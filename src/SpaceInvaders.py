@@ -53,7 +53,17 @@ class Projectile(object):
 
     def draw(self,win):
         win.blit(self.image,(self.x,self.y))
+        #pygame.draw.rect(win,(255,0,0),self.hitbox,2)
+
+class Enemy_Projectile(Projectile):
+    def __init__(self,x,y,width,height,image,vel,dir):
+        super().__init__(x,y,width,height,image,vel,dir)
+        self.hitbox = (self.x + 8,self.y,8,height-10,image,vel,dir)
+        
+    def draw(self,win):
+        super(Enemy_Projectile, self).draw(win)
         pygame.draw.rect(win,(255,0,0),self.hitbox,2)
+        print('Drawing enemy projectile')
         
 class Enemy(object):
     def __init__(self,x,y,width,height,image,x_vel,y_vel,dir,score,shoot):
@@ -79,7 +89,7 @@ class Small_Enemy(Enemy):
         super().__init__(x, y, width, height, image,x_vel,y_vel,dir,score,shoot)
         self.right_boundary = 650
         self.left_boundary = 50
-        self.hitbox = (self.x,self.y,self.width,self.height)
+        self.hitbox = (self.x + 8,self.y + 19,self.width - 16,11)
 
     def move(self):
         
@@ -91,7 +101,7 @@ class Small_Enemy(Enemy):
             self.dir *= -1
     
         self.x += self.x_vel*self.dir
-        self.hitbox = (self.x,self.y,self.width,self.height)
+        self.hitbox = (self.x + 8,self.y + 19,self.width - 16,11)
 
     def draw(self,win):
         win.blit(self.image,(self.x,self.y))
@@ -155,7 +165,7 @@ for i in range(0,num_small_enemies):
         small_enemies.append(Small_Enemy(50 + i*x_separation,y,32,31,enemy_1,5,5,1,10,i))
     else:
         y = 100
-        small_enemies.append(Small_Enemy(50 + (i-3)*x_separation,y,32,31,enemy_1,5,5,1,10,i))
+        small_enemies.append(Small_Enemy(50 + (i-3)*x_separation,y,15,31,enemy_1,5,5,1,10,i))
         
 while running:
     clock.tick(30)
@@ -172,7 +182,7 @@ while running:
             player_ship.hit(10)
         
         if enemy.shoot == shoot_flag and len(enemy.bullets) < 1:
-            enemy.bullets.append(Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,enemy_missile,3,'down'))
+            enemy.bullets.append(Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,enemy_missile,3,'down'))
         
     for enemy in small_enemies:
         for bullet in enemy.bullets:
@@ -180,7 +190,7 @@ while running:
                 enemy.bullets.pop(enemy.bullets.index(bullet))
                 continue
             bullet.y += bullet.vel
-            bullet.hitbox = (bullet.x,bullet.y,bullet.width,bullet.height)
+            bullet.hitbox = (bullet.x + 8,bullet.y,8,bullet.height - 10)
             #check if bullet hits other enemy bullets
             if overlap_check(bullet,player_ship):
                 player_ship.hit(10)
