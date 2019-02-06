@@ -2,6 +2,7 @@ import pygame
 import random
 
 pygame.init()
+
 screen_width = 700
 screen_height = 700
 ship_x = 330
@@ -9,12 +10,12 @@ ship_y = 500
 ship_width = 32
 ship_height = 32
 win = pygame.display.set_mode((screen_width,screen_height))
-pygame.display.set_caption("First Pygame Game")
+pygame.display.set_caption("Space Invaders")
 bg = pygame.image.load('starter_background.png')
 ship = pygame.image.load('player_ship.png')
 ship_vel = 5
 small_missile = pygame.image.load('small_missile.png')
-num_small_enemies = 1
+num_small_enemies = 6
 enemy_1 = pygame.image.load('enemy_1.png')
 enemy_missile = pygame.image.load('enemy_missile.png')
 
@@ -58,12 +59,21 @@ class Projectile(object):
 class Enemy_Projectile(Projectile):
     def __init__(self,x,y,width,height,image,vel,dir):
         super().__init__(x,y,width,height,image,vel,dir)
-        self.hitbox = (self.x + 8,self.y,8,height-10,image,vel,dir)
+        self.hitbox = (self.x + 8,self.y,8,height-10)
         
     def draw(self,win):
         super(Enemy_Projectile, self).draw(win)
         pygame.draw.rect(win,(255,0,0),self.hitbox,2)
         print('Drawing enemy projectile')
+
+class Player_Projectile(Projectile):
+    def __init__(self,x,y,width,height,image,vel,dir):
+        super().__init__(x,y,width,height,image,vel,dir)
+        self.hitbox = (self.x + 9,self.y,self.width,self.height + 10)
+    
+    def draw(self,win):
+        super(Player_Projectile,self).draw(win)
+        pygame.draw.rect(win,(255,0,0),self.hitbox,2)
         
 class Enemy(object):
     def __init__(self,x,y,width,height,image,x_vel,y_vel,dir,score,shoot):
@@ -109,7 +119,6 @@ class Small_Enemy(Enemy):
         
     def hit(self,player_ship):
         player_ship.pts += self.score
-        #print(player_ship.pts)
         
 def redraw_game_window():
     win.blit(bg,(0,0))
@@ -136,14 +145,7 @@ def overlap_check(sprite1,sprite2):
     left_in = sprite1.x > sprite2.x and sprite1.x < sprite2.x + sprite2.width
     right_in = sprite1.x + sprite1.width > sprite2.x and sprite1.x + sprite1.width < sprite2.x + sprite2.width
     
-    collision = (bottom_in and right_in) or (left_in and bottom_in) or (top_in and right_in) or (top_in and left_in)
-    if isinstance(sprite1,Projectile) and isinstance(sprite2,Projectile):
-        print('Top In: ' + str(top_in))
-        print('Bottom In: ' + str(bottom_in))
-        print('Left In: ' + str(left_in))
-        print('Right In: ' + str(right_in))
-        print('Collision: ' + str(collision))
-    
+    collision = (bottom_in and right_in) or (left_in and bottom_in) or (top_in and right_in) or (top_in and left_in)    
     return collision
     
 running = True
@@ -151,9 +153,7 @@ running = True
 clock = pygame.time.Clock()
 
 player_ship = Player(ship_x,ship_y,ship_width,ship_height,ship)
-#if isinstance(player_ship,Player):
- #   print('Player Ship is instance of Player class')
-#print('Player Ship Type: ' + str(type(player_ship)))
+
 small_enemies = list()
 font = pygame.font.SysFont('comicsans', 30, True)    
 x_separation = 60
@@ -165,7 +165,7 @@ for i in range(0,num_small_enemies):
         small_enemies.append(Small_Enemy(50 + i*x_separation,y,32,31,enemy_1,5,5,1,10,i))
     else:
         y = 100
-        small_enemies.append(Small_Enemy(50 + (i-3)*x_separation,y,15,31,enemy_1,5,5,1,10,i))
+        small_enemies.append(Small_Enemy(50 + (i-3)*x_separation,y,32,31,enemy_1,5,5,1,10,i))
         
 while running:
     clock.tick(30)
@@ -181,7 +181,7 @@ while running:
         if overlap_check(enemy,player_ship):
             player_ship.hit(10)
         
-        if enemy.shoot == shoot_flag and len(enemy.bullets) < 1:
+        if enemy.shoot == shoot_flag and len(enemy.bullets) < 5:
             enemy.bullets.append(Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,enemy_missile,3,'down'))
         
     for enemy in small_enemies:
@@ -195,7 +195,8 @@ while running:
             if overlap_check(bullet,player_ship):
                 player_ship.hit(10)
                 enemy.bullets.pop(enemy.bullets.index(bullet))
-                
+                continue
+                #need to put a continue here?
             for p_bullet in player_ship.bullets:
                 #print('CHeck Bullet Collision')
                 if overlap_check(p_bullet,bullet):
@@ -209,7 +210,7 @@ while running:
             player_ship.bullets.pop(player_ship.bullets.index(bullet))
             continue
         bullet.y -= bullet.vel
-        bullet.hitbox = (bullet.x,bullet.y,bullet.width,bullet.height)
+        bullet.hitbox = (bullet.x + 9,bullet.y + 1,bullet.width - 6,bullet.height + 7)
         #check if bullet makes contact with any enemy
         for enemy in small_enemies:
             if overlap_check(bullet,enemy):
@@ -223,8 +224,8 @@ while running:
     
     keys = pygame.key.get_pressed()
     
-    if keys[pygame.K_SPACE] and len(player_ship.bullets) < 1:
-        player_ship.bullets.append(Projectile(player_ship.x + 0.5*player_ship.width - 5,player_ship.y,12,7,small_missile,3,player_ship.dir))
+    if keys[pygame.K_SPACE] and len(player_ship.bullets) < 20:
+        player_ship.bullets.append(Player_Projectile(player_ship.x + 0.5*player_ship.width - 12,player_ship.y,12,7,small_missile,3,player_ship.dir))
 
     if keys[pygame.K_RIGHT] and player_ship.x + player_ship.width + player_ship.vel <= screen_width:
         player_ship.x += player_ship.vel
