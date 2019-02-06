@@ -140,10 +140,10 @@ def redraw_game_window():
     
 def overlap_check(sprite1,sprite2):
     
-    top_in = sprite1.y > sprite2.y and sprite1.y < sprite2.y + sprite2.height
-    bottom_in = sprite1.y + sprite1.height > sprite2.y and sprite1.y + sprite1.height < sprite2.y + sprite2.height
-    left_in = sprite1.x > sprite2.x and sprite1.x < sprite2.x + sprite2.width
-    right_in = sprite1.x + sprite1.width > sprite2.x and sprite1.x + sprite1.width < sprite2.x + sprite2.width
+    top_in = sprite1.hitbox[1] > sprite2.hitbox[1] and sprite1.hitbox[1] < sprite2.hitbox[1] + sprite2.hitbox[3]
+    bottom_in = sprite1.hitbox[1] + sprite1.hitbox[3] > sprite2.hitbox[1] and sprite1.hitbox[1] + sprite1.hitbox[3] < sprite2.hitbox[1] + sprite2.hitbox[3]
+    left_in = sprite1.hitbox[0] > sprite2.hitbox[0] and sprite1.hitbox[0] < sprite2.hitbox[0] + sprite2.hitbox[2]
+    right_in = sprite1.hitbox[0] + sprite1.hitbox[2] > sprite2.hitbox[0] and sprite1.hitbox[0] + sprite1.hitbox[2] < sprite2.hitbox[0] + sprite2.hitbox[2]
     
     collision = (bottom_in and right_in) or (left_in and bottom_in) or (top_in and right_in) or (top_in and left_in)    
     return collision
@@ -181,7 +181,7 @@ while running:
         if overlap_check(enemy,player_ship):
             player_ship.hit(10)
         
-        if enemy.shoot == shoot_flag and len(enemy.bullets) < 5:
+        if enemy.shoot == shoot_flag and len(enemy.bullets) < 1:
             enemy.bullets.append(Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,enemy_missile,3,'down'))
         
     for enemy in small_enemies:
@@ -191,27 +191,23 @@ while running:
                 continue
             bullet.y += bullet.vel
             bullet.hitbox = (bullet.x + 8,bullet.y,8,bullet.height - 10)
-            #check if bullet hits other enemy bullets
+            
             if overlap_check(bullet,player_ship):
                 player_ship.hit(10)
                 enemy.bullets.pop(enemy.bullets.index(bullet))
                 continue
-                #need to put a continue here?
             for p_bullet in player_ship.bullets:
-                #print('CHeck Bullet Collision')
                 if overlap_check(p_bullet,bullet):
                     enemy.bullets.pop(enemy.bullets.index(bullet))
                     player_ship.bullets.pop(player_ship.bullets.index(p_bullet))
-                    #print('Bullet Collision')
-            #check if bullet hits player
-    #player_ship bullet removal check         
+                    
     for bullet in player_ship.bullets:
         if bullet.y < 0:
             player_ship.bullets.pop(player_ship.bullets.index(bullet))
             continue
         bullet.y -= bullet.vel
         bullet.hitbox = (bullet.x + 9,bullet.y + 1,bullet.width - 6,bullet.height + 7)
-        #check if bullet makes contact with any enemy
+        
         for enemy in small_enemies:
             if overlap_check(bullet,enemy):
                 enemy.hit(player_ship)
@@ -224,7 +220,7 @@ while running:
     
     keys = pygame.key.get_pressed()
     
-    if keys[pygame.K_SPACE] and len(player_ship.bullets) < 20:
+    if keys[pygame.K_SPACE] and len(player_ship.bullets) < 1:
         player_ship.bullets.append(Player_Projectile(player_ship.x + 0.5*player_ship.width - 12,player_ship.y,12,7,small_missile,3,player_ship.dir))
 
     if keys[pygame.K_RIGHT] and player_ship.x + player_ship.width + player_ship.vel <= screen_width:
