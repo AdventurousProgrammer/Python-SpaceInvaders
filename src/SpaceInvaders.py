@@ -5,19 +5,30 @@ pygame.init()
 
 screen_width = 700
 screen_height = 700
+
 ship_x = 330
 ship_y = 500
 ship_width = 32
 ship_height = 32
+
 win = pygame.display.set_mode((screen_width,screen_height))
+
 pygame.display.set_caption("Space Invaders")
+
 bg = pygame.image.load('starter_background.png')
 ship = pygame.image.load('player_ship.png')
+
 ship_vel = 5
+
 small_missile = pygame.image.load('small_missile.png')
-num_small_enemies = 6
+
+num_small_enemies = 1
+
 enemy_1 = pygame.image.load('enemy_1.png')
 enemy_missile = pygame.image.load('enemy_missile.png')
+
+current_frame = 0
+old_frame = 0
 
 class Player(object):
     
@@ -40,8 +51,11 @@ class Player(object):
         pygame.draw.rect(win,(255,0,0),self.hitbox,2)
         
     def hit(self,pts_lost):
-        self.health -= pts_lost
-
+        global old_frame
+        if current_frame - old_frame > 3:
+            self.health -= pts_lost
+            old_frame = current_frame
+            
 class Projectile(object):
     def __init__(self,x,y,width,height,image,vel,dir):
         self.x = x 
@@ -150,8 +164,24 @@ def overlap_check(sprite1,sprite2):
     
 running = True
 
-clock = pygame.time.Clock()
+def game_over_screen():
+    while True:
+        loss_text = font.render('Too Bad You Lost! Score:' + str(player_ship.pts),True,(255,0,0))
+        win.blit(loss_text,(0,0))
+        evil = pygame.image.load('evil.png')
+        win.blit(evil,(120,120))
+        pygame.display.update()
 
+        i = 0
+        while i < 300:
+                pygame.time.delay(10)
+                i+=1
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        
+clock = pygame.time.Clock()
+frame_count = 0
 player_ship = Player(ship_x,ship_y,ship_width,ship_height,ship)
 
 small_enemies = list()
@@ -166,9 +196,12 @@ for i in range(0,num_small_enemies):
     else:
         y = 100
         small_enemies.append(Small_Enemy(50 + (i-3)*x_separation,y,32,31,enemy_1,5,5,1,10,i))
+
+
         
 while running:
     clock.tick(30)
+    current_frame += 1
     shoot_flag = random.randint(0,9)
     
     if player_ship.health <= 0:
@@ -220,9 +253,12 @@ while running:
     
     keys = pygame.key.get_pressed()
     
-    if keys[pygame.K_SPACE] and len(player_ship.bullets) < 1:
-        player_ship.bullets.append(Player_Projectile(player_ship.x + 0.5*player_ship.width - 12,player_ship.y,12,7,small_missile,3,player_ship.dir))
-
+    if keys[pygame.K_SPACE] and len(player_ship.bullets) < 5:
+        if current_frame - old_frame > 3:
+            #use frames to prevent multiple bullets from coming out all at once
+            old_frame = current_frame
+            player_ship.bullets.append(Player_Projectile(player_ship.x + 0.5*player_ship.width - 12,player_ship.y,12,7,small_missile,3,player_ship.dir))
+        frame_count += 1
     if keys[pygame.K_RIGHT] and player_ship.x + player_ship.width + player_ship.vel <= screen_width:
         player_ship.x += player_ship.vel
     elif keys[pygame.K_LEFT] and player_ship.x - player_ship.vel >= 0:
@@ -235,4 +271,6 @@ while running:
     player_ship.hitbox = (player_ship.x,player_ship.y,player_ship.width,player_ship.height)
     
     redraw_game_window()
+
+game_over_screen()
           
