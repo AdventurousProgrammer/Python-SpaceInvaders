@@ -1,0 +1,4 @@
+TO DO:
+Need to add dictionary of all enemy ships and their numbers
+Set level method, figure out functionality
+In main game loop find out how to go through each level and set up enemies

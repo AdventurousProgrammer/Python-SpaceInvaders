@@ -1,6 +1,25 @@
 import pygame
 import random
 
+#Level 1: 6 enemies current set up, 
+#Level 2: 10 enemies, need to change spacing, and starting and ending point
+#Level 3: 15 enemies that can go side to side, and up and down, player bullet limit is now 5
+#Level 4: 10 Enemies that can go side to side, and up and down, and shoot three missiles
+#Level 5: 10 Enemies that can go any direction including diagonal, one bullet
+#Level 6: 10 Enemies: 3 Enemies that can shoot 3 bullets, 4 enemies that can move any direction,
+#3 Enemies that take three shots to take down
+#Level 7: 5 enemies that can shoot 3 shots, and 5 that can shoot 3 shots at different angles
+#Player has 8 bullets now starting at level 7
+#Level 8: 6 enemies that can shoot shots at different angles, 2 enemies that can reflect 
+#player bullets
+#Level 9: 5 Enemies that can reflect missiles, and 5 enemies that take 3 shots to kill
+#Level 10: Mini Boss, enemies that can shoot three missiles at different angles appear, boss
+#can spawn enemies that can move side to side and up and down, and rarely missile deflecting
+#enemies
+
+#need a dict to keep all the enemy names and numbers 
+#
+
 pygame.init()
 
 screen_width = 700
@@ -30,6 +49,15 @@ enemy_missile = pygame.image.load('enemy_missile.png')
 current_frame = 0
 old_frame = 0
 
+class Level(object):
+    enemy_list = list()
+    
+    def __init(self,enemy_list):
+        self.enemy_list = enemy_list
+    @staticmethod
+    def set_level(self,level_index):
+        #set location of enemies that is it
+        pass
 class Player(object):
     
     def __init__(self,x,y,width,height,image):
@@ -70,17 +98,19 @@ class Projectile(object):
         win.blit(self.image,(self.x,self.y))
         #pygame.draw.rect(win,(255,0,0),self.hitbox,2)
 
-class Enemy_Projectile(Projectile):
+class Basic_Enemy_Projectile(Projectile):
+    
     def __init__(self,x,y,width,height,image,vel,dir):
         super().__init__(x,y,width,height,image,vel,dir)
         self.hitbox = (self.x + 8,self.y,8,height-10)
         
     def draw(self,win):
-        super(Enemy_Projectile, self).draw(win)
+        super(Basic_Enemy_Projectile, self).draw(win)
         pygame.draw.rect(win,(255,0,0),self.hitbox,2)
         print('Drawing enemy projectile')
 
 class Player_Projectile(Projectile):
+    
     def __init__(self,x,y,width,height,image,vel,dir):
         super().__init__(x,y,width,height,image,vel,dir)
         self.hitbox = (self.x + 9,self.y,self.width,self.height + 10)
@@ -90,6 +120,7 @@ class Player_Projectile(Projectile):
         pygame.draw.rect(win,(255,0,0),self.hitbox,2)
         
 class Enemy(object):
+    
     def __init__(self,x,y,width,height,image,x_vel,y_vel,dir,score,shoot):
         self.x = x 
         self.y = y
@@ -107,7 +138,7 @@ class Enemy(object):
     def draw(self,win):
         win.blit(self.image,(self.x,self.y))
     
-class Small_Enemy(Enemy):
+class Horizontal_Enemy(Enemy):
 
     def __init__(self,x,y,width,height,image,x_vel,y_vel,dir,score,shoot):
         super().__init__(x, y, width, height, image,x_vel,y_vel,dir,score,shoot)
@@ -135,6 +166,7 @@ class Small_Enemy(Enemy):
         player_ship.pts += self.score
         
 def redraw_game_window():
+    
     win.blit(bg,(0,0))
     player_ship.draw(win)
     for enemy in small_enemies:
@@ -165,6 +197,7 @@ def overlap_check(sprite1,sprite2):
 running = True
 
 def game_over_screen():
+    #needs some work
     while True:
         loss_text = font.render('Too Bad You Lost! Score:' + str(player_ship.pts),True,(255,0,0))
         win.blit(loss_text,(0,0))
@@ -192,10 +225,10 @@ y_separation = 50
 for i in range(0,num_small_enemies):
     if i < 3:
         y = 50
-        small_enemies.append(Small_Enemy(50 + i*x_separation,y,32,31,enemy_1,5,5,1,10,i))
+        small_enemies.append(Horizontal_Enemy(50 + i*x_separation,y,32,31,enemy_1,5,5,1,10,i))
     else:
         y = 100
-        small_enemies.append(Small_Enemy(50 + (i-3)*x_separation,y,32,31,enemy_1,5,5,1,10,i))
+        small_enemies.append(Horizontal_Enemy(50 + (i-3)*x_separation,y,32,31,enemy_1,5,5,1,10,i))
 
 
         
@@ -215,7 +248,7 @@ while running:
             player_ship.hit(10)
         
         if enemy.shoot == shoot_flag and len(enemy.bullets) < 1:
-            enemy.bullets.append(Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,enemy_missile,3,'down'))
+            enemy.bullets.append(Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,enemy_missile,3,'down'))
         
     for enemy in small_enemies:
         for bullet in enemy.bullets:
