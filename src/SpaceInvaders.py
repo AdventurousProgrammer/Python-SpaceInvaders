@@ -1,24 +1,7 @@
 import pygame
 import random
 
-#Level 1: 6 enemies current set up, 
-#Level 2: 10 enemies, need to change spacing, and starting and ending point
-#Level 3: 15 enemies that can go side to side, and up and down, player bullet limit is now 5
-#Level 4: 10 Enemies that can go side to side, and up and down, and shoot three missiles
-#Level 5: 10 Enemies that can go any direction including diagonal, one bullet
-#Level 6: 10 Enemies: 3 Enemies that can shoot 3 bullets, 4 enemies that can move any direction,
-#3 Enemies that take three shots to take down
-#Level 7: 5 enemies that can shoot 3 shots, and 5 that can shoot 3 shots at different angles
-#Player has 8 bullets now starting at level 7
-#Level 8: 6 enemies that can shoot shots at different angles, 2 enemies that can reflect 
-#player bullets
-#Level 9: 5 Enemies that can reflect missiles, and 5 enemies that take 3 shots to kill
-#Level 10: Mini Boss, enemies that can shoot three missiles at different angles appear, boss
-#can spawn enemies that can move side to side and up and down, and rarely missile deflecting
-#enemies
 
-#need a dict to keep all the enemy names and numbers 
-#
 
 pygame.init()
 
@@ -49,8 +32,12 @@ enemy_missile = pygame.image.load('enemy_missile.png')
 current_frame = 0
 old_frame = 0
 
+num_levels = 10
+
+levels = list()
+
 class Level(object):
-    enemy_list = list()
+    enemy_list = dict()
     
     def __init(self,enemy_list):
         self.enemy_list = enemy_list
@@ -61,6 +48,7 @@ class Level(object):
 class Player(object):
     
     def __init__(self,x,y,width,height,image):
+        
         self.x = x
         self.y = y
         self.width = width
@@ -75,16 +63,19 @@ class Player(object):
         self.hitbox = (self.x,self.y,self.width,self.height)
         
     def draw(self,win):
+        
         win.blit(self.image,(self.x,self.y))
         pygame.draw.rect(win,(255,0,0),self.hitbox,2)
         
     def hit(self,pts_lost):
+        
         global old_frame
         if current_frame - old_frame > 3:
             self.health -= pts_lost
             old_frame = current_frame
             
 class Projectile(object):
+    
     def __init__(self,x,y,width,height,image,vel,dir):
         self.x = x 
         self.y = y
@@ -196,6 +187,30 @@ def overlap_check(sprite1,sprite2):
     
 running = True
 
+def game_init():
+    #Level 1: 6 enemies current set up, 
+#Level 2: 10 enemies, need to change spacing, and starting and ending point
+#Level 3: 15 enemies that can go side to side, and up and down, player bullet limit is now 5
+#Level 4: 10 Enemies that can go side to side, and up and down, and shoot three missiles
+#Level 5: 10 Enemies that can go any direction including diagonal, one bullet
+#Level 6: 10 Enemies: 3 Enemies that can shoot 3 bullets, 4 enemies that can move any direction,
+#3 Enemies that take three shots to take down
+#Level 7: 5 enemies that can shoot 3 shots, and 5 that can shoot 3 shots at different angles
+#Player has 8 bullets now starting at level 7
+#Level 8: 6 enemies that can shoot shots at different angles, 2 enemies that can reflect 
+#player bullets
+#Level 9: 5 Enemies that can reflect missiles, and 5 enemies that take 3 shots to kill
+#Level 10: Mini Boss, enemies that can shoot three missiles at different angles appear, boss
+#can spawn enemies that can move side to side and up and down, and rarely missile deflecting
+#enemies
+
+#need a dict to keep all the enemy names and numbers 
+#
+    enemy_list = ['Horizontal Enemy','Vertical Enemy','Diagonal Enemy','Tri Shoot Enemy','Dynamic Tri Shoot Enemy','Reflector Enemy','Tank Enemy','Boss']
+    
+    #set up all the levels
+        #set dicitonaries for all levels
+
 def game_over_screen():
     #needs some work
     while True:
@@ -230,8 +245,7 @@ for i in range(0,num_small_enemies):
         y = 100
         small_enemies.append(Horizontal_Enemy(50 + (i-3)*x_separation,y,32,31,enemy_1,5,5,1,10,i))
 
-
-        
+game_init()        
 while running:
     clock.tick(30)
     current_frame += 1
