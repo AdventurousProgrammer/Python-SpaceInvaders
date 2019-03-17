@@ -1,7 +1,6 @@
 import pygame
 import random
-
-
+import csv
 
 pygame.init()
 
@@ -36,19 +35,9 @@ num_levels = 10
 
 levels = list()
 
-class Level(object):
-    enemy_list = dict()
-    
-    def __init(self,enemy_list):
-        self.enemy_list = enemy_list
-    @staticmethod
-    def set_level(self,level_index):
-        #set location of enemies that is it
-        pass
 class Player(object):
     
     def __init__(self,x,y,width,height,image):
-        
         self.x = x
         self.y = y
         self.width = width
@@ -63,19 +52,16 @@ class Player(object):
         self.hitbox = (self.x,self.y,self.width,self.height)
         
     def draw(self,win):
-        
         win.blit(self.image,(self.x,self.y))
         pygame.draw.rect(win,(255,0,0),self.hitbox,2)
         
     def hit(self,pts_lost):
-        
         global old_frame
         if current_frame - old_frame > 3:
             self.health -= pts_lost
             old_frame = current_frame
             
 class Projectile(object):
-    
     def __init__(self,x,y,width,height,image,vel,dir):
         self.x = x 
         self.y = y
@@ -90,18 +76,16 @@ class Projectile(object):
         #pygame.draw.rect(win,(255,0,0),self.hitbox,2)
 
 class Basic_Enemy_Projectile(Projectile):
-    
     def __init__(self,x,y,width,height,image,vel,dir):
         super().__init__(x,y,width,height,image,vel,dir)
-        self.hitbox = (self.x + 8,self.y,8,height-10)
+        self.hitbox = (self.x + 8,self.y,8,height - 10)
         
     def draw(self,win):
         super(Basic_Enemy_Projectile, self).draw(win)
         pygame.draw.rect(win,(255,0,0),self.hitbox,2)
-        print('Drawing enemy projectile')
+        
 
 class Player_Projectile(Projectile):
-    
     def __init__(self,x,y,width,height,image,vel,dir):
         super().__init__(x,y,width,height,image,vel,dir)
         self.hitbox = (self.x + 9,self.y,self.width,self.height + 10)
@@ -111,7 +95,6 @@ class Player_Projectile(Projectile):
         pygame.draw.rect(win,(255,0,0),self.hitbox,2)
         
 class Enemy(object):
-    
     def __init__(self,x,y,width,height,image,x_vel,y_vel,dir,score,shoot):
         self.x = x 
         self.y = y
@@ -128,9 +111,12 @@ class Enemy(object):
         
     def draw(self,win):
         win.blit(self.image,(self.x,self.y))
+        pygame.draw.rect(win,(255,0,0),self.hitbox,2)
+        
+    def hit(self):
+        player_ship.score += self.score
     
 class Horizontal_Enemy(Enemy):
-
     def __init__(self,x,y,width,height,image,x_vel,y_vel,dir,score,shoot):
         super().__init__(x, y, width, height, image,x_vel,y_vel,dir,score,shoot)
         self.right_boundary = 650
@@ -138,7 +124,6 @@ class Horizontal_Enemy(Enemy):
         self.hitbox = (self.x + 8,self.y + 19,self.width - 16,11)
 
     def move(self):
-        
         if self.x >= self.right_boundary:
             self.y += self.y_vel
             self.dir *= -1
@@ -148,16 +133,8 @@ class Horizontal_Enemy(Enemy):
     
         self.x += self.x_vel*self.dir
         self.hitbox = (self.x + 8,self.y + 19,self.width - 16,11)
-
-    def draw(self,win):
-        win.blit(self.image,(self.x,self.y))
-        pygame.draw.rect(win,(255,0,0),self.hitbox,2)
-        
-    def hit(self,player_ship):
-        player_ship.pts += self.score
-        
-def redraw_game_window():
     
+def redraw_game_window():
     win.blit(bg,(0,0))
     player_ship.draw(win)
     for enemy in small_enemies:
@@ -168,7 +145,7 @@ def redraw_game_window():
     for bullet in player_ship.bullets:
         bullet.draw(win) 
     
-    text = font.render('Score: ' + str(player_ship.pts),True,(255,0,0))
+    text = font.render('Score: ' + str(player_ship.score),True,(255,0,0))
     health = font.render('Health: ' + str(player_ship.health),True,(0,255,0))
     win.blit(text,(0,0))
     win.blit(health,(300,0))
@@ -176,7 +153,6 @@ def redraw_game_window():
     pygame.display.update()
     
 def overlap_check(sprite1,sprite2):
-    
     top_in = sprite1.hitbox[1] > sprite2.hitbox[1] and sprite1.hitbox[1] < sprite2.hitbox[1] + sprite2.hitbox[3]
     bottom_in = sprite1.hitbox[1] + sprite1.hitbox[3] > sprite2.hitbox[1] and sprite1.hitbox[1] + sprite1.hitbox[3] < sprite2.hitbox[1] + sprite2.hitbox[3]
     left_in = sprite1.hitbox[0] > sprite2.hitbox[0] and sprite1.hitbox[0] < sprite2.hitbox[0] + sprite2.hitbox[2]
@@ -188,29 +164,38 @@ def overlap_check(sprite1,sprite2):
 running = True
 
 def game_init():
-    #Level 1: 6 enemies current set up, 
-#Level 2: 10 enemies, need to change spacing, and starting and ending point
-#Level 3: 15 enemies that can go side to side, and up and down, player bullet limit is now 5
-#Level 4: 10 Enemies that can go side to side, and up and down, and shoot three missiles
-#Level 5: 10 Enemies that can go any direction including diagonal, one bullet
-#Level 6: 10 Enemies: 3 Enemies that can shoot 3 bullets, 4 enemies that can move any direction,
-#3 Enemies that take three shots to take down
-#Level 7: 5 enemies that can shoot 3 shots, and 5 that can shoot 3 shots at different angles
-#Player has 8 bullets now starting at level 7
-#Level 8: 6 enemies that can shoot shots at different angles, 2 enemies that can reflect 
-#player bullets
-#Level 9: 5 Enemies that can reflect missiles, and 5 enemies that take 3 shots to kill
-#Level 10: Mini Boss, enemies that can shoot three missiles at different angles appear, boss
-#can spawn enemies that can move side to side and up and down, and rarely missile deflecting
-#enemies
+    level_layout = open('levels.csv')
+    file_reader = csv.reader(level_layout)
+    data = list(file_reader)
+    print('Length of csv file: ' + str(len(data)))
+    print(data)
+    row = 1
+    for i in range(0,10):
+        print('i = ' + str(i) + ' New Level')
+        level = Level()
+        level.enemy_list = {}
+        print(level.enemy_list)
+        if(i == 9):
+            print(row)
+        while(row < len(data)):
+            if int(data[row][0]) == i:
+               # print('Add New Enemy')
+                level.enemy_list[data[row][1]] = int(data[row][2])
+                row+=1
+                if row == len(data):
+                    levels.append(level)
+            else:
+                levels.append(level)
+                print(level.enemy_list)
+                break
 
-#need a dict to keep all the enemy names and numbers 
-#
-    enemy_list = ['Horizontal Enemy','Vertical Enemy','Diagonal Enemy','Tri Shoot Enemy','Dynamic Tri Shoot Enemy','Reflector Enemy','Tank Enemy','Boss']
-    
-    #set up all the levels
-        #set dicitonaries for all levels
-
+def set_level(index):
+    #get level from list with index
+    level = levels[index]
+    #set location for each enemy, x and y locations
+        #calculate x and y coordinates and separation
+        
+    for enemy in level.enemy
 def game_over_screen():
     #needs some work
     while True:
@@ -290,7 +275,7 @@ while running:
         
         for enemy in small_enemies:
             if overlap_check(bullet,enemy):
-                enemy.hit(player_ship)
+                enemy.hit()
                 small_enemies.pop(small_enemies.index(enemy))
                 player_ship.bullets.pop(player_ship.bullets.index(bullet))
     
@@ -319,5 +304,4 @@ while running:
     
     redraw_game_window()
 
-game_over_screen()
-          
+game_over_screen()         
