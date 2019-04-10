@@ -2,6 +2,7 @@ import pygame
 import random
 import csv
 
+
 pygame.init()
 
 screen_width = 700
@@ -11,7 +12,7 @@ ship_x = 330
 ship_y = 500
 ship_width = 32
 ship_height = 32
-
+margin = 40
 win = pygame.display.set_mode((screen_width,screen_height))
 
 pygame.display.set_caption("Space Invaders")
@@ -36,7 +37,6 @@ num_levels = 10
 levels = list()
 
 class Player(object):
-    
     def __init__(self,x,y,width,height,image):
         self.x = x
         self.y = y
@@ -162,40 +162,51 @@ def overlap_check(sprite1,sprite2):
     return collision
     
 running = True
+global data
 
-def game_init():
+def init():
     level_layout = open('levels.csv')
     file_reader = csv.reader(level_layout)
     data = list(file_reader)
-    print('Length of csv file: ' + str(len(data)))
-    print(data)
-    row = 1
-    for i in range(0,10):
-        print('i = ' + str(i) + ' New Level')
-        level = Level()
-        level.enemy_list = {}
-        print(level.enemy_list)
-        if(i == 9):
-            print(row)
-        while(row < len(data)):
-            if int(data[row][0]) == i:
-               # print('Add New Enemy')
-                level.enemy_list[data[row][1]] = int(data[row][2])
-                row+=1
-                if row == len(data):
-                    levels.append(level)
-            else:
-                levels.append(level)
-                print(level.enemy_list)
-                break
-
-def set_level(index):
-    #get level from list with index
-    level = levels[index]
-    #set location for each enemy, x and y locations
-        #calculate x and y coordinates and separation
+    
+def set_level(row,index):
+    enemy_list = {}
+    print('i = ' + str(index) + ' New Level')
+    while(row < len(data)):
+        if int(data[row][0]) == i:
+            enemy_list[data[row][1]] = int(data[row][2])
+            row+=1
+        else:
+            break
+            
+    set_enemy_locations(enemy_list)
+    
         
-    for enemy in level.enemy
+def set_enemy_locations(enemies):
+    num_enemies = len(enemies)
+    x_sep = 30
+    y_sep = 30
+    sprite_width = enemies.get(enemies.keys[0]).width     #(n-1)*x_sep + n*ship_width = screen_width - margin
+    #n*x_sep - x_sep + n*ship_width = screen_width - margin
+    n = int((screen_width - margin)/(x_sep + sprite_width))
+    
+    keys = enemies.keys()
+    #get enemy
+    #figure out x_sep 
+    x_sep = (screen_width - margin - (n/2)*(ship_width)/(n - 1))
+    
+    for i in range(0,len(enemies.keys)):
+        if enemies.
+        enemy = eval(enemies.get(enemies.keys[i]))
+        
+        
+    enemy = eval(enemies.get(enemies.keys[i]))
+    #create enemy instance
+    if n > num_enemies/2:
+        n = num_enemies/2
+        #place first ship at left boundary
+    #the case with varying ships
+    
 def game_over_screen():
     #needs some work
     while True:
@@ -230,7 +241,9 @@ for i in range(0,num_small_enemies):
         y = 100
         small_enemies.append(Horizontal_Enemy(50 + (i-3)*x_separation,y,32,31,enemy_1,5,5,1,10,i))
 
-game_init()        
+init()
+level = 0
+        
 while running:
     clock.tick(30)
     current_frame += 1
