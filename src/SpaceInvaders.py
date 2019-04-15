@@ -1,18 +1,18 @@
 import pygame
 import random
 import csv
-
+from Enemy import *
+from Projectile import *
+from Player import *
 
 pygame.init()
 
 screen_width = 700
 screen_height = 700
 
-ship_x = 330
-ship_y = 500
-ship_width = 32
-ship_height = 32
+
 margin = 40
+
 win = pygame.display.set_mode((screen_width,screen_height))
 
 pygame.display.set_caption("Space Invaders")
@@ -34,212 +34,113 @@ old_frame = 0
 
 num_levels = 10
 
+clock = pygame.time.Clock()
+
 levels = list()
 
-class Player(object):
-    def __init__(self,x,y,width,height,image):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.bullets = list()
-        self.score = 0
-        self.image = image
-        self.dir = 'up'
-        self.vel = 5
-        self.pts = 0
-        self.health = 100
-        self.hitbox = (self.x,self.y,self.width,self.height)
+class Game():
+    enemies = list()#static variable
+    font = pygame.font.SysFont('comicsans', 30, True)
+    data = ()
+    running = True    
+
+    def redraw_game_window(self,player_ship):
+        win.blit(bg,(0,0))
+        player_ship.draw(win)
+        player_ship.hit()
         
-    def draw(self,win):
-        win.blit(self.image,(self.x,self.y))
-        pygame.draw.rect(win,(255,0,0),self.hitbox,2)
-        
-    def hit(self,pts_lost):
-        global old_frame
-        if current_frame - old_frame > 3:
-            self.health -= pts_lost
-            old_frame = current_frame
+        for enemy in Game.enemies:
+            enemy.draw(win)
             
-class Projectile(object):
-    def __init__(self,x,y,width,height,image,vel,dir):
-        self.x = x 
-        self.y = y
-        self.width = width
-        self.height = height
-        self.image = image
-        self.vel = vel
-        self.hitbox = (self.x,self.y,self.width,self.height)
-
-    def draw(self,win):
-        win.blit(self.image,(self.x,self.y))
-        #pygame.draw.rect(win,(255,0,0),self.hitbox,2)
-
-class Basic_Enemy_Projectile(Projectile):
-    def __init__(self,x,y,width,height,image,vel,dir):
-        super().__init__(x,y,width,height,image,vel,dir)
-        self.hitbox = (self.x + 8,self.y,8,height - 10)
-        
-    def draw(self,win):
-        super(Basic_Enemy_Projectile, self).draw(win)
-        pygame.draw.rect(win,(255,0,0),self.hitbox,2)
-        
-
-class Player_Projectile(Projectile):
-    def __init__(self,x,y,width,height,image,vel,dir):
-        super().__init__(x,y,width,height,image,vel,dir)
-        self.hitbox = (self.x + 9,self.y,self.width,self.height + 10)
-    
-    def draw(self,win):
-        super(Player_Projectile,self).draw(win)
-        pygame.draw.rect(win,(255,0,0),self.hitbox,2)
-        
-class Enemy(object):
-    def __init__(self,x,y,width,height,image,x_vel,y_vel,dir,score,shoot):
-        self.x = x 
-        self.y = y
-        self.width = width
-        self.height = height
-        self.image = image
-        self.x_vel = x_vel
-        self.y_vel = y_vel
-        self.dir = dir
-        self.dead = False
-        self.score = score
-        self.shoot = shoot
-        self.bullets = list()
-        
-    def draw(self,win):
-        win.blit(self.image,(self.x,self.y))
-        pygame.draw.rect(win,(255,0,0),self.hitbox,2)
-        
-    def hit(self):
-        player_ship.score += self.score
-    
-class Horizontal_Enemy(Enemy):
-    def __init__(self,x,y,width,height,image,x_vel,y_vel,dir,score,shoot):
-        super().__init__(x, y, width, height, image,x_vel,y_vel,dir,score,shoot)
-        self.right_boundary = 650
-        self.left_boundary = 50
-        self.hitbox = (self.x + 8,self.y + 19,self.width - 16,11)
-
-    def move(self):
-        if self.x >= self.right_boundary:
-            self.y += self.y_vel
-            self.dir *= -1
-        elif self.dir == -1 and self.x <= 0:
-            self.y += self.y_vel
-            self.dir *= -1
-    
-        self.x += self.x_vel*self.dir
-        self.hitbox = (self.x + 8,self.y + 19,self.width - 16,11)
-    
-def redraw_game_window():
-    win.blit(bg,(0,0))
-    player_ship.draw(win)
-    for enemy in small_enemies:
-        enemy.draw(win)
         for bullet in enemy.bullets:
             bullet.draw(win)
             
-    for bullet in player_ship.bullets:
-        bullet.draw(win) 
+        for bullet in player_ship.bullets:
+            bullet.draw(win) 
     
-    text = font.render('Score: ' + str(player_ship.score),True,(255,0,0))
-    health = font.render('Health: ' + str(player_ship.health),True,(0,255,0))
-    win.blit(text,(0,0))
-    win.blit(health,(300,0))
-    pygame.draw.rect(win,(0,255,0),(450,0,player_ship.health,15))
-    pygame.display.update()
+        text = Game.font.render('Score: ' + str(player_ship.score),True,(255,0,0))
+        health = Game.font.render('Health: ' + str(player_ship.health),True,(0,255,0))
+        win.blit(text,(0,0))
+        win.blit(health,(300,0))
+        pygame.draw.rect(win,(0,255,0),(450,0,player_ship.health,15))
+        pygame.display.update()
     
-def overlap_check(sprite1,sprite2):
-    top_in = sprite1.hitbox[1] > sprite2.hitbox[1] and sprite1.hitbox[1] < sprite2.hitbox[1] + sprite2.hitbox[3]
-    bottom_in = sprite1.hitbox[1] + sprite1.hitbox[3] > sprite2.hitbox[1] and sprite1.hitbox[1] + sprite1.hitbox[3] < sprite2.hitbox[1] + sprite2.hitbox[3]
-    left_in = sprite1.hitbox[0] > sprite2.hitbox[0] and sprite1.hitbox[0] < sprite2.hitbox[0] + sprite2.hitbox[2]
-    right_in = sprite1.hitbox[0] + sprite1.hitbox[2] > sprite2.hitbox[0] and sprite1.hitbox[0] + sprite1.hitbox[2] < sprite2.hitbox[0] + sprite2.hitbox[2]
+    @staticmethod
+    def overlap_check(sprite1,sprite2):
+        top_in = sprite1.hitbox[1] > sprite2.hitbox[1] and sprite1.hitbox[1] < sprite2.hitbox[1] + sprite2.hitbox[3]
+        bottom_in = sprite1.hitbox[1] + sprite1.hitbox[3] > sprite2.hitbox[1] and sprite1.hitbox[1] + sprite1.hitbox[3] < sprite2.hitbox[1] + sprite2.hitbox[3]
+        left_in = sprite1.hitbox[0] > sprite2.hitbox[0] and sprite1.hitbox[0] < sprite2.hitbox[0] + sprite2.hitbox[2]
+        right_in = sprite1.hitbox[0] + sprite1.hitbox[2] > sprite2.hitbox[0] and sprite1.hitbox[0] + sprite1.hitbox[2] < sprite2.hitbox[0] + sprite2.hitbox[2]
     
-    collision = (bottom_in and right_in) or (left_in and bottom_in) or (top_in and right_in) or (top_in and left_in)    
-    return collision
+        collision = (bottom_in and right_in) or (left_in and bottom_in) or (top_in and right_in) or (top_in and left_in)    
+        return collision
     
-running = True
-global data
-
-def init():
-    level_layout = open('levels.csv')
-    file_reader = csv.reader(level_layout)
-    data = list(file_reader)
+    def init(self):
+        level_layout = open('levels.csv')
+        file_reader = csv.reader(level_layout)
+        Game.data = list(file_reader)
     
-def set_level(row,index):
-    enemy_list = {}
-    print('i = ' + str(index) + ' New Level')
-    while(row < len(data)):
-        if int(data[row][0]) == i:
-            enemy_list[data[row][1]] = int(data[row][2])
-            row+=1
-        else:
-            break
-            
-    set_enemy_locations(enemy_list)
+    def set_level(self,row,index):
+        enemy_list = {}
+        print('i = ' + str(index) + ' New Level')
+        while(row < len(Game.data)):
+            if int(Game.data[row][0]) == i:
+                enemy_list[Game.data[row][1]] = int(Game.data[row][2])
+                row+=1
+            else:
+                break
+        _set_enemy_locations(enemy_list)
     
         
-def set_enemy_locations(enemies):
-    num_enemies = len(enemies)
-    x_sep = 30
-    y_sep = 30
-    sprite_width = enemies.get(enemies.keys[0]).width     #(n-1)*x_sep + n*ship_width = screen_width - margin
+    def _set_enemy_locations(self,e):
+        num_enemies = len(e)
+         x_sep = 30
+         y_sep = 30
+         sprite_width = enemies.get(enemies.keys[0]).width     #(n-1)*x_sep + n*ship_width = screen_width - margin
     #n*x_sep - x_sep + n*ship_width = screen_width - margin
-    n = int((screen_width - margin)/(x_sep + sprite_width))
+         n = int((screen_width - margin)/(x_sep + sprite_width))
     
-    keys = enemies.keys()
+         keys = enemies.keys()
     #get enemy
     #figure out x_sep 
-    x_sep = (screen_width - margin - (n/2)*(ship_width)/(n - 1))
+         x_sep = (screen_width - margin - (n/2)*(ship_width)/(n - 1))
     
-    for i in range(0,len(enemies.keys)):
-        if enemies.
-        enemy = eval(enemies.get(enemies.keys[i]))
-        
-        
-    enemy = eval(enemies.get(enemies.keys[i]))
+         for i in range(0,len(enemies.keys)):
+             if enemies:
+             enemy = eval(enemies.get(enemies.keys[i]))
     #create enemy instance
-    if n > num_enemies/2:
-        n = num_enemies/2
+         if n > num_enemies/2:
+             n = num_enemies/2
         #place first ship at left boundary
     #the case with varying ships
     
-def game_over_screen():
-    #needs some work
-    while True:
-        loss_text = font.render('Too Bad You Lost! Score:' + str(player_ship.pts),True,(255,0,0))
-        win.blit(loss_text,(0,0))
-        evil = pygame.image.load('evil.png')
-        win.blit(evil,(120,120))
-        pygame.display.update()
-
-        i = 0
-        while i < 300:
+    def game_over_screen(self):
+        while True:
+            loss_text = Game.font.render('Too Bad You Lost! Score:' + str(player_ship.pts),True,(255,0,0))
+            win.blit(loss_text,(0,0))
+            evil = pygame.image.load('evil.png')
+            win.blit(evil,(120,120))
+            pygame.display.update()
+            i = 0
+            while i < 300:
                 pygame.time.delay(10)
                 i+=1
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         pygame.quit()
                         
-clock = pygame.time.Clock()
 frame_count = 0
-player_ship = Player(ship_x,ship_y,ship_width,ship_height,ship)
 
-small_enemies = list()
-font = pygame.font.SysFont('comicsans', 30, True)    
 x_separation = 60
 y_separation = 50
 
 for i in range(0,num_small_enemies):
     if i < 3:
         y = 50
-        small_enemies.append(Horizontal_Enemy(50 + i*x_separation,y,32,31,enemy_1,5,5,1,10,i))
+        enemies.append(Horizontal_Enemy(50 + i*x_separation,y,32,31,enemy_1,5,5,1,10,i))
     else:
         y = 100
-        small_enemies.append(Horizontal_Enemy(50 + (i-3)*x_separation,y,32,31,enemy_1,5,5,1,10,i))
+        enemies.append(Horizontal_Enemy(50 + (i-3)*x_separation,y,32,31,enemy_1,5,5,1,10,i))
 
 init()
 level = 0
@@ -253,7 +154,7 @@ while running:
         running = False
         break
     
-    for enemy in small_enemies:
+    for enemy in enemies:
         enemy.move()
         
         if overlap_check(enemy,player_ship):
@@ -262,7 +163,7 @@ while running:
         if enemy.shoot == shoot_flag and len(enemy.bullets) < 1:
             enemy.bullets.append(Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,enemy_missile,3,'down'))
         
-    for enemy in small_enemies:
+    for enemy in enemies:
         for bullet in enemy.bullets:
             if bullet.y > screen_height:
                 enemy.bullets.pop(enemy.bullets.index(bullet))
@@ -286,10 +187,10 @@ while running:
         bullet.y -= bullet.vel
         bullet.hitbox = (bullet.x + 9,bullet.y + 1,bullet.width - 6,bullet.height + 7)
         
-        for enemy in small_enemies:
+        for enemy in enemies:
             if overlap_check(bullet,enemy):
                 enemy.hit()
-                small_enemies.pop(small_enemies.index(enemy))
+                enemies.pop(enemies.index(enemy))
                 player_ship.bullets.pop(player_ship.bullets.index(bullet))
     
     for event in pygame.event.get():
@@ -317,4 +218,17 @@ while running:
     
     redraw_game_window()
 
-game_over_screen()         
+game_over_screen()
+
+def main():
+    game = Game()
+    ship_x = 330
+    ship_y = 500
+    ship_width = 32
+    ship_height = 32
+    player_ship = Player(ship_x,ship_y,ship_width,ship_height,ship)
+    game.init()
+    game.play()
+
+if __name__ == '__main__':
+    main()
