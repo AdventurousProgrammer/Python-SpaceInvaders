@@ -47,19 +47,18 @@ class Game():
     def redraw_game_window(self,player_ship):
         win.blit(bg,(0,0))
         player_ship.draw(win)
-        player_ship.hit()
+        player_ship.hit(10)
         
         for enemy in Game.enemies:
             enemy.draw(win)
-            
-        for bullet in enemy.bullets:
-            bullet.draw(win)
+            for bullet in enemy.bullets:
+                bullet.draw(win)
             
         for bullet in player_ship.bullets:
             bullet.draw(win) 
     
-        text = Game.font.render('Score: ' + str(player_ship.score),True,(255,0,0))
-        health = Game.font.render('Health: ' + str(player_ship.health),True,(0,255,0))
+        text = self.font.render('Score: ' + str(player_ship.score),True,(255,0,0))
+        health = self.font.render('Health: ' + str(player_ship.health),True,(0,255,0))
         win.blit(text,(0,0))
         win.blit(health,(300,0))
         pygame.draw.rect(win,(0,255,0),(450,0,player_ship.health,15))
@@ -78,14 +77,14 @@ class Game():
     def init(self):
         level_layout = open('levels.csv')
         file_reader = csv.reader(level_layout)
-        Game.data = list(file_reader)
+        self.data = list(file_reader)
     
     def set_level(self,row,index):
         enemy_list = {}
         print('i = ' + str(index) + ' New Level')
-        while(row < len(Game.data)):
-            if int(Game.data[row][0]) == index:
-                enemy_list[Game.data[row][1]] = int(Game.data[row][2])
+        while(row < len(self.data)):
+            if int(self.data[row][0]) == index:
+                enemy_list[self.data[row][1]] = int(self.data[row][2])
                 row+=1
             else:
                 break
@@ -116,7 +115,7 @@ class Game():
     
     def game_over_screen(self,player_ship):
         while True:
-            loss_text = Game.font.render('Too Bad You Lost! Score:' + str(player_ship.pts),True,(255,0,0))
+            loss_text = self.font.render('Too Bad You Lost! Score:' + str(player_ship.pts),True,(255,0,0))
             win.blit(loss_text,(0,0))
             evil = pygame.image.load('evil.png')
             win.blit(evil,(120,120))
@@ -131,6 +130,8 @@ class Game():
                         
     
     def play(self,player_ship):
+        old_frame = 0
+        current_frame = 0
         while Game.running:
             clock.tick(30)
             current_frame += 1
@@ -140,14 +141,14 @@ class Game():
                 running = False
                 break
             
-            for enemy in Game.enemies:
+            for enemy in self.enemies:
                 enemy.move()
-        
-            if self.overlap_check(enemy,player_ship):
-                player_ship.hit(10)
-        
-            if enemy.shoot == shoot_flag and len(enemy.bullets) < 1:
-                enemy.bullets.append(Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,enemy_missile,3,'down'))
+                if self.overlap_check(enemy,player_ship):
+                    if current_frame - old_frame > 3:
+                        old_frame = current_frame
+                        player_ship.hit(10)
+                if enemy.shoot == shoot_flag and len(enemy.bullets) < 1:
+                    enemy.bullets.append(Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,enemy_missile,3,'down'))
         
             for enemy in self.enemies:
                 for bullet in enemy.bullets:#block start
@@ -202,8 +203,8 @@ class Game():
                 
             player_ship.hitbox = (player_ship.x,player_ship.y,player_ship.width,player_ship.height)
     
-            self.redraw_game_window()
-        self.game_over_screen()
+            self.redraw_game_window(player_ship)
+        self.game_over_screen(player_ship)
 
 def main():
     game = Game()
@@ -212,8 +213,8 @@ def main():
     ship_width = 32
     ship_height = 32
     player_ship = Player(ship_x,ship_y,ship_width,ship_height,ship)
-    game.init()
-    game.play()
+    #game.init()
+    game.play(player_ship)
 
 if __name__ == '__main__':
     main()

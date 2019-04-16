@@ -21,9 +21,7 @@ class Player(object):
         win.blit(self.image,(self.x,self.y))
         pygame.draw.rect(win,(255,0,0),self.hitbox,2)
         
-    def hit(self,pts_lost,current_frame,old_frame):
-        global old_frame
-        if current_frame - old_frame > 3:
-            self.health -= pts_lost
-            old_frame = current_frame
+    def hit(self,pts_lost):
+        self.health -= pts_lost
+        
             
