@@ -24,7 +24,7 @@ ship_vel = 5
 
 small_missile = pygame.image.load('small_missile.png')
 
-num_small_enemies = 1
+num_small_enemies = 6
 
 enemy_1 = pygame.image.load('enemy_1.png')
 enemy_missile = pygame.image.load('enemy_missile.png')
@@ -47,10 +47,10 @@ class Game():
     def redraw_game_window(self,player_ship):
         win.blit(bg,(0,0))
         player_ship.draw(win)
-        player_ship.hit(10)
         
-        for enemy in Game.enemies:
+        for enemy in self.enemies:
             enemy.draw(win)
+            #set enemies and their locations get it from a previous commit
             for bullet in enemy.bullets:
                 bullet.draw(win)
             
@@ -75,9 +75,20 @@ class Game():
         return collision
     
     def init(self):
-        level_layout = open('levels.csv')
-        file_reader = csv.reader(level_layout)
-        self.data = list(file_reader)
+        #level_layout = open('levels.csv')
+        #file_reader = csv.reader(level_layout)
+        #self.data = list(file_reader)
+        
+        x_separation = 60
+
+        for i in range(0,num_small_enemies):
+            if i < 3:
+                y = 50
+                self.enemies.append(Horizontal_Enemy(50 + i*x_separation,y,32,31,enemy_1,5,5,1,10,i))
+            else:
+                y = 100
+                self.enemies.append(Horizontal_Enemy(50 + (i-3)*x_separation,y,32,31,enemy_1,5,5,1,10,i))
+
     
     def set_level(self,row,index):
         enemy_list = {}
@@ -114,31 +125,31 @@ class Game():
     #the case with varying ships
     
     def game_over_screen(self,player_ship):
-        while True:
-            loss_text = self.font.render('Too Bad You Lost! Score:' + str(player_ship.pts),True,(255,0,0))
-            win.blit(loss_text,(0,0))
-            evil = pygame.image.load('evil.png')
-            win.blit(evil,(120,120))
-            pygame.display.update()
-            i = 0
-            while i < 300:
-                pygame.time.delay(10)
-                i+=1
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        pygame.quit()
+        print('Game Over')
+        #while True:
+         #   loss_text = self.font.render('Too Bad You Lost! Score:' + str(player_ship.pts),True,(255,0,0))
+          ## evil = pygame.image.load('evil.png')
+         #   win.blit(evil,(120,120))
+         #   pygame.display.update()
+         #   i = 0
+         #   while i < 300:
+         #       pygame.time.delay(10)
+         #       i+=1
+         #       for event in pygame.event.get():
+         #           if event.type == pygame.QUIT:
+         #               pygame.quit()
                         
     
     def play(self,player_ship):
         old_frame = 0
         current_frame = 0
-        while Game.running:
+        while self.running:
             clock.tick(30)
             current_frame += 1
             shoot_flag = random.randint(0,9)
             
             if player_ship.health <= 0:
-                running = False
+                self.running = False
                 break
             
             for enemy in self.enemies:
@@ -164,7 +175,7 @@ class Game():
                         continue
                     
                     for p_bullet in player_ship.bullets:
-                        if Game.overlap_check(p_bullet,bullet):
+                        if self.overlap_check(p_bullet,bullet):
                             enemy.bullets.pop(enemy.bullets.index(bullet))
                             player_ship.bullets.pop(player_ship.bullets.index(p_bullet))
                     
@@ -177,7 +188,7 @@ class Game():
                 
                 for enemy in self.enemies:
                     if self.overlap_check(bullet,enemy):
-                        enemy.hit()
+                        enemy.hit(player_ship)
                         self.enemies.pop(self.enemies.index(enemy))
                         player_ship.bullets.pop(player_ship.bullets.index(bullet))
     
@@ -213,7 +224,7 @@ def main():
     ship_width = 32
     ship_height = 32
     player_ship = Player(ship_x,ship_y,ship_width,ship_height,ship)
-    #game.init()
+    game.init()
     game.play(player_ship)
 
 if __name__ == '__main__':
