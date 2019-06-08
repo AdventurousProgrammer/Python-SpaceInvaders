@@ -107,20 +107,23 @@ class Game():
         x_sep = 30
         y_sep = 30
         sprite_width = self.enemies.get(self.enemies.keys[0]).width     #(n-1)*x_sep + n*ship_width = screen_width - margin
-    #n*x_sep - x_sep + n*ship_width = screen_width - margin
-         #n = int((screen_width - margin)/(x_sep + sprite_width))
+        #n*x_sep - x_sep + n*ship_width = screen_width - margin
+        n = int((screen_width - margin)/(x_sep + sprite_width))#number of enemies that can fit on a row
     
-         #keys = enemies.keys()
-    #get enemy
-    #figure out x_sep 
-         #x_sep = (screen_width - margin - (n/2)*(ship_width)/(n - 1))
+        
+        if n > num_enemies/2:
+            n = num_enemies/2
+        
+        keys = list(e.keys())
+
     
-         #for i in range(0,len(enemies.keys)):
-          #   if enemies:
+        x_sep = (screen_width - margin - (n/2)*(ship_width)/(n - 1))
+    
+        for i in range(0,len(keys)):
+            if enemies:
            #  enemy = eval(enemies.get(enemies.keys[i]))
     #create enemy instance
-         #if n > num_enemies/2:
-          #   n = num_enemies/2
+        
         #place first ship at left boundary
     #the case with varying ships
     
