@@ -75,19 +75,19 @@ class Game():
         return collision
     
     def init(self):
-        #level_layout = open('levels.csv')
-        #file_reader = csv.reader(level_layout)
-        #self.data = list(file_reader)
+        level_layout = open('levels.csv')
+        file_reader = csv.reader(level_layout)
+        self.data = list(file_reader)
         
         x_separation = 60
 
-        for i in range(0,num_small_enemies):
-            if i < 3:
-                y = 50
-                self.enemies.append(Horizontal_Enemy(50 + i*x_separation,y,32,31,enemy_1,5,5,1,10,i))
-            else:
-                y = 100
-                self.enemies.append(Horizontal_Enemy(50 + (i-3)*x_separation,y,32,31,enemy_1,5,5,1,10,i))
+        #for i in range(0,num_small_enemies):
+        #    if i < 3:
+        #        y = 50
+        #        self.enemies.append(Horizontal_Enemy(50 + i*x_separation,y,32,31,enemy_1,5,5,1,10,i))
+        #    else:
+        #        y = 100
+        #        self.enemies.append(Horizontal_Enemy(50 + (i-3)*x_separation,y,32,31,enemy_1,5,5,1,10,i))
 
     
     def set_level(self,row,index):
@@ -103,25 +103,37 @@ class Game():
     
         
     def _set_enemy_locations(self,e):
+        #Called when the level is completed
         num_enemies = len(e)
+        
+        left_x_boundary = 20
+        right_x_boundary = screen_width - 20
+        top_y_boundary = 30
+        bottom_y_boundary = screen_height - 30
+        
         x_sep = 30
         y_sep = 30
         sprite_width = self.enemies.get(self.enemies.keys[0]).width     #(n-1)*x_sep + n*ship_width = screen_width - margin
+        sprite_height = self.enemies.get(self.enemies.keys[0]).height
         #n*x_sep - x_sep + n*ship_width = screen_width - margin
         n = int((screen_width - margin)/(x_sep + sprite_width))#number of enemies that can fit on a row
     
-        
         if n > num_enemies/2:
             n = num_enemies/2
+            x_sep = int((screen_width - margin - n*(sprite_width))/(n-1))
         
         keys = list(e.keys())
 
-    
-        x_sep = (screen_width - margin - (n/2)*(ship_width)/(n - 1))
-    
+        x_sep = (screen_width - margin - (n/2)*(sprite_width)/(n - 1))
+        j = 0
         for i in range(0,len(keys)):
-            if enemies:
-           #  enemy = eval(enemies.get(enemies.keys[i]))
+            if i == n: #will need to be changed will probably have to do mod
+                j += 1
+            enemy = eval(keys[i])
+            enemy.x = left_x_boundary + i*(sprite_width + x_sep)
+            enemy.y = top_y_boundary + j*(sprite_height + y_sep)
+        
+            
     #create enemy instance
         
         #place first ship at left boundary
