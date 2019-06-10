@@ -79,7 +79,7 @@ class Game():
         file_reader = csv.reader(level_layout)
         self.data = list(file_reader)
         
-        x_separation = 60
+        #x_separation = 60
 
         #for i in range(0,num_small_enemies):
         #    if i < 3:
