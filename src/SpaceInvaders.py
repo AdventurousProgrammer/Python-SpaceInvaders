@@ -89,17 +89,18 @@ class Game():
         #        y = 100
         #        self.enemies.append(Horizontal_Enemy(50 + (i-3)*x_separation,y,32,31,enemy_1,5,5,1,10,i))
 
-    
-    def set_level(self,row,index):
+    #get enemy name and how many of each there are
+    def set_level(self,row,level):
         enemy_list = {}
-        print('i = ' + str(index) + ' New Level')
+        print('i = ' + str(level) + ' New Level')
         while(row < len(self.data)):
-            if int(self.data[row][0]) == index:
-                enemy_list[self.data[row][1]] = int(self.data[row][2])
+            if int(self.data[row][0]) == level:
+                enemy_list[self.data[row][1]] = int(self.data[row][2])#get enemy names, and how many of each
                 row+=1
             else:
                 break
-        self._set_enemy_locations(enemy_list)
+        return enemy_list
+        #self._set_enemy_locations(enemy_list)
     
         
     def _set_enemy_locations(self,e):
