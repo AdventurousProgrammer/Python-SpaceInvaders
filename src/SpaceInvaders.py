@@ -11,7 +11,7 @@ screen_width = 700
 screen_height = 700
 
 
-margin = 40
+margin = 20
 
 win = pygame.display.set_mode((screen_width,screen_height))
 
@@ -90,12 +90,16 @@ class Game():
         #        self.enemies.append(Horizontal_Enemy(50 + (i-3)*x_separation,y,32,31,enemy_1,5,5,1,10,i))
 
     #get enemy name and how many of each there are
-    def set_level(self,row,level):
-        enemy_list = {}
+    def set_level(self,row,level):#works
+        enemy_list = []
         print('i = ' + str(level) + ' New Level')
         while(row < len(self.data)):
             if int(self.data[row][0]) == level:
-                enemy_list[self.data[row][1]] = int(self.data[row][2])#get enemy names, and how many of each
+                enemy_type = eval(str(self.data[row][1]))
+                num_enemy_type = int(self.data[row][2])
+                for k in range(0,num_enemy_type):
+                    enemy_list.append(enemy_type)
+                #enemy_list[self.data[row][1]] = int(self.data[row][2])#get enemy names, and how many of each
                 row+=1
             else:
                 break
@@ -114,26 +118,30 @@ class Game():
         
         x_sep = 30
         y_sep = 30
-        sprite_width = self.enemies.get(self.enemies.keys[0]).width     #(n-1)*x_sep + n*ship_width = screen_width - margin
-        sprite_height = self.enemies.get(self.enemies.keys[0]).height
+        sprite_width = 32     #(n-1)*x_sep + n*ship_width = screen_width - margin
+        sprite_height = 31
         #n*x_sep - x_sep + n*ship_width = screen_width - margin
         n = int((screen_width - margin)/(x_sep + sprite_width))#number of enemies that can fit on a row
     
         if n > num_enemies/2:
             n = num_enemies/2
-            x_sep = int((screen_width - margin - n*(sprite_width))/(n-1))
+            x_sep = int((screen_width - 2*(margin) - n*(sprite_width))/(n-1))
         
-        keys = list(e.keys())
-
-        x_sep = (screen_width - margin - (n/2)*(sprite_width)/(n - 1))
+        #keys = list(e.keys())
+        
+        print('X separation: ' + str(x_sep))
+        #x_sep = (screen_width - margin - (n/2)*(sprite_width)/(n - 1))
         j = 0
-        for i in range(0,len(keys)):
+        for i in range(0,len(e)):
             if i == n: #will need to be changed will probably have to do mod
                 j += 1
-            enemy = eval(keys[i])
-            enemy.x = left_x_boundary + i*(sprite_width + x_sep)
+            enemy = e[i]
+            #need to change function
+            enemy.x = left_x_boundary + (i%3)*(sprite_width + x_sep)
             enemy.y = top_y_boundary + j*(sprite_height + y_sep)
-        
+            print('X Location: ' + str(enemy.x) + ' Y Location: ' + str(enemy.y))
+            
+        return e
             
     #create enemy instance
         
@@ -142,6 +150,7 @@ class Game():
     
     def game_over_screen(self,player_ship):
         print('Game Over')
+        pygame.quit()
         #while True:
          #   loss_text = self.font.render('Too Bad You Lost! Score:' + str(player_ship.pts),True,(255,0,0))
           ## evil = pygame.image.load('evil.png')
