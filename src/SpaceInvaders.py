@@ -37,7 +37,7 @@ num_levels = 10
 clock = pygame.time.Clock()
 
 levels = list()
-
+row = 0
 class Game():
     enemies = list()#static variable
     font = pygame.font.SysFont('comicsans', 30, True)
@@ -90,7 +90,8 @@ class Game():
         #        self.enemies.append(Horizontal_Enemy(50 + (i-3)*x_separation,y,32,31,enemy_1,5,5,1,10,i))
 
     #get enemy name and how many of each there are
-    def set_level(self,row,level):#works
+    
+    def set_level(self,level):#works
         enemy_list = []
         print('i = ' + str(level) + ' New Level')
         while(row < len(self.data)):
@@ -103,8 +104,8 @@ class Game():
                 row+=1
             else:
                 break
-        return enemy_list
-        #self._set_enemy_locations(enemy_list)
+        #return enemy_list
+        self._set_enemy_locations(enemy_list)
     
         
     def _set_enemy_locations(self,e):
@@ -137,9 +138,9 @@ class Game():
                 j += 1
             enemy = e[i]
             #need to change function
-            enemy.x = left_x_boundary + (i%3)*(sprite_width + x_sep)
+            enemy.x = left_x_boundary + (i%n)*(sprite_width + x_sep)
             enemy.y = top_y_boundary + j*(sprite_height + y_sep)
-            print('X Location: ' + str(enemy.x) + ' Y Location: ' + str(enemy.y))
+            #print('X Location: ' + str(enemy.x) + ' Y Location: ' + str(enemy.y))
             
         return e
             

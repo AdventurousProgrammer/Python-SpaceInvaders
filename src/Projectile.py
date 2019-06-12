@@ -31,3 +31,4 @@ class Player_Projectile(Projectile):
     def draw(self,win):
         super(Player_Projectile,self).draw(win)
         pygame.draw.rect(win,(255,0,0),self.hitbox,2)
+        
