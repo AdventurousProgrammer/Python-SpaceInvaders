@@ -33,7 +33,7 @@ current_frame = 0
 old_frame = 0
 
 num_levels = 10
-
+horizontal_enemy = 'enemy_1.png'
 clock = pygame.time.Clock()
 
 levels = list()
@@ -78,34 +78,25 @@ class Game():
         level_layout = open('levels.csv')
         file_reader = csv.reader(level_layout)
         self.data = list(file_reader)
-        
-        #x_separation = 60
-
-        #for i in range(0,num_small_enemies):
-        #    if i < 3:
-        #        y = 50
-        #        self.enemies.append(Horizontal_Enemy(50 + i*x_separation,y,32,31,enemy_1,5,5,1,10,i))
-        #    else:
-        #        y = 100
-        #        self.enemies.append(Horizontal_Enemy(50 + (i-3)*x_separation,y,32,31,enemy_1,5,5,1,10,i))
-
-    #get enemy name and how many of each there are
-    
-    def set_level(self,level):#works
+            
+    def set_level(self,row,level):#works
         enemy_list = []
         print('i = ' + str(level) + ' New Level')
         while(row < len(self.data)):
             if int(self.data[row][0]) == level:
-                enemy_type = eval(str(self.data[row][1]))
+                enemy = Enemy(0,0,32,31,horizontal_enemy,2,2,1,5,random.randint(0,6))
                 num_enemy_type = int(self.data[row][2])
+                enemy_type = str(self.data[row][1])
+                if enemy_type == 'Horizontal_Enemy':
+                    enemy = Horizontal_Enemy(0,0,32,31,horizontal_enemy,2,2,1,5,random.randint(0,6))
                 for k in range(0,num_enemy_type):
-                    enemy_list.append(enemy_type)
-                #enemy_list[self.data[row][1]] = int(self.data[row][2])#get enemy names, and how many of each
+                    enemy_list.append(enemy)
                 row+=1
             else:
                 break
-        #return enemy_list
-        self._set_enemy_locations(enemy_list)
+            
+        #self._set_enemy_locations(enemy_list)
+        return enemy_list
     
         
     def _set_enemy_locations(self,e):
@@ -119,20 +110,20 @@ class Game():
         
         x_sep = 30
         y_sep = 30
-        sprite_width = 32     #(n-1)*x_sep + n*ship_width = screen_width - margin
+        sprite_width = 32     
         sprite_height = 31
-        #n*x_sep - x_sep + n*ship_width = screen_width - margin
-        n = int((screen_width - margin)/(x_sep + sprite_width))#number of enemies that can fit on a row
+        
+        #number of enemies that can fit on a row
+        n = int((screen_width - margin)/(x_sep + sprite_width))
     
         if n > num_enemies/2:
             n = num_enemies/2
             x_sep = int((screen_width - 2*(margin) - n*(sprite_width))/(n-1))
         
-        #keys = list(e.keys())
-        
-        print('X separation: ' + str(x_sep))
-        #x_sep = (screen_width - margin - (n/2)*(sprite_width)/(n - 1))
+        #print('X separation: ' + str(x_sep))
         j = 0
+        #print(len(e))
+        x = list()
         for i in range(0,len(e)):
             if i == n: #will need to be changed will probably have to do mod
                 j += 1
@@ -140,9 +131,12 @@ class Game():
             #need to change function
             enemy.x = left_x_boundary + (i%n)*(sprite_width + x_sep)
             enemy.y = top_y_boundary + j*(sprite_height + y_sep)
+            x.append(enemy)
+            print('Enemy X: ' + str(x[i].x) + ' Enemy Y: ' + str(x[i].y))
             #print('X Location: ' + str(enemy.x) + ' Y Location: ' + str(enemy.y))
-            
-        return e
+        for enemy in x:
+            print('X Location: ' + str(enemy.x) + ' Y Location: ' + str(enemy.y))    
+        return x
             
     #create enemy instance
         
