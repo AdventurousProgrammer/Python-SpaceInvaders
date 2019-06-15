@@ -26,14 +26,13 @@ small_missile = pygame.image.load('small_missile.png')
 
 num_small_enemies = 6
 
-enemy_1 = pygame.image.load('enemy_1.png')
+horizontal_enemy = pygame.image.load('enemy_1.png')
 enemy_missile = pygame.image.load('enemy_missile.png')
 
 current_frame = 0
 old_frame = 0
 
 num_levels = 10
-horizontal_enemy = 'enemy_1.png'
 clock = pygame.time.Clock()
 
 levels = list()
@@ -78,30 +77,10 @@ class Game():
         level_layout = open('levels.csv')
         file_reader = csv.reader(level_layout)
         self.data = list(file_reader)
-            
+        print('Data File Set')
+        
     def set_level(self,row,level):#works
         enemy_list = []
-        print('i = ' + str(level) + ' New Level')
-        while(row < len(self.data)):
-            if int(self.data[row][0]) == level:
-                enemy = Enemy(0,0,32,31,horizontal_enemy,2,2,1,5,random.randint(0,6))
-                num_enemy_type = int(self.data[row][2])
-                enemy_type = str(self.data[row][1])
-                if enemy_type == 'Horizontal_Enemy':
-                    enemy = Horizontal_Enemy(0,0,32,31,horizontal_enemy,2,2,1,5,random.randint(0,6))
-                for k in range(0,num_enemy_type):
-                    enemy_list.append(enemy)
-                row+=1
-            else:
-                break
-            
-        #self._set_enemy_locations(enemy_list)
-        return enemy_list
-    
-        
-    def _set_enemy_locations(self,e):
-        #Called when the level is completed
-        num_enemies = len(e)
         
         left_x_boundary = 20
         right_x_boundary = screen_width - 20
@@ -112,36 +91,40 @@ class Game():
         y_sep = 30
         sprite_width = 32     
         sprite_height = 31
+        enemy_type = ''
+        num_enemy_type = 0
         
-        #number of enemies that can fit on a row
+        #print('Level = ' + str(level) + ' New Level')
+        #print()
+        while(row < len(self.data)):
+            if int(self.data[row][0]) == level:
+                num_enemy_type = int(self.data[row][2])
+                enemy_type = str(self.data[row][1])
+                row+=1
+            else:
+                break
+        
         n = int((screen_width - margin)/(x_sep + sprite_width))
-    
-        if n > num_enemies/2:
-            n = num_enemies/2
+        
+        if n > num_enemy_type/2:
+            n = num_enemy_type/2
             x_sep = int((screen_width - 2*(margin) - n*(sprite_width))/(n-1))
-        
-        #print('X separation: ' + str(x_sep))
-        j = 0
-        #print(len(e))
-        x = list()
-        for i in range(0,len(e)):
-            if i == n: #will need to be changed will probably have to do mod
-                j += 1
-            enemy = e[i]
-            #need to change function
-            enemy.x = left_x_boundary + (i%n)*(sprite_width + x_sep)
-            enemy.y = top_y_boundary + j*(sprite_height + y_sep)
-            x.append(enemy)
-            print('Enemy X: ' + str(x[i].x) + ' Enemy Y: ' + str(x[i].y))
-            #print('X Location: ' + str(enemy.x) + ' Y Location: ' + str(enemy.y))
-        for enemy in x:
-            print('X Location: ' + str(enemy.x) + ' Y Location: ' + str(enemy.y))    
-        return x
             
-    #create enemy instance
+        j = 0
+        for k in range(0,num_enemy_type):
+            if k == n:
+                j += 1
+            x_loc = left_x_boundary + (k%n)*(sprite_width + x_sep)
+            y_loc = top_y_boundary + j*(sprite_height + y_sep)
+            enemy = Horizontal_Enemy(x_loc,y_loc,32,31,horizontal_enemy,2,2,1,5,random.randint(0,6))
+            enemy_list.append(enemy)
+            
+        #self._set_enemy_locations(enemy_list)
+        #print('Number of enemies: ' + str(len(enemy_list)))
+        return enemy_list
+    
         
-        #place first ship at left boundary
-    #the case with varying ships
+   
     
     def game_over_screen(self,player_ship):
         print('Game Over')
