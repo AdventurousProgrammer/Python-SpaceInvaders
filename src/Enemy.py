@@ -39,3 +39,27 @@ class Horizontal_Enemy(Enemy):
     
         self.x += self.x_vel*self.dir
         self.hitbox = (self.x + 8,self.y + 19,self.width - 16,11)
+        
+class Vertical_Enemy(Enemy):
+    def __init__(self,x,y,width,height,image,x_vel,y_vel,dir,score,shoot):
+        super().__init__(x, y, width, height, image,x_vel,y_vel,dir,score,shoot)
+        self.right_boundary = 650
+        self.left_boundary = 50
+        self.top_boundary = 50
+        self.bottom_boundary = 650
+        self.hitbox = (self.x + 8,self.y + 19,self.width - 16,11)
+        
+    def move(self):
+        if self.y >= self.top_boundary:
+            self.x += self.x_vel
+            self.dir *= -1
+        elif self.dir == -1 and self.y <= 0:
+            self.x += self.x_vel
+            self.dir *= -1
+    
+        self.y += self.y_vel*self.dir
+        self.hitbox = (self.x + 8,self.y + 19,self.width - 16,11)
+
+        
+
+        

@@ -27,6 +27,13 @@ small_missile = pygame.image.load('small_missile.png')
 num_small_enemies = 6
 
 horizontal_enemy = pygame.image.load('enemy_1.png')
+horizontal_enemy_width = 32
+horizontal_enemy_height = 31
+
+vertical_enemy = pygame.image.load('enemy_2.png')
+vertical_enemy_width = 32
+vertical_enemy_height = 32
+
 enemy_missile = pygame.image.load('enemy_missile.png')
 
 current_frame = 0
@@ -35,13 +42,15 @@ old_frame = 0
 num_levels = 10
 clock = pygame.time.Clock()
 
-levels = list()
-row = 0
+
+
 class Game():
     enemies = list()#static variable
     font = pygame.font.SysFont('comicsans', 30, True)
     data = ()
-    running = True    
+    running = True
+    level = 1
+    row = 1    
 
     def redraw_game_window(self,player_ship):
         win.blit(bg,(0,0))
@@ -79,7 +88,7 @@ class Game():
         self.data = list(file_reader)
         print('Data File Set')
         
-    def set_level(self,row,level):#works
+    def set_level(self):#works
         enemy_list = []
         
         left_x_boundary = 20
@@ -93,18 +102,21 @@ class Game():
         sprite_height = 31
         enemy_type = ''
         num_enemy_type = 0
+        enemy = Enemy(0,0,32,31,horizontal_enemy,2,2,1,5,random.randint(0,6))
         
         #print('Level = ' + str(level) + ' New Level')
         #print()
-        while(row < len(self.data)):
-            if int(self.data[row][0]) == level:
-                num_enemy_type = int(self.data[row][2])
-                enemy_type = str(self.data[row][1])
-                row+=1
+        
+        while(self.row < len(self.data)):
+            if int(self.data[self.row][0]) == self.level:
+                #need to update code
+                num_enemy_type = int(self.data[self.row][2])
+                enemy_type = str(self.data[self.row][1])
+                self.row+=1
             else:
                 break
         
-        n = int((screen_width - margin)/(x_sep + sprite_width))
+        n = int((screen_width - 2*margin + x_sep)/(x_sep + sprite_width))
         
         if n > num_enemy_type/2:
             n = num_enemy_type/2
@@ -116,7 +128,10 @@ class Game():
                 j += 1
             x_loc = left_x_boundary + (k%n)*(sprite_width + x_sep)
             y_loc = top_y_boundary + j*(sprite_height + y_sep)
-            enemy = Horizontal_Enemy(x_loc,y_loc,32,31,horizontal_enemy,2,2,1,5,random.randint(0,6))
+            if enemy_type == 'Horizontal_Enemy':
+                enemy = Horizontal_Enemy(x_loc,y_loc,32,31,horizontal_enemy,2,2,1,5,random.randint(0,6))
+            elif enemy_type == 'Vertical_Enemy':
+                enemy = Vertical_Enemy(x_loc,y_loc,32,32,vertical_enemy,2,2,1,5,random.randint(0,6))
             enemy_list.append(enemy)
             
         #self._set_enemy_locations(enemy_list)
@@ -126,9 +141,12 @@ class Game():
         
    
     
-    def game_over_screen(self,player_ship):
+    def game_over_screen(self):
         print('Game Over')
-        pygame.quit()
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
         #while True:
          #   loss_text = self.font.render('Too Bad You Lost! Score:' + str(player_ship.pts),True,(255,0,0))
           ## evil = pygame.image.load('evil.png')
@@ -146,9 +164,19 @@ class Game():
     def play(self,player_ship):
         old_frame = 0
         current_frame = 0
+        
         while self.running:
             clock.tick(30)
+            
             current_frame += 1
+            
+            if len(self.enemies) <= 0:
+                self.enemies = self.set_level()
+                self.level += 1
+                if len(self.enemies) == 0:
+                    print('Game Over: All Levels Completed')
+                    self.game_over_screen()
+                    
             shoot_flag = random.randint(0,9)
             
             if player_ship.health <= 0:
@@ -218,7 +246,7 @@ class Game():
             player_ship.hitbox = (player_ship.x,player_ship.y,player_ship.width,player_ship.height)
     
             self.redraw_game_window(player_ship)
-        self.game_over_screen(player_ship)
+        self.game_over_screen()
 
 def main():
     game = Game()
