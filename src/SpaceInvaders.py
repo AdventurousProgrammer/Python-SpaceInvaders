@@ -7,8 +7,8 @@ from Player import *
 
 pygame.init()
 
-screen_width = 700
-screen_height = 700
+screen_width = 300
+screen_height = 300
 
 
 margin = 20
@@ -106,7 +106,7 @@ class Game():
         
         #print('Level = ' + str(level) + ' New Level')
         #print()
-        
+        distance_row = 0
         while(self.row < len(self.data)):
             if int(self.data[self.row][0]) == self.level:
                 #need to update code
@@ -115,28 +115,32 @@ class Game():
                 self.row+=1
             else:
                 break
-        
+                
+            
         n = int((screen_width - 2*margin + x_sep)/(x_sep + sprite_width))
-        
+                
         if n > num_enemy_type/2:
             n = num_enemy_type/2
             x_sep = int((screen_width - 2*(margin) - n*(sprite_width))/(n-1))
             
         j = 0
         for k in range(0,num_enemy_type):
-            if k == n:
+            if k%n == 0:
                 j += 1
             x_loc = left_x_boundary + (k%n)*(sprite_width + x_sep)
             y_loc = top_y_boundary + j*(sprite_height + y_sep)
-            if enemy_type == 'Horizontal_Enemy':
-                enemy = Horizontal_Enemy(x_loc,y_loc,32,31,horizontal_enemy,2,2,1,5,random.randint(0,6))
-            elif enemy_type == 'Vertical_Enemy':
-                enemy = Vertical_Enemy(x_loc,y_loc,32,32,vertical_enemy,2,2,1,5,random.randint(0,6))
+            #if enemy_type == 'Horizontal_Enemy':
+            enemy = Horizontal_Enemy(x_loc,y_loc,32,31,horizontal_enemy,2,2,1,5,random.randint(0,6))
+            #elif enemy_type == 'Vertical_Enemy':
+             #   enemy = Vertical_Enemy(x_loc,y_loc,32,32,vertical_enemy,2,2,1,5,random.randint(0,6))
             enemy_list.append(enemy)
             
         #self._set_enemy_locations(enemy_list)
         #print('Number of enemies: ' + str(len(enemy_list)))
         return enemy_list
+           
+        
+        
     
         
    
