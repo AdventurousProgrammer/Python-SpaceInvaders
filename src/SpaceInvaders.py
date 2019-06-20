@@ -90,12 +90,12 @@ class Game():
         
     def set_level(self):#works
         enemy_list = []
-        
+        h = 'horizontal_enemy'
         left_x_boundary = 20
         right_x_boundary = screen_width - 20
         top_y_boundary = 30
         bottom_y_boundary = screen_height - 30
-        
+        n = 0
         x_sep = 30
         y_sep = 30
         sprite_width = 32     
@@ -113,27 +113,43 @@ class Game():
                 num_enemy_type = int(self.data[self.row][2])
                 enemy_type = str(self.data[self.row][1])
                 self.row+=1
+                
+                if enemy_type == 'Horizontal_Enemy':
+                    n = int((screen_width - 2*margin + x_sep)/(x_sep + sprite_width))
+                    if n > num_enemy_type/2:
+                        n = num_enemy_type/2
+                        x_sep = int((screen_width - 2*(margin) - n*(sprite_width))/(n-1))
+                
+        
+
+                
+        
+                elif enemy_type == 'Vertical_Enemy':
+                    n = int((screen_height - 2*margin + y_sep)/(y_sep + sprite_height))
+                    if n > num_enemy_type/2:
+                        n = num_enemy_type/2
+                        y_sep = int((screen_height - 2*(margin) - n*(sprite_height))/(n-1))
+                        
+                j = 0
+                for k in range(0,num_enemy_type):
+                   if k%n == 0:
+                       j+=1
+                   if enemy_type == 'Horizontal_Enemy':
+                       x_loc = left_x_boundary + (k%n)*(sprite_width + x_sep)
+                       y_loc = top_y_boundary + j*(sprite_height + y_sep)
+                       enemy = Horizontal_Enemy(x_loc,y_loc,32,31,horizontal_enemy,2,2,1,5,random.randint(0,6))
+                   elif enemy_type == 'Vertical_Enemy':
+                       x_loc = left_x_boundary + j*(sprite_width + x_sep)
+                       y_loc = top_y_boundary + (k%n)*(sprite_height + y_sep)
+                       enemy = Vertical_Enemy(x_loc,y_loc,32,32,vertical_enemy,2,2,1,5,random.randint(0,6))
+                   enemy_list.append(enemy)
+        
             else:
                 break
                 
             
-        n = int((screen_width - 2*margin + x_sep)/(x_sep + sprite_width))
-                
-        if n > num_enemy_type/2:
-            n = num_enemy_type/2
-            x_sep = int((screen_width - 2*(margin) - n*(sprite_width))/(n-1))
+       
             
-        j = 0
-        for k in range(0,num_enemy_type):
-            if k%n == 0:
-                j += 1
-            x_loc = left_x_boundary + (k%n)*(sprite_width + x_sep)
-            y_loc = top_y_boundary + j*(sprite_height + y_sep)
-            #if enemy_type == 'Horizontal_Enemy':
-            enemy = Horizontal_Enemy(x_loc,y_loc,32,31,horizontal_enemy,2,2,1,5,random.randint(0,6))
-            #elif enemy_type == 'Vertical_Enemy':
-             #   enemy = Vertical_Enemy(x_loc,y_loc,32,32,vertical_enemy,2,2,1,5,random.randint(0,6))
-            enemy_list.append(enemy)
             
         #self._set_enemy_locations(enemy_list)
         #print('Number of enemies: ' + str(len(enemy_list)))

@@ -1,2 +1,4 @@
 Level, Enemy, Count
-0, Horizontal_Enemy,6
+1,Horizontal_Enemy,4
+1,Vertical_Enemy,4
+
