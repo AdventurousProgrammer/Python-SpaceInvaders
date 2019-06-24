@@ -41,7 +41,7 @@ old_frame = 0
 
 num_levels = 10
 clock = pygame.time.Clock()
-j = 0
+#j = 0
 class Game():
     enemies = list()#static variable
     font = pygame.font.SysFont('comicsans', 30, True)
@@ -126,8 +126,8 @@ class Game():
                     else:
                         y_sep = int((screen_height - 2*(margin) - n*(sprite_height))/(n-1))
                 
-                #j = 0
-                global j
+                j = 0
+                
                 for k in range(0,num_enemy_type):
                    if k%n == 0 and k!=0:
                        j+=1
@@ -142,7 +142,7 @@ class Game():
                    enemy_list.append(enemy)
             else:
                 break
-            j+=1
+        
         return enemy_list
            
     def game_over_screen(self):
