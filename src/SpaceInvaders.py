@@ -7,8 +7,8 @@ from Player import *
 
 pygame.init()
 
-screen_width = 300
-screen_height = 300
+screen_width = 700
+screen_height = 700
 
 
 margin = 20
@@ -41,8 +41,6 @@ old_frame = 0
 
 num_levels = 10
 clock = pygame.time.Clock()
-
-
 
 class Game():
     enemies = list()#static variable
@@ -89,6 +87,7 @@ class Game():
         print('Data File Set')
         
     def set_level(self):#works
+        #if there are more than 5 enemies then just set as 5
         enemy_list = []
         h = 'horizontal_enemy'
         left_x_boundary = 20
@@ -104,9 +103,6 @@ class Game():
         num_enemy_type = 0
         enemy = Enemy(0,0,32,31,horizontal_enemy,2,2,1,5,random.randint(0,6))
         
-        #print('Level = ' + str(level) + ' New Level')
-        #print()
-        distance_row = 0
         while(self.row < len(self.data)):
             if int(self.data[self.row][0]) == self.level:
                 #need to update code
@@ -114,22 +110,22 @@ class Game():
                 enemy_type = str(self.data[self.row][1])
                 self.row+=1
                 
+                if num_enemy_type > 5:
+                    n = 5
+                else:
+                    n = num_enemy_type
+                    
                 if enemy_type == 'Horizontal_Enemy':
-                    n = int((screen_width - 2*margin + x_sep)/(x_sep + sprite_width))
-                    if n > num_enemy_type/2:
-                        n = num_enemy_type/2
+                    if n == 1:
+                         x_sep = 0.5*screen_width - margin
+                    else:
                         x_sep = int((screen_width - 2*(margin) - n*(sprite_width))/(n-1))
-                
-        
-
-                
-        
                 elif enemy_type == 'Vertical_Enemy':
-                    n = int((screen_height - 2*margin + y_sep)/(y_sep + sprite_height))
-                    if n > num_enemy_type/2:
-                        n = num_enemy_type/2
+                    if n == 1:
+                        y_sep = 0.5*screen_height - margin
+                    else:
                         y_sep = int((screen_height - 2*(margin) - n*(sprite_height))/(n-1))
-                        
+                
                 j = 0
                 for k in range(0,num_enemy_type):
                    if k%n == 0:
@@ -143,44 +139,18 @@ class Game():
                        y_loc = top_y_boundary + (k%n)*(sprite_height + y_sep)
                        enemy = Vertical_Enemy(x_loc,y_loc,32,32,vertical_enemy,2,2,1,5,random.randint(0,6))
                    enemy_list.append(enemy)
-        
             else:
                 break
-                
             
-       
-            
-            
-        #self._set_enemy_locations(enemy_list)
-        #print('Number of enemies: ' + str(len(enemy_list)))
-        return enemy_list
+            return enemy_list
            
-        
-        
-    
-        
-   
-    
     def game_over_screen(self):
         print('Game Over')
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-        #while True:
-         #   loss_text = self.font.render('Too Bad You Lost! Score:' + str(player_ship.pts),True,(255,0,0))
-          ## evil = pygame.image.load('evil.png')
-         #   win.blit(evil,(120,120))
-         #   pygame.display.update()
-         #   i = 0
-         #   while i < 300:
-         #       pygame.time.delay(10)
-         #       i+=1
-         #       for event in pygame.event.get():
-         #           if event.type == pygame.QUIT:
-         #               pygame.quit()
-                        
-    
+        
     def play(self,player_ship):
         old_frame = 0
         current_frame = 0
@@ -210,7 +180,7 @@ class Game():
                         old_frame = current_frame
                         player_ship.hit(10)
                 if enemy.shoot == shoot_flag and len(enemy.bullets) < 1:
-                    enemy.bullets.append(Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,enemy_missile,3,'down'))
+                    enemy.bullets.append(Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,enemy_missile,4,'down'))
         
             for enemy in self.enemies:
                 for bullet in enemy.bullets:#block start

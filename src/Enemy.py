@@ -50,16 +50,12 @@ class Vertical_Enemy(Enemy):
         self.hitbox = (self.x + 8,self.y + 19,self.width - 16,11)
         
     def move(self):
-        if self.y >= self.top_boundary:
+        if self.y >= self.bottom_boundary:
             self.x += self.x_vel
             self.dir *= -1
-        elif self.dir == -1 and self.y <= 0:
+        elif self.dir == -1 and self.y <= self.top_boundary:
             self.x += self.x_vel
             self.dir *= -1
     
         self.y += self.y_vel*self.dir
         self.hitbox = (self.x + 8,self.y + 19,self.width - 16,11)
-
-        
-
-        
