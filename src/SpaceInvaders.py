@@ -12,7 +12,7 @@ screen_height = 700
 
 
 margin = 20
-
+j = 0
 win = pygame.display.set_mode((screen_width,screen_height))
 
 pygame.display.set_caption("Space Invaders")
@@ -41,7 +41,7 @@ old_frame = 0
 
 num_levels = 10
 clock = pygame.time.Clock()
-
+j = 0
 class Game():
     enemies = list()#static variable
     font = pygame.font.SysFont('comicsans', 30, True)
@@ -85,7 +85,7 @@ class Game():
         file_reader = csv.reader(level_layout)
         self.data = list(file_reader)
         print('Data File Set')
-        
+            
     def set_level(self):#works
         #if there are more than 5 enemies then just set as 5
         enemy_list = []
@@ -126,9 +126,10 @@ class Game():
                     else:
                         y_sep = int((screen_height - 2*(margin) - n*(sprite_height))/(n-1))
                 
-                j = 0
+                #j = 0
+                global j
                 for k in range(0,num_enemy_type):
-                   if k%n == 0:
+                   if k%n == 0 and k!=0:
                        j+=1
                    if enemy_type == 'Horizontal_Enemy':
                        x_loc = left_x_boundary + (k%n)*(sprite_width + x_sep)
@@ -141,8 +142,8 @@ class Game():
                    enemy_list.append(enemy)
             else:
                 break
-            
-            return enemy_list
+            j+=1
+        return enemy_list
            
     def game_over_screen(self):
         print('Game Over')
