@@ -40,6 +40,7 @@ current_frame = 0
 old_frame = 0
 
 num_levels = 10
+distance_index = 0
 clock = pygame.time.Clock()
 #j = 0
 class Game():
@@ -69,7 +70,6 @@ class Game():
         win.blit(health,(300,0))
         pygame.draw.rect(win,(0,255,0),(450,0,player_ship.health,15))
         pygame.display.update()
-    
     
     def overlap_check(self,sprite1,sprite2):
         top_in = sprite1.hitbox[1] > sprite2.hitbox[1] and sprite1.hitbox[1] < sprite2.hitbox[1] + sprite2.hitbox[3]
@@ -127,22 +127,23 @@ class Game():
                         y_sep = int((screen_height - 2*(margin) - n*(sprite_height))/(n-1))
                 
                 j = 0
-                
+                global distance_index
                 for k in range(0,num_enemy_type):
                    if k%n == 0 and k!=0:
                        j+=1
                    if enemy_type == 'Horizontal_Enemy':
                        x_loc = left_x_boundary + (k%n)*(sprite_width + x_sep)
-                       y_loc = top_y_boundary + j*(sprite_height + y_sep)
+                       y_loc = top_y_boundary + j*(sprite_height + y_sep) + distance_index*(30+sprite_height)
                        enemy = Horizontal_Enemy(x_loc,y_loc,32,31,horizontal_enemy,2,2,1,5,random.randint(0,6))
                    elif enemy_type == 'Vertical_Enemy':
                        x_loc = left_x_boundary + j*(sprite_width + x_sep)
-                       y_loc = top_y_boundary + (k%n)*(sprite_height + y_sep)
+                       y_loc = top_y_boundary + (k%n)*(sprite_height + y_sep) + distance_index*(30+sprite_height)
                        enemy = Vertical_Enemy(x_loc,y_loc,32,32,vertical_enemy,2,2,1,5,random.randint(0,6))
                    enemy_list.append(enemy)
+                distance_index+=1
             else:
                 break
-        
+            
         return enemy_list
            
     def game_over_screen(self):
