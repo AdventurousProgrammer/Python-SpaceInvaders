@@ -5,6 +5,7 @@ from Enemy import *
 from Projectile import *
 from Player import *
 
+#TODO: fix vertical ships so they move to next level as well
 pygame.init()
 
 screen_width = 700
@@ -140,7 +141,9 @@ class Game():
                    elif enemy_type == 'Vertical_Enemy':
                        x_loc = left_x_boundary + j*(sprite_width + x_sep)
                        y_loc = top_y_boundary + (k%n)*(sprite_height + y_sep) + distance_index*(30+sprite_height)
-                       enemy = Vertical_Enemy(x_loc,y_loc,32,32,vertical_enemy,2,2,1,5,random.randint(0,6))
+                       if y_loc >= 220:
+                           y_loc -=200
+                       enemy = Vertical_Enemy(x_loc,y_loc,32,32,vertical_enemy,5,2,1,5,random.randint(0,6))
                    enemy_list.append(enemy)
                 distance_index+=1
             else:
@@ -179,7 +182,7 @@ class Game():
                 break
             
             if Enemy.move_next_level:
-                    Enemy.move_next_level = False
+                Enemy.move_next_level = False
                     
             for enemy in self.enemies:
                 if enemy.check_out_of_bounds():

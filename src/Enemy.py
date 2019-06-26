@@ -61,12 +61,22 @@ class Vertical_Enemy(Enemy):
         self.hitbox = (self.x + 8,self.y + 19,self.width - 16,11)
         
     def move(self):
-        if self.y >= self.bottom_boundary and self.dir == 1:
-            self.x += self.x_vel
-            self.dir *= -1
-        elif self.dir == -1 and self.y <= self.top_boundary:
+        if Enemy.move_next_level:
+            #print('Y Location: ' + str(self.y))
+            #print('Moving Second to Next Layer')
             self.x += self.x_vel
             self.dir *= -1
     
         self.y += self.y_vel*self.dir
         self.hitbox = (self.x + 8,self.y + 19,self.width - 16,11)
+        
+    def check_out_of_bounds(self):
+        if self.y >= self.bottom_boundary and self.dir == 1 and Enemy.move_next_level == False:
+            #self.x += self.x_vel
+            #self.dir *= -1
+            return True
+        elif self.dir == -1 and self.y <= self.top_boundary and Enemy.move_next_level == False:
+            #self.x += self.x_vel
+            #self.dir *= -1
+            return True
+        return False
