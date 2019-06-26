@@ -1,6 +1,8 @@
 import pygame
 
 class Enemy(object):
+    move_next_level = False
+    
     def __init__(self,x,y,width,height,image,x_vel,y_vel,dir,score,shoot):
         self.x = x 
         self.y = y
@@ -23,6 +25,7 @@ class Enemy(object):
         player_ship.score += self.score
     
 class Horizontal_Enemy(Enemy):
+    
     def __init__(self,x,y,width,height,image,x_vel,y_vel,dir,score,shoot):
         super().__init__(x, y, width, height, image,x_vel,y_vel,dir,score,shoot)
         self.right_boundary = 650
@@ -30,13 +33,25 @@ class Horizontal_Enemy(Enemy):
         self.hitbox = (self.x + 8,self.y + 19,self.width - 16,11)
 
     def move(self):
-        if self.x >= self.right_boundary:
+        if Enemy.move_next_level:
+            #print('Y Location: ' + str(self.y))
+            print('Moving Second to Next Layer')
             self.y += self.y_vel
             self.dir *= -1
-        elif self.dir == -1 and self.x <= 0:
+            
+        elif self.dir == 1 and self.x + self.width >= self.right_boundary and Enemy.move_next_level == False:
+            print('Moving To Next Layer')
+            Enemy.move_next_level = True
             self.y += self.y_vel
             self.dir *= -1
-    
+            #print('Y Location: ' + str(self.y))
+
+        elif self.dir == -1 and self.x <= self.left_boundary and Enemy.move_next_level == False:
+            Enemy.move_next_level = True
+            self.y += self.y_vel
+            self.dir *= -1
+            #print('Y Location: ' + str(self.y))
+
         self.x += self.x_vel*self.dir
         self.hitbox = (self.x + 8,self.y + 19,self.width - 16,11)
         

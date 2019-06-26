@@ -96,7 +96,7 @@ class Game():
         bottom_y_boundary = screen_height - 30
         n = 0
         x_sep = 30
-        y_sep = 30
+        y_sep = 80
         sprite_width = 32     
         sprite_height = 31
         enemy_type = ''
@@ -110,8 +110,8 @@ class Game():
                 enemy_type = str(self.data[self.row][1])
                 self.row+=1
                 
-                if num_enemy_type > 5:
-                    n = 5
+                if num_enemy_type > 3:
+                    n = 3
                 else:
                     n = num_enemy_type
                     
@@ -133,6 +133,8 @@ class Game():
                        j+=1
                    if enemy_type == 'Horizontal_Enemy':
                        x_loc = left_x_boundary + (k%n)*(sprite_width + x_sep)
+                       if x_loc >= 220:
+                           x_loc -=200
                        y_loc = top_y_boundary + j*(sprite_height + y_sep) + distance_index*(30+sprite_height)
                        enemy = Horizontal_Enemy(x_loc,y_loc,32,31,horizontal_enemy,2,2,1,5,random.randint(0,6))
                    elif enemy_type == 'Vertical_Enemy':
@@ -143,7 +145,8 @@ class Game():
                 distance_index+=1
             else:
                 break
-            
+        for enemy in enemy_list:
+            print('X Location: ' + str(enemy.x) + ' Y Location: ' + str(enemy.y))
         return enemy_list
            
     def game_over_screen(self):
@@ -175,6 +178,9 @@ class Game():
                 self.running = False
                 break
             
+            if Enemy.move_next_level:
+                    Enemy.move_next_level = False
+                    
             for enemy in self.enemies:
                 enemy.move()
                 if self.overlap_check(enemy,player_ship):
