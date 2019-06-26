@@ -23,6 +23,14 @@ class Enemy(object):
         
     def hit(self,player_ship):
         player_ship.score += self.score
+        
+    def check_out_of_bounds(self):
+        if self.dir == 1 and self.x + self.width >= self.right_boundary and Enemy.move_next_level == False:
+           return True
+        elif self.dir == -1 and self.x <= self.left_boundary and Enemy.move_next_level == False:
+            return True
+        else:
+            return False
     
 class Horizontal_Enemy(Enemy):
     
@@ -39,22 +47,10 @@ class Horizontal_Enemy(Enemy):
             self.y += self.y_vel
             self.dir *= -1
             
-        elif self.dir == 1 and self.x + self.width >= self.right_boundary and Enemy.move_next_level == False:
-            print('Moving To Next Layer')
-            Enemy.move_next_level = True
-            self.y += self.y_vel
-            self.dir *= -1
-            #print('Y Location: ' + str(self.y))
-
-        elif self.dir == -1 and self.x <= self.left_boundary and Enemy.move_next_level == False:
-            Enemy.move_next_level = True
-            self.y += self.y_vel
-            self.dir *= -1
-            #print('Y Location: ' + str(self.y))
-
         self.x += self.x_vel*self.dir
         self.hitbox = (self.x + 8,self.y + 19,self.width - 16,11)
         
+    
 class Vertical_Enemy(Enemy):
     def __init__(self,x,y,width,height,image,x_vel,y_vel,dir,score,shoot):
         super().__init__(x, y, width, height, image,x_vel,y_vel,dir,score,shoot)

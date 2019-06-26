@@ -182,6 +182,13 @@ class Game():
                     Enemy.move_next_level = False
                     
             for enemy in self.enemies:
+                if enemy.check_out_of_bounds():
+                    Enemy.move_next_level = True
+                    break
+            
+            
+                    
+            for enemy in self.enemies:
                 enemy.move()
                 if self.overlap_check(enemy,player_ship):
                     if current_frame - old_frame > 3:
