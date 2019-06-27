@@ -5,14 +5,14 @@ from Enemy import *
 from Projectile import *
 from Player import *
 
-#TODO: fix vertical ships so they move to next level as well
+#TODO: check level arrangement again 6, enemies, then 10 enemies
 pygame.init()
 
 screen_width = 700
 screen_height = 700
 
 
-margin = 20
+margin = 50
 j = 0
 win = pygame.display.set_mode((screen_width,screen_height))
 
@@ -91,9 +91,9 @@ class Game():
         #if there are more than 5 enemies then just set as 5
         enemy_list = []
         h = 'horizontal_enemy'
-        left_x_boundary = 20
-        right_x_boundary = screen_width - 20
-        top_y_boundary = 30
+        left_x_boundary = 50
+        right_x_boundary = screen_width - 50
+        top_y_boundary = 50
         bottom_y_boundary = screen_height - 30
         n = 0
         x_sep = 30
@@ -111,10 +111,15 @@ class Game():
                 enemy_type = str(self.data[self.row][1])
                 self.row+=1
                 
-                if num_enemy_type > 3:
-                    n = 3
-                else:
-                    n = num_enemy_type
+                n = int((screen_width - 2*margin + x_sep)/(x_sep + sprite_width))
+
+                if n > num_enemy_type/2:
+                    n = num_enemy_type/2
+                    x_sep = int((screen_width - 2*(margin) - n*(sprite_width))/(n-1))
+                #if num_enemy_type > 3:
+                 #   n = 3
+                #else:
+                #    n = num_enemy_type
                     
                 if enemy_type == 'Horizontal_Enemy':
                     if n == 1:
@@ -134,15 +139,15 @@ class Game():
                        j+=1
                    if enemy_type == 'Horizontal_Enemy':
                        x_loc = left_x_boundary + (k%n)*(sprite_width + x_sep)
-                       if x_loc >= 220:
-                           x_loc -=200
+                       #if x_loc >= 220:
+                       #    x_loc -=200
                        y_loc = top_y_boundary + j*(sprite_height + y_sep) + distance_index*(30+sprite_height)
-                       enemy = Horizontal_Enemy(x_loc,y_loc,32,31,horizontal_enemy,2,2,1,5,random.randint(0,6))
+                       enemy = Horizontal_Enemy(x_loc,y_loc,32,31,horizontal_enemy,1,1,1,5,random.randint(0,6))
                    elif enemy_type == 'Vertical_Enemy':
                        x_loc = left_x_boundary + j*(sprite_width + x_sep)
                        y_loc = top_y_boundary + (k%n)*(sprite_height + y_sep) + distance_index*(30+sprite_height)
-                       if y_loc >= 220:
-                           y_loc -=200
+                       #if y_loc >= 220:
+                       #    y_loc -=200
                        enemy = Vertical_Enemy(x_loc,y_loc,32,32,vertical_enemy,5,2,1,5,random.randint(0,6))
                    enemy_list.append(enemy)
                 distance_index+=1

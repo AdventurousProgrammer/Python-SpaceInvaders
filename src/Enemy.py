@@ -54,10 +54,10 @@ class Horizontal_Enemy(Enemy):
 class Vertical_Enemy(Enemy):
     def __init__(self,x,y,width,height,image,x_vel,y_vel,dir,score,shoot):
         super().__init__(x, y, width, height, image,x_vel,y_vel,dir,score,shoot)
-        self.right_boundary = 650
-        self.left_boundary = 50
-        self.top_boundary = 50
-        self.bottom_boundary = 650
+        self.right_boundary = 680
+        self.left_boundary = 20
+        self.top_boundary = 20
+        self.bottom_boundary = 680
         self.hitbox = (self.x + 8,self.y + 19,self.width - 16,11)
         
     def move(self):
