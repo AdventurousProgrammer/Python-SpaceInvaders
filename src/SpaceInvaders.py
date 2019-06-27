@@ -12,7 +12,6 @@ screen_width = 700
 screen_height = 700
 
 
-margin = 50
 j = 0
 win = pygame.display.set_mode((screen_width,screen_height))
 
@@ -95,6 +94,7 @@ class Game():
         right_x_boundary = screen_width - 50
         top_y_boundary = 50
         bottom_y_boundary = screen_height - 30
+        margin = 50
         n = 0
         x_sep = 30
         y_sep = 80
@@ -112,10 +112,9 @@ class Game():
                 self.row+=1
                 
                 n = int((screen_width - 2*margin + x_sep)/(x_sep + sprite_width))
-
-                if n > num_enemy_type/2:
-                    n = num_enemy_type/2
-                    x_sep = int((screen_width - 2*(margin) - n*(sprite_width))/(n-1))
+                print('N: ' + str(n))
+                if n > num_enemy_type:
+                    margin = int(screen_width - (n-1)*(x_sep) - n*(sprite_width))/2
                 #if num_enemy_type > 3:
                  #   n = 3
                 #else:
@@ -135,10 +134,10 @@ class Game():
                 j = 0
                 global distance_index
                 for k in range(0,num_enemy_type):
-                   if k%n == 0 and k!=0:
-                       j+=1
+                   #if k%n == 0 and k!=0:
+                   #    j+=1
                    if enemy_type == 'Horizontal_Enemy':
-                       x_loc = left_x_boundary + (k%n)*(sprite_width + x_sep)
+                       x_loc = margin + (k%n)*(sprite_width + x_sep)
                        #if x_loc >= 220:
                        #    x_loc -=200
                        y_loc = top_y_boundary + j*(sprite_height + y_sep) + distance_index*(30+sprite_height)
