@@ -64,11 +64,11 @@ class Game():
         for bullet in player_ship.bullets:
             bullet.draw(win) 
     
-        text = self.font.render('Score: ' + str(player_ship.score),True,(255,0,0))
-        health = self.font.render('Health: ' + str(player_ship.health),True,(0,255,0))
+        text = self.font.render('Score: ' + str(player_ship.score),True,(0,255,0))
+        health = self.font.render('Health: ' + str(player_ship.health),True,(255,0,0))
         win.blit(text,(0,0))
         win.blit(health,(300,0))
-        pygame.draw.rect(win,(0,255,0),(450,0,player_ship.health,15))
+        pygame.draw.rect(win,(255,0,0),(450,0,player_ship.health,15))
         pygame.display.update()
     
     def overlap_check(self,sprite1,sprite2):
@@ -94,7 +94,7 @@ class Game():
         right_x_boundary = screen_width - 50
         top_y_boundary = 50
         bottom_y_boundary = screen_height - 30
-        margin = 50
+        margin = 20
         n = 0
         x_sep = 30
         y_sep = 80
@@ -103,7 +103,7 @@ class Game():
         enemy_type = ''
         num_enemy_type = 0
         enemy = Enemy(0,0,32,31,horizontal_enemy,2,2,1,5,random.randint(0,6))
-        
+        j = 0
         while(self.row < len(self.data)):
             if int(self.data[self.row][0]) == self.level:
                 #need to update code
@@ -113,43 +113,52 @@ class Game():
                 
                 n = int((screen_width - 2*margin + x_sep)/(x_sep + sprite_width))
                 print('N: ' + str(n))
-                if n > num_enemy_type:
-                    margin = int(screen_width - (n-1)*(x_sep) - n*(sprite_width))/2
-                #if num_enemy_type > 3:
+                
+                while num_enemy_type > 0:
+                    if num_enemy_type <n-1:
+                        margin = int(screen_width - (num_enemy_type-1)*(x_sep) - (num_enemy_type-1)*(sprite_width))/2
+                        num_enemies = num_enemy_type 
+                        num_enemy_type = 0
+                        
+                    else:
+                        margin = int(screen_width - (n-2)*(x_sep) - (n-1)*(sprite_width))/2
+                        num_enemies = n-1
+                        num_enemy_type -= n-1
+                            
+                    for k in range(0,num_enemies):
+                        if enemy_type == 'Horizontal_Enemy':
+                            x_loc = margin + (k%n)*(sprite_width + x_sep)
+                            y_loc = top_y_boundary + j*(sprite_height + y_sep) + distance_index*(30+sprite_height)
+                            enemy = Horizontal_Enemy(x_loc,y_loc,32,31,horizontal_enemy,2,3,1,5,random.randint(0,6))
+                        elif enemy_type == 'Vertical_Enemy':
+                            x_loc = left_x_boundary + j*(sprite_width + x_sep)
+                            y_loc = margin + (k%n)*(sprite_height + y_sep) + distance_index*(30+sprite_height)
+                            enemy = Vertical_Enemy(x_loc,y_loc,32,32,vertical_enemy,3,2,1,5,random.randint(0,6))
+                        enemy_list.append(enemy)
+                    j+=1 
+                                       #if num_enemy_type > 3:
                  #   n = 3
                 #else:
                 #    n = num_enemy_type
                     
-                if enemy_type == 'Horizontal_Enemy':
-                    if n == 1:
-                         x_sep = 0.5*screen_width - margin
-                    else:
-                        x_sep = int((screen_width - 2*(margin) - n*(sprite_width))/(n-1))
-                elif enemy_type == 'Vertical_Enemy':
-                    if n == 1:
-                        y_sep = 0.5*screen_height - margin
-                    else:
-                        y_sep = int((screen_height - 2*(margin) - n*(sprite_height))/(n-1))
+                #if enemy_type == 'Horizontal_Enemy':
+                #    if n == 1:
+                       #  x_sep = 0.5*screen_width - margin
+               #     else:
+               #         x_sep = int((screen_width - 2*(margin) - n*(sprite_width))/(n-1))
+               # elif enemy_type == 'Vertical_Enemy':
+               #     if n == 1:
+               #         y_sep = 0.5*screen_height - margin
+               #     else:
+               #         y_sep = int((screen_height - 2*(margin) - n*(sprite_height))/(n-1))
                 
-                j = 0
-                global distance_index
-                for k in range(0,num_enemy_type):
+                #j = 0
+                #global distance_index
+                #for k in range(0,num_enemy_type):
                    #if k%n == 0 and k!=0:
                    #    j+=1
-                   if enemy_type == 'Horizontal_Enemy':
-                       x_loc = margin + (k%n)*(sprite_width + x_sep)
-                       #if x_loc >= 220:
-                       #    x_loc -=200
-                       y_loc = top_y_boundary + j*(sprite_height + y_sep) + distance_index*(30+sprite_height)
-                       enemy = Horizontal_Enemy(x_loc,y_loc,32,31,horizontal_enemy,1,1,1,5,random.randint(0,6))
-                   elif enemy_type == 'Vertical_Enemy':
-                       x_loc = left_x_boundary + j*(sprite_width + x_sep)
-                       y_loc = top_y_boundary + (k%n)*(sprite_height + y_sep) + distance_index*(30+sprite_height)
-                       #if y_loc >= 220:
-                       #    y_loc -=200
-                       enemy = Vertical_Enemy(x_loc,y_loc,32,32,vertical_enemy,5,2,1,5,random.randint(0,6))
-                   enemy_list.append(enemy)
-                distance_index+=1
+                   
+                #distance_index+=1
             else:
                 break
         for enemy in enemy_list:
@@ -200,7 +209,7 @@ class Game():
                 if self.overlap_check(enemy,player_ship):
                     if current_frame - old_frame > 3:
                         old_frame = current_frame
-                        player_ship.hit(10)
+                        player_ship.hit(5)
                 if enemy.shoot == shoot_flag and len(enemy.bullets) < 1:
                     enemy.bullets.append(Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,enemy_missile,4,'down'))
         
@@ -213,7 +222,7 @@ class Game():
                     bullet.hitbox = (bullet.x + 8,bullet.y,8,bullet.height - 10)
             
                     if self.overlap_check(bullet,player_ship):
-                        player_ship.hit(10)
+                        player_ship.hit(5)
                         enemy.bullets.pop(enemy.bullets.index(bullet))
                         continue
                     

@@ -33,7 +33,6 @@ class Enemy(object):
             return False
     
 class Horizontal_Enemy(Enemy):
-    
     def __init__(self,x,y,width,height,image,x_vel,y_vel,dir,score,shoot):
         super().__init__(x, y, width, height, image,x_vel,y_vel,dir,score,shoot)
         self.right_boundary = 650
@@ -50,7 +49,6 @@ class Horizontal_Enemy(Enemy):
         self.x += self.x_vel*self.dir
         self.hitbox = (self.x + 8,self.y + 19,self.width - 16,11)
         
-    
 class Vertical_Enemy(Enemy):
     def __init__(self,x,y,width,height,image,x_vel,y_vel,dir,score,shoot):
         super().__init__(x, y, width, height, image,x_vel,y_vel,dir,score,shoot)
@@ -71,7 +69,7 @@ class Vertical_Enemy(Enemy):
         self.hitbox = (self.x + 8,self.y + 19,self.width - 16,11)
         
     def check_out_of_bounds(self):
-        if self.y >= self.bottom_boundary and self.dir == 1 and Enemy.move_next_level == False:
+        if self.y + self.height >= self.bottom_boundary and self.dir == 1 and Enemy.move_next_level == False:
             #self.x += self.x_vel
             #self.dir *= -1
             return True
