@@ -72,6 +72,7 @@ class Game():
         pygame.display.update()
     
     def overlap_check(self,sprite1,sprite2):
+        #add grazing damage
         top_in = sprite1.hitbox[1] > sprite2.hitbox[1] and sprite1.hitbox[1] < sprite2.hitbox[1] + sprite2.hitbox[3]
         bottom_in = sprite1.hitbox[1] + sprite1.hitbox[3] > sprite2.hitbox[1] and sprite1.hitbox[1] + sprite1.hitbox[3] < sprite2.hitbox[1] + sprite2.hitbox[3]
         left_in = sprite1.hitbox[0] > sprite2.hitbox[0] and sprite1.hitbox[0] < sprite2.hitbox[0] + sprite2.hitbox[2]
@@ -97,7 +98,7 @@ class Game():
         margin = 20
         n = 0
         x_sep = 30
-        y_sep = 80
+        y_sep = 30
         sprite_width = 32     
         sprite_height = 31
         enemy_type = ''
@@ -131,7 +132,7 @@ class Game():
                             y_loc = top_y_boundary + j*(sprite_height + y_sep) + distance_index*(30+sprite_height)
                             enemy = Horizontal_Enemy(x_loc,y_loc,32,31,horizontal_enemy,2,3,1,5,random.randint(0,6))
                         elif enemy_type == 'Vertical_Enemy':
-                            x_loc = left_x_boundary + j*(sprite_width + x_sep)
+                            x_loc = left_x_boundary + (k%n)*(sprite_width + x_sep)
                             y_loc = margin + (k%n)*(sprite_height + y_sep) + distance_index*(30+sprite_height)
                             enemy = Vertical_Enemy(x_loc,y_loc,32,32,vertical_enemy,3,2,1,5,random.randint(0,6))
                         enemy_list.append(enemy)
