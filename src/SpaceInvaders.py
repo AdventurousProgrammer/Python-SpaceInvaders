@@ -56,7 +56,8 @@ class Game():
         player_ship.draw(win)
         
         for enemy in self.enemies:
-            enemy.draw(win)
+            if enemy.dead == False:
+                enemy.draw(win)
             #set enemies and their locations get it from a previous commit
             for bullet in enemy.bullets:
                 bullet.draw(win)
@@ -103,7 +104,7 @@ class Game():
         sprite_height = 31
         enemy_type = ''
         num_enemy_type = 0
-        enemy = Enemy(0,0,32,31,horizontal_enemy,2,2,1,5,random.randint(0,6))
+        enemy = Enemy(0,0,32,31,horizontal_enemy,2,2,1,1,5,random.randint(0,6))
         j = 0
         while(self.row < len(self.data)):
             if int(self.data[self.row][0]) == self.level:
@@ -130,11 +131,11 @@ class Game():
                         if enemy_type == 'Horizontal_Enemy':
                             x_loc = margin + (k%n)*(sprite_width + x_sep)
                             y_loc = top_y_boundary + j*(sprite_height + y_sep) + distance_index*(30+sprite_height)
-                            enemy = Horizontal_Enemy(x_loc,y_loc,32,31,horizontal_enemy,2,3,1,5,random.randint(0,6))
+                            enemy = Horizontal_Enemy(x_loc,y_loc,32,31,horizontal_enemy,2,3,1,1,5,random.randint(0,6))
                         elif enemy_type == 'Vertical_Enemy':
                             x_loc = left_x_boundary + (k%n)*(sprite_width + x_sep)
                             y_loc = margin + (k%n)*(sprite_height + y_sep) + distance_index*(30+sprite_height)
-                            enemy = Vertical_Enemy(x_loc,y_loc,32,32,vertical_enemy,3,2,1,5,random.randint(0,6))
+                            enemy = Vertical_Enemy(x_loc,y_loc,32,32,vertical_enemy,3,2,1,1,5,random.randint(0,6))
                         enemy_list.append(enemy)
                     j+=1 
                                        #if num_enemy_type > 3:
@@ -211,7 +212,7 @@ class Game():
                     if current_frame - old_frame > 3:
                         old_frame = current_frame
                         player_ship.hit(5)
-                if enemy.shoot == shoot_flag and len(enemy.bullets) < 1:
+                if enemy.shoot == shoot_flag and len(enemy.bullets) < 1 and enemy.dead == False:
                     enemy.bullets.append(Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,enemy_missile,4,'down'))
         
             for enemy in self.enemies:
@@ -242,7 +243,8 @@ class Game():
                 for enemy in self.enemies:
                     if self.overlap_check(bullet,enemy):
                         enemy.hit(player_ship)
-                        self.enemies.pop(self.enemies.index(enemy))
+                        enemy.dead = True
+                        #self.enemies.pop(self.enemies.index(enemy))
                         player_ship.bullets.pop(player_ship.bullets.index(bullet))
     
             for event in pygame.event.get():
