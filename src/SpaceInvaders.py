@@ -97,6 +97,7 @@ class Game():
         top_y_boundary = 50
         bottom_y_boundary = screen_height - 30
         margin = 20
+        layer = 0
         n = 0
         x_sep = 30
         y_sep = 30
@@ -138,7 +139,7 @@ class Game():
                             enemy = Vertical_Enemy(x_loc,y_loc,32,32,vertical_enemy,3,2,1,1,5,random.randint(0,6))
                         enemy_list.append(enemy)
                     j+=1 
-                                       #if num_enemy_type > 3:
+                layer = j + 1                       #if num_enemy_type > 3:
                  #   n = 3
                 #else:
                 #    n = num_enemy_type
@@ -200,6 +201,8 @@ class Game():
                 Enemy.move_next_level = False
                     
             for enemy in self.enemies:
+                if enemy.dead == True:
+                    continue
                 if enemy.check_out_of_bounds():
                     Enemy.move_next_level = True
                     break
@@ -207,6 +210,8 @@ class Game():
             
                     
             for enemy in self.enemies:
+                if enemy.dead == True:
+                    continue
                 enemy.move()
                 if self.overlap_check(enemy,player_ship):
                     if current_frame - old_frame > 3:
@@ -241,6 +246,8 @@ class Game():
                 bullet.hitbox = (bullet.x + 9,bullet.y + 1,bullet.width - 6,bullet.height + 7)
                 
                 for enemy in self.enemies:
+                    if enemy.dead == True:
+                        continue
                     if self.overlap_check(bullet,enemy):
                         enemy.hit(player_ship)
                         enemy.dead = True
@@ -256,17 +263,14 @@ class Game():
             if keys[pygame.K_SPACE] and len(player_ship.bullets) < 5:
                 if current_frame - old_frame > 3:
                     old_frame = current_frame
-                    player_ship.bullets.append(Player_Projectile(player_ship.x + 0.5*player_ship.width - 12,player_ship.y,12,7,small_missile,3,player_ship.dir))
+                    player_ship.bullets.append(Player_Projectile(player_ship.x + 0.5*player_ship.width - 12,player_ship.y,12,7,small_missile,5,player_ship.dir))
            #frame_count += 1
             if keys[pygame.K_RIGHT] and player_ship.x + player_ship.width + player_ship.vel <= screen_width:
                 player_ship.x += player_ship.vel
             elif keys[pygame.K_LEFT] and player_ship.x - player_ship.vel >= 0:
                 player_ship.x -= player_ship.vel
-            elif keys[pygame.K_UP] and player_ship.y - player_ship.vel >= 0:
-                player_ship.y -= player_ship.vel
-            elif keys[pygame.K_DOWN] and player_ship.y + player_ship.height + player_ship.vel <= screen_height:
-                player_ship.y += player_ship.vel
-                
+            #elif keys[pygame.K_DOWN] and player_ship.y + player_ship.height + player_ship.vel <= screen_height:
+            #    player_ship.y += player_ship.vel
             player_ship.hitbox = (player_ship.x,player_ship.y,player_ship.width,player_ship.height)
     
             self.redraw_game_window(player_ship)
