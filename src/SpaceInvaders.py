@@ -113,7 +113,8 @@ class Game():
                 num_enemy_type = int(self.data[self.row][2])
                 enemy_type = str(self.data[self.row][1])
                 self.row+=1
-                
+                margin = 20
+                x_sep = 30
                 n = int((screen_width - 2*margin + x_sep)/(x_sep + sprite_width))
                 print('N: ' + str(n))
                 
@@ -131,15 +132,19 @@ class Game():
                     for k in range(0,num_enemies):
                         if enemy_type == 'Horizontal_Enemy':
                             x_loc = margin + (k%n)*(sprite_width + x_sep)
-                            y_loc = top_y_boundary + j*(sprite_height + y_sep) + distance_index*(30+sprite_height)
+                            y_loc = top_y_boundary + j*(sprite_height + y_sep)
                             enemy = Horizontal_Enemy(x_loc,y_loc,32,31,horizontal_enemy,2,3,1,1,5,random.randint(0,6))
                         elif enemy_type == 'Vertical_Enemy':
                             x_loc = left_x_boundary + (k%n)*(sprite_width + x_sep)
-                            y_loc = margin + (k%n)*(sprite_height + y_sep) + distance_index*(30+sprite_height)
+                            y_loc = margin + (k%n)*(sprite_height + y_sep) + layer*(30+sprite_height)
                             enemy = Vertical_Enemy(x_loc,y_loc,32,32,vertical_enemy,3,2,1,1,5,random.randint(0,6))
                         enemy_list.append(enemy)
-                    j+=1 
-                layer = j + 1                       #if num_enemy_type > 3:
+                    j+=1
+                print(enemy_type)
+                for enemy in enemy_list:
+                    print('X Location: ' + str(enemy.x) + ' Y Location: ' + str(enemy.y))
+                print('================')
+                layer = j                      #if num_enemy_type > 3:
                  #   n = 3
                 #else:
                 #    n = num_enemy_type
@@ -164,8 +169,7 @@ class Game():
                 #distance_index+=1
             else:
                 break
-        for enemy in enemy_list:
-            print('X Location: ' + str(enemy.x) + ' Y Location: ' + str(enemy.y))
+        
         return enemy_list
            
     def game_over_screen(self):
@@ -265,9 +269,9 @@ class Game():
                     old_frame = current_frame
                     player_ship.bullets.append(Player_Projectile(player_ship.x + 0.5*player_ship.width - 12,player_ship.y,12,7,small_missile,5,player_ship.dir))
            #frame_count += 1
-            if keys[pygame.K_RIGHT] and player_ship.x + player_ship.width + player_ship.vel <= screen_width:
+            if keys[pygame.K_RIGHT] and player_ship.x + player_ship.width + player_ship.vel <= screen_width - 20:
                 player_ship.x += player_ship.vel
-            elif keys[pygame.K_LEFT] and player_ship.x - player_ship.vel >= 0:
+            elif keys[pygame.K_LEFT] and player_ship.x - player_ship.vel >= 20:
                 player_ship.x -= player_ship.vel
             #elif keys[pygame.K_DOWN] and player_ship.y + player_ship.height + player_ship.vel <= screen_height:
             #    player_ship.y += player_ship.vel
