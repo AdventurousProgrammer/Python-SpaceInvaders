@@ -50,7 +50,8 @@ class Game():
     running = True
     level = 1
     row = 1    
-
+    num_level_enemies = 0
+    
     def redraw_game_window(self,player_ship):
         win.blit(bg,(0,0))
         player_ship.draw(win)
@@ -65,11 +66,11 @@ class Game():
         for bullet in player_ship.bullets:
             bullet.draw(win) 
     
-        text = self.font.render('Score: ' + str(player_ship.score),True,(0,255,0))
+        text = self.font.render('Score: ' + str(player_ship.score),True,(0,255,0))#text surface that you are blitting to the screen
         health = self.font.render('Health: ' + str(player_ship.health),True,(255,0,0))
         win.blit(text,(0,0))
         win.blit(health,(300,0))
-        pygame.draw.rect(win,(255,0,0),(450,0,player_ship.health,15))
+        pygame.draw.rect(win,(255,128,0),(450,0,player_ship.health,15))
         pygame.display.update()
     
     def overlap_check(self,sprite1,sprite2):
@@ -179,6 +180,14 @@ class Game():
                 if event.type == pygame.QUIT:
                     pygame.quit()
         
+    def level_transition(self):
+         text = self.font.render('Level: ' + str(self.level) + ' is starting',True,(255,128,0))
+         win.blit(text,(100,100))
+         print('put level text')
+         pygame.time.delay(10000)
+         print('LevelTransition time over')
+         win.blit(bg,(100,100))
+         #pygame.display.update()
     def play(self,player_ship):
         old_frame = 0
         current_frame = 0
@@ -188,10 +197,12 @@ class Game():
             
             current_frame += 1
             
-            if len(self.enemies) <= 0:
+            if self.num_level_enemies <= 0:
+                self.level_transition()
                 self.enemies = self.set_level()
+                self.num_level_enemies = len(self.enemies)
                 self.level += 1
-                if len(self.enemies) == 0:
+                if self.num_level_enemies == 0:
                     print('Game Over: All Levels Completed')
                     self.game_over_screen()
                     
@@ -255,6 +266,7 @@ class Game():
                     if self.overlap_check(bullet,enemy):
                         enemy.hit(player_ship)
                         enemy.dead = True
+                        self.num_level_enemies -= 1
                         #self.enemies.pop(self.enemies.index(enemy))
                         player_ship.bullets.pop(player_ship.bullets.index(bullet))
     
