@@ -11,6 +11,7 @@ pygame.init()
 screen_width = 700
 screen_height = 700
 
+BLACK = (0,0,0)
 
 j = 0
 win = pygame.display.set_mode((screen_width,screen_height))
@@ -42,6 +43,14 @@ old_frame = 0
 num_levels = 10
 distance_index = 0
 clock = pygame.time.Clock()
+
+def draw_text(text,size,color,x,y):
+    font = pygame.font.SysFont('comicsans',size)
+    text_surface = font.render(text,True,color)
+    text_rect = text_surface.get_rect()
+    text_rect.midtop = (x,y)
+    win.blit(text_surface,text_rect)
+    
 #j = 0
 class Game():
     enemies = list()#static variable
@@ -67,7 +76,7 @@ class Game():
             bullet.draw(win) 
     
         text = self.font.render('Score: ' + str(player_ship.score),True,(0,255,0))#text surface that you are blitting to the screen
-        health = self.font.render('Health: ' + str(player_ship.health),True,(255,0,0))
+        health = self.font.render('Health: ' + str(player_ship.health),True,(255,128,0))
         win.blit(text,(0,0))
         win.blit(health,(300,0))
         pygame.draw.rect(win,(255,128,0),(450,0,player_ship.health,15))
@@ -181,13 +190,35 @@ class Game():
                     pygame.quit()
         
     def level_transition(self):
-         text = self.font.render('Level: ' + str(self.level) + ' is starting',True,(255,128,0))
-         win.blit(text,(100,100))
+         #text = self.font.render(,True,(255,128,0))
+         
+         top = pygame.Rect(20,20,660,80)#should be 79
+         delay_left = pygame.Rect(20,100,240,20)
+         delay_right = pygame.Rect(440,100,240,20)
+         middle = pygame.Rect(20,120,660,380)
+         ship_left = pygame.Rect(20,500,310,32)
+         ship_right = pygame.Rect(362,500,318,32)
+         bottom = pygame.Rect(20,532,660,148)
+         
+         rectangles = [top,bottom,middle,ship_left,ship_right,delay_left,delay_right]
+         #rectangles.append()
          print('put level text')
-         pygame.time.delay(10000)
+         x = 500
+         while x > 0:
+             for rectangle in rectangles:
+                 pygame.draw.rect(win,BLACK,rectangle)
+             draw_text('Level ' + str(self.level) + ' is Starting!',30,(255,128,0),screen_width/2,100)
+             #if x == 500:
+                # print('blitting text')
+             #top_rect = 
+             
+             pygame.display.update()
+             pygame.time.delay(20)
+             x -= 1
+         #pygame.time.delay(10000)
          print('LevelTransition time over')
-         win.blit(bg,(100,100))
-         #pygame.display.update()
+         #win.blit(bg,(100,100))
+         #
     def play(self,player_ship):
         old_frame = 0
         current_frame = 0
