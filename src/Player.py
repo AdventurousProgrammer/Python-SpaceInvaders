@@ -16,6 +16,7 @@ class Player(object):
         self.health = 100
         self.hitbox = (self.x,self.y,self.width,self.height)
         self.bullets = list()
+        self.num_bullets = 50
         
     def draw(self,win):
         win.blit(self.image,(self.x,self.y))

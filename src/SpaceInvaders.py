@@ -6,6 +6,11 @@ from Projectile import *
 from Player import *
 
 #TODO: check level arrangement again 6, enemies, then 10 enemies
+#Level 1: 5 vertical enemies
+#Level 2: 5 horizontal enemies
+#Level 3: 10 vertical enemies
+#Level 4: 10 horizontal enemies
+#Level 5: 7 Horizontal enemies, 8 vertical enemies
 pygame.init()
 
 screen_width = 700
@@ -74,12 +79,12 @@ class Game():
             
         for bullet in player_ship.bullets:
             bullet.draw(win) 
-    
-        text = self.font.render('Score: ' + str(player_ship.score),True,(0,255,0))#text surface that you are blitting to the screen
-        health = self.font.render('Health: ' + str(player_ship.health),True,(255,128,0))
-        win.blit(text,(0,0))
-        win.blit(health,(300,0))
-        pygame.draw.rect(win,(255,128,0),(450,0,player_ship.health,15))
+            
+        score = 'Score: ' + str(player_ship.score)
+        health = 'Health: ' + str(player_ship.health)
+        draw_text(score,30,(0,255,0),45,0)
+        draw_text(health,30,(255,0,0),351,0)
+        pygame.draw.rect(win,(255,0,0),(450,0,player_ship.health,15))
         pygame.display.update()
     
     def overlap_check(self,sprite1,sprite2):
@@ -98,14 +103,11 @@ class Game():
         self.data = list(file_reader)
         print('Data File Set')
             
-    def set_level(self):#works
+    def set_level(self,player_ship):#works
         #if there are more than 5 enemies then just set as 5
         enemy_list = []
-        h = 'horizontal_enemy'
         left_x_boundary = 50
-        right_x_boundary = screen_width - 50
         top_y_boundary = 50
-        bottom_y_boundary = screen_height - 30
         margin = 20
         layer = 0
         n = 0
@@ -120,6 +122,9 @@ class Game():
         while(self.row < len(self.data)):
             if int(self.data[self.row][0]) == self.level:
                 #need to update code
+                print('Row: ' + str(self.row))
+                num_bullets = int(self.data[self.row][3])
+                player_ship.num_bullets = num_bullets
                 num_enemy_type = int(self.data[self.row][2])
                 enemy_type = str(self.data[self.row][1])
                 self.row+=1
@@ -155,28 +160,6 @@ class Game():
                     print('X Location: ' + str(enemy.x) + ' Y Location: ' + str(enemy.y))
                 print('================')
                 layer = j                      #if num_enemy_type > 3:
-                 #   n = 3
-                #else:
-                #    n = num_enemy_type
-                    
-                #if enemy_type == 'Horizontal_Enemy':
-                #    if n == 1:
-                       #  x_sep = 0.5*screen_width - margin
-               #     else:
-               #         x_sep = int((screen_width - 2*(margin) - n*(sprite_width))/(n-1))
-               # elif enemy_type == 'Vertical_Enemy':
-               #     if n == 1:
-               #         y_sep = 0.5*screen_height - margin
-               #     else:
-               #         y_sep = int((screen_height - 2*(margin) - n*(sprite_height))/(n-1))
-                
-                #j = 0
-                #global distance_index
-                #for k in range(0,num_enemy_type):
-                   #if k%n == 0 and k!=0:
-                   #    j+=1
-                   
-                #distance_index+=1
             else:
                 break
         
@@ -185,40 +168,42 @@ class Game():
     def game_over_screen(self):
         print('Game Over')
         while True:
+            draw_text('Game Over!',30,(255,0,0),screen_width/2,screen_height/2)
+            pygame.display.update()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
         
-    def level_transition(self):
-         #text = self.font.render(,True,(255,128,0))
-         
-         top = pygame.Rect(20,20,660,80)#should be 79
-         delay_left = pygame.Rect(20,100,240,20)
-         delay_right = pygame.Rect(440,100,240,20)
-         middle = pygame.Rect(20,120,660,380)
-         ship_left = pygame.Rect(20,500,310,32)
-         ship_right = pygame.Rect(362,500,318,32)
-         bottom = pygame.Rect(20,532,660,148)
-         
-         rectangles = [top,bottom,middle,ship_left,ship_right,delay_left,delay_right]
-         #rectangles.append()
-         print('put level text')
-         x = 500
+    def level_transition(self,player_ship):
+        
+         #top = pygame.Rect(20,20,660,80)
+         #delay_left = pygame.Rect(20,100,240,20)
+         #delay_right = pygame.Rect(440,100,240,20)
+         ##middle = pygame.Rect(20,120,660,380)
+         #ship_left = pygame.Rect(20,500,310,32)
+         #ship_right = pygame.Rect(362,500,318,32)
+         #bottom = pygame.Rect(20,532,660,148)
+         #rectangles = [top,bottom,middle,ship_left,ship_right,delay_left,delay_right]
+         score = 'Score: ' + str(player_ship.score)
+         health = 'Health: ' + str(player_ship.health)
+         x = 150
+         win.fill((0,0,0))
          while x > 0:
-             for rectangle in rectangles:
-                 pygame.draw.rect(win,BLACK,rectangle)
-             draw_text('Level ' + str(self.level) + ' is Starting!',30,(255,128,0),screen_width/2,100)
-             #if x == 500:
-                # print('blitting text')
-             #top_rect = 
              
+             #for rectangle in rectangles:
+              #   pygame.draw.rect(win,BLACK,rectangle)
+             draw_text(score,30,(0,255,0),45,0)
+             draw_text(health,30,(255,0,0),351,0)
+             pygame.draw.rect(win,(255,0,0),(450,0,player_ship.health,15))
+             draw_text('Level ' + str(self.level) + ' is Starting!',30,(255,128,0),screen_width/2,100)
+             player_ship.draw(win)
+             
+             if self.level == 5:
+                 draw_text('Number of Bullets has increased to 7!',30,(255,128,0),screen_width/2,130)
              pygame.display.update()
              pygame.time.delay(20)
              x -= 1
-         #pygame.time.delay(10000)
-         print('LevelTransition time over')
-         #win.blit(bg,(100,100))
-         #
+      
     def play(self,player_ship):
         old_frame = 0
         current_frame = 0
@@ -229,8 +214,8 @@ class Game():
             current_frame += 1
             
             if self.num_level_enemies <= 0:
-                self.level_transition()
-                self.enemies = self.set_level()
+                self.level_transition(player_ship)
+                self.enemies = self.set_level(player_ship)
                 self.num_level_enemies = len(self.enemies)
                 self.level += 1
                 if self.num_level_enemies == 0:
@@ -307,7 +292,7 @@ class Game():
     
             keys = pygame.key.get_pressed()
             
-            if keys[pygame.K_SPACE] and len(player_ship.bullets) < 5:
+            if keys[pygame.K_SPACE] and len(player_ship.bullets) < player_ship.num_bullets:
                 if current_frame - old_frame > 3:
                     old_frame = current_frame
                     player_ship.bullets.append(Player_Projectile(player_ship.x + 0.5*player_ship.width - 12,player_ship.y,12,7,small_missile,5,player_ship.dir))
@@ -316,8 +301,10 @@ class Game():
                 player_ship.x += player_ship.vel
             elif keys[pygame.K_LEFT] and player_ship.x - player_ship.vel >= 20:
                 player_ship.x -= player_ship.vel
-            #elif keys[pygame.K_DOWN] and player_ship.y + player_ship.height + player_ship.vel <= screen_height:
-            #    player_ship.y += player_ship.vel
+            elif keys[pygame.K_DOWN] and player_ship.y + player_ship.height + player_ship.vel <= screen_height - 20:
+                player_ship.y += player_ship.vel
+            elif keys[pygame.K_UP] and player_ship.y - player_ship.vel >= 500:
+                player_ship.y -= player_ship.vel
             player_ship.hitbox = (player_ship.x,player_ship.y,player_ship.width,player_ship.height)
     
             self.redraw_game_window(player_ship)
