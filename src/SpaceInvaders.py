@@ -5,12 +5,6 @@ from Enemy import *
 from Projectile import *
 from Player import *
 
-#TODO: check level arrangement again 6, enemies, then 10 enemies
-#Level 1: 5 vertical enemies
-#Level 2: 5 horizontal enemies
-#Level 3: 10 vertical enemies
-#Level 4: 10 horizontal enemies
-#Level 5: 7 Horizontal enemies, 8 vertical enemies
 pygame.init()
 
 screen_width = 700
@@ -58,7 +52,7 @@ def draw_text(text,size,color,x,y):
     
 #j = 0
 class Game():
-    enemies = list()#static variable
+    enemies = list()
     font = pygame.font.SysFont('comicsans', 30, True)
     data = ()
     running = True
@@ -73,7 +67,7 @@ class Game():
         for enemy in self.enemies:
             if enemy.dead == False:
                 enemy.draw(win)
-            #set enemies and their locations get it from a previous commit
+            
             for bullet in enemy.bullets:
                 bullet.draw(win)
             
@@ -103,8 +97,7 @@ class Game():
         self.data = list(file_reader)
         print('Data File Set')
             
-    def set_level(self,player_ship):#works
-        #if there are more than 5 enemies then just set as 5
+    def set_level(self,player_ship):
         enemy_list = []
         left_x_boundary = 50
         top_y_boundary = 50
@@ -121,8 +114,7 @@ class Game():
         j = 0
         while(self.row < len(self.data)):
             if int(self.data[self.row][0]) == self.level:
-                #need to update code
-                print('Row: ' + str(self.row))
+                
                 num_bullets = int(self.data[self.row][3])
                 player_ship.num_bullets = num_bullets
                 num_enemy_type = int(self.data[self.row][2])
@@ -131,7 +123,6 @@ class Game():
                 margin = 20
                 x_sep = 30
                 n = int((screen_width - 2*margin + x_sep)/(x_sep + sprite_width))
-                print('N: ' + str(n))
                 
                 while num_enemy_type > 0:
                     if num_enemy_type <n-1:
@@ -175,23 +166,12 @@ class Game():
                     pygame.quit()
         
     def level_transition(self,player_ship):
-        
-         #top = pygame.Rect(20,20,660,80)
-         #delay_left = pygame.Rect(20,100,240,20)
-         #delay_right = pygame.Rect(440,100,240,20)
-         ##middle = pygame.Rect(20,120,660,380)
-         #ship_left = pygame.Rect(20,500,310,32)
-         #ship_right = pygame.Rect(362,500,318,32)
-         #bottom = pygame.Rect(20,532,660,148)
-         #rectangles = [top,bottom,middle,ship_left,ship_right,delay_left,delay_right]
          score = 'Score: ' + str(player_ship.score)
          health = 'Health: ' + str(player_ship.health)
          x = 150
          win.fill((0,0,0))
          while x > 0:
              
-             #for rectangle in rectangles:
-              #   pygame.draw.rect(win,BLACK,rectangle)
              draw_text(score,30,(0,255,0),45,0)
              draw_text(health,30,(255,0,0),351,0)
              pygame.draw.rect(win,(255,0,0),(450,0,player_ship.health,15))
@@ -237,8 +217,6 @@ class Game():
                 if enemy.check_out_of_bounds():
                     Enemy.move_next_level = True
                     break
-            
-            
                     
             for enemy in self.enemies:
                 if enemy.dead == True:
