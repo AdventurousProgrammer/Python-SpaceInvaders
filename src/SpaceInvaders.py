@@ -4,6 +4,7 @@ import csv
 from Enemy import *
 from Projectile import *
 from Player import *
+import math
 
 #TODO: check level arrangement again 6, enemies, then 10 enemies
 #Level 1: 5 vertical enemies
@@ -101,7 +102,7 @@ class Game():
         level_layout = open('levels.csv')
         file_reader = csv.reader(level_layout)
         self.data = list(file_reader)
-        print('Data File Set')
+        #print('Data File Set')
             
     def set_level(self,player_ship):#works
         #if there are more than 5 enemies then just set as 5
@@ -119,10 +120,15 @@ class Game():
         num_enemy_type = 0
         enemy = Enemy(0,0,32,31,horizontal_enemy,2,2,1,1,5,random.randint(0,6))
         j = 0
+        levels = list()
+        for ii in range(0,len(self.data)):#should only occur once during the execution of the game
+            levels.append(self.data[ii][0])
+        #need to check if this level is redundant, because screen needs to be split up 
+        #if level is redundant, Horizontal Enemy must be split up (work on this later)    
         while(self.row < len(self.data)):
             if int(self.data[self.row][0]) == self.level:
                 #need to update code
-                print('Row: ' + str(self.row))
+                #print('Row: ' + str(self.row))
                 num_bullets = int(self.data[self.row][3])
                 player_ship.num_bullets = num_bullets
                 num_enemy_type = int(self.data[self.row][2])
@@ -131,7 +137,7 @@ class Game():
                 margin = 20
                 x_sep = 30
                 n = int((screen_width - 2*margin + x_sep)/(x_sep + sprite_width))
-                print('N: ' + str(n))
+                
                 
                 while num_enemy_type > 0:
                     if num_enemy_type <n-1:
@@ -148,17 +154,17 @@ class Game():
                         if enemy_type == 'Horizontal_Enemy':
                             x_loc = margin + (k%n)*(sprite_width + x_sep)
                             y_loc = top_y_boundary + j*(sprite_height + y_sep)
-                            enemy = Horizontal_Enemy(x_loc,y_loc,32,31,horizontal_enemy,2,3,1,1,5,random.randint(0,6))
+                            enemy = Horizontal_Enemy(x_loc,y_loc,32,31,horizontal_enemy,2,3,1,1,5,random.randint(0,6),screen_width,screen_height)
                         elif enemy_type == 'Vertical_Enemy':
                             x_loc = left_x_boundary + (k%n)*(sprite_width + x_sep)
                             y_loc = margin + (k%n)*(sprite_height + y_sep) + layer*(30+sprite_height)
-                            enemy = Vertical_Enemy(x_loc,y_loc,32,32,vertical_enemy,3,2,1,1,5,random.randint(0,6))
+                            enemy = Vertical_Enemy(x_loc,y_loc,32,32,vertical_enemy,3,2,1,1,5,random.randint(0,6),screen_width,screen_height)
                         enemy_list.append(enemy)
                     j+=1
-                print(enemy_type)
-                for enemy in enemy_list:
-                    print('X Location: ' + str(enemy.x) + ' Y Location: ' + str(enemy.y))
-                print('================')
+                #print(enemy_type)
+                #for enemy in enemy_list:
+                #    print('X Location: ' + str(enemy.x) + ' Y Location: ' + str(enemy.y))
+                #print('================')
                 layer = j                      #if num_enemy_type > 3:
             else:
                 break
@@ -166,7 +172,7 @@ class Game():
         return enemy_list
            
     def game_over_screen(self):
-        print('Game Over')
+        #print('Game Over')
         while True:
             draw_text('Game Over!',30,(255,0,0),screen_width/2,screen_height/2)
             pygame.display.update()
@@ -176,14 +182,6 @@ class Game():
         
     def level_transition(self,player_ship):
         
-         #top = pygame.Rect(20,20,660,80)
-         #delay_left = pygame.Rect(20,100,240,20)
-         #delay_right = pygame.Rect(440,100,240,20)
-         ##middle = pygame.Rect(20,120,660,380)
-         #ship_left = pygame.Rect(20,500,310,32)
-         #ship_right = pygame.Rect(362,500,318,32)
-         #bottom = pygame.Rect(20,532,660,148)
-         #rectangles = [top,bottom,middle,ship_left,ship_right,delay_left,delay_right]
          score = 'Score: ' + str(player_ship.score)
          health = 'Health: ' + str(player_ship.health)
          x = 150
@@ -219,7 +217,7 @@ class Game():
                 self.num_level_enemies = len(self.enemies)
                 self.level += 1
                 if self.num_level_enemies == 0:
-                    print('Game Over: All Levels Completed')
+                    #print('Game Over: All Levels Completed')
                     self.game_over_screen()
                     
             shoot_flag = random.randint(0,9)
@@ -228,18 +226,33 @@ class Game():
                 self.running = False
                 break
             
-            if Enemy.move_next_level:
-                Enemy.move_next_level = False
+            if Horizontal_Enemy.move_next_level:
+                Horizontal_Enemy.move_next_level = False
                     
+            if Vertical_Enemy.move_next_level:
+                Vertical_Enemy.move_next_level = False
+                
             for enemy in self.enemies:
+                
                 if enemy.dead == True:
                     continue
+                
+                if enemy.type == 'Vertical_Enemy':
+                    for e in self.enemies:
+                        if e.type == 'Vertical_Enemy':
+                            continue
+                        distance = math.sqrt((enemy.y - (e.y + e.height))**2)#need to actually place them further away
+                        if distance <= 10.0:
+                            print('Too Close vertically')
+                            Vertical_Enemy.move_next_level = True
+                            
                 if enemy.check_out_of_bounds():
-                    Enemy.move_next_level = True
-                    break
-            
-            
+                    if enemy.type == 'Vertical_Enemy':
+                        Vertical_Enemy.move_next_level = True
+                    elif enemy.type == 'Horizontal_Enemy':
+                        Horizontal_Enemy.move_next_level = True #each enemy needs 
                     
+                        
             for enemy in self.enemies:
                 if enemy.dead == True:
                     continue
@@ -247,12 +260,12 @@ class Game():
                 if self.overlap_check(enemy,player_ship):
                     if current_frame - old_frame > 3:
                         old_frame = current_frame
-                        player_ship.hit(5)
+                        #player_ship.hit(5)
                 if enemy.shoot == shoot_flag and len(enemy.bullets) < 1 and enemy.dead == False:
                     enemy.bullets.append(Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,enemy_missile,4,'down'))
         
             for enemy in self.enemies:
-                for bullet in enemy.bullets:#block start
+                for bullet in enemy.bullets:
                     if bullet.y > screen_height:
                         enemy.bullets.pop(enemy.bullets.index(bullet))
                         continue
@@ -260,7 +273,7 @@ class Game():
                     bullet.hitbox = (bullet.x + 8,bullet.y,8,bullet.height - 10)
             
                     if self.overlap_check(bullet,player_ship):
-                        player_ship.hit(5)
+                        #player_ship.hit(5)
                         enemy.bullets.pop(enemy.bullets.index(bullet))
                         continue
                     
