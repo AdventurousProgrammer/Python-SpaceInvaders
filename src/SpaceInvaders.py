@@ -123,12 +123,10 @@ class Game():
         levels = list()
         for ii in range(0,len(self.data)):#should only occur once during the execution of the game
             levels.append(self.data[ii][0])
-        #need to check if this level is redundant, because screen needs to be split up 
-        #if level is redundant, Horizontal Enemy must be split up (work on this later)    
+                
         while(self.row < len(self.data)):
             if int(self.data[self.row][0]) == self.level:
-                #need to update code
-                #print('Row: ' + str(self.row))
+    
                 num_bullets = int(self.data[self.row][3])
                 player_ship.num_bullets = num_bullets
                 num_enemy_type = int(self.data[self.row][2])
