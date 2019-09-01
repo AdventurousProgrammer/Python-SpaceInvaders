@@ -3,7 +3,7 @@ import pygame
 class Enemy(object):
     move_next_level = False
     
-    def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot):
+    def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height):
         self.x = x 
         self.y = y
         self.width = width
@@ -17,6 +17,10 @@ class Enemy(object):
         self.score = score
         self.shoot = shoot
         self.bullets = list()
+        self.right_boundary = screen_width - 20
+        self.left_boundary = 20
+        self.top_boundary = 20
+        self.bottom_boundary = screen_height - 20
         
     def draw(self,win):
         win.blit(self.image,(self.x,self.y))
@@ -26,12 +30,8 @@ class Enemy(object):
         player_ship.score += self.score
         
 class Horizontal_Enemy(Enemy):
-    def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height):
-        super().__init__(x, y, width, height, image,x_vel,y_vel,x_dir,y_dir,score,shoot)
-        self.right_boundary = screen_width - 20
-        self.left_boundary = 20
-        self.top_boundary = 20
-        self.bottom_boundary = (screen_height/2) - 20
+    def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot):
+        super().__init__(x, y, width, height, image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height)
         self.hitbox = (self.x + 8,self.y + 19,self.width - 16,11)
         self.type = 'Horizontal_Enemy'
         
@@ -43,7 +43,6 @@ class Horizontal_Enemy(Enemy):
         else:
             return False
     
-
     def move(self):
         if self.y_dir == -1 and self.y <= self.top_boundary:
             self.y_dir*=-1
@@ -62,11 +61,7 @@ class Horizontal_Enemy(Enemy):
         
 class Vertical_Enemy(Enemy):
     def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height):
-        super().__init__(x, y, width, height, image,x_vel,y_vel,x_dir,y_dir,score,shoot)
-        self.right_boundary = screen_width - 20
-        self.left_boundary = 20
-        self.top_boundary = (screen_height/2) + 20
-        self.bottom_boundary = screen_height - 20
+        super().__init__(x, y, width, height, image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height)
         self.hitbox = (self.x,self.y,self.width,self.height)
         self.type = 'Vertical_Enemy'
         
@@ -90,3 +85,5 @@ class Vertical_Enemy(Enemy):
             return True
         return False
     
+class Multiple_Movement_Enemy(Enemy):
+    def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height):
