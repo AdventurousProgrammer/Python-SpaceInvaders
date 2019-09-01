@@ -159,6 +159,38 @@ class Game():
                             x_loc = left_x_boundary + (k%n)*(sprite_width + x_sep)
                             y_loc = margin + (k%n)*(sprite_height + y_sep) + layer*(30+sprite_height)
                             enemy = Vertical_Enemy(x_loc,y_loc,32,32,vertical_enemy,3,2,1,1,5,random.randint(0,6),screen_width,screen_height)
+                        elif enemy_type == 'Multiple_Movement_Enemy':
+                            x_loc = margin + (k%n)*(sprite_width + x_sep)
+                            y_loc = top_y_boundary + j*(sprite_height + y_sep)
+                            image = pygame.image.load('enemy_2.png')
+                            width = 32
+                            height = 32
+                            x_dir = 0 
+                            y_dir = 0
+                            dir = k%8
+                            
+                            if dir == 0:
+                                x_dir = 1              
+                            elif dir == 1:
+                                x_dir = 1
+                                y_dir = -1
+                            elif dir == 2:
+                                y_dir = -1
+                            elif dir == 3:
+                                x_dir = -1
+                                y_dir = -1
+                            elif dir == 4:
+                                x_dir = -1
+                            elif dir == 5:
+                                x_dir = -1
+                                y_dir = 1
+                            elif dir == 6:
+                                y_dir = 1
+                            elif dir == 7:
+                                x_dir == 1
+                                y_dir == 1
+                            
+                            enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height)
                         enemy_list.append(enemy)
                     j+=1
                 #print(enemy_type)

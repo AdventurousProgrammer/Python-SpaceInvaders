@@ -92,3 +92,37 @@ class Multiple_Movement_Enemy(Enemy):
         self.type = 'Multiple_Movement_Enemy'
         
     def move(self):
+        will_be_within_left = self.x - self.x_vel >= 20
+        will_be_within_right = self.x + self.width + self.x_vel <= screen_width - 20
+        will_be_within_top = self.y - self.y_vel >= 20
+        will_be_within_bottom = self.y + self.height + self.y_vel <= screen_height
+        
+        right = will_be_within_right and self.x_dir == 1 
+        up_right = will_be_within_right and will_be_within_top and self.x_dir == 1 and self.y_dir == -1
+        up = will_be_within_top and self.y_dir == -1
+        up_left = will_be_within_left and will_be_within_top and self.x_dir == -1 and self.y_dir == -1
+        left = will_be_within_left and self.x_dir == -1
+        down_left = will_be_within_left and will_be_within_bottom and self.x_dir == -1 and self.y_dir == 1 
+        down = will_be_within_bottom and self.y_dir == 1
+        down_right = will_be_within_right and self.x_dir == 1 and will_be_within_bottom and self.y_dir == 1
+        
+        if right:
+            self.x+=self.x_vel 
+        elif up_right:
+            self.x+=self.x_vel
+            self.y-=self.y_vel
+        elif up:
+            self.y-=self.y_vel
+        elif up_left:
+            self.x-=self.x_vel
+            self.y-=self.y_vel
+        elif left:
+            self.x-=self.x_vel
+        elif down_left:
+            self.x-=self.x_vel
+            self.y+=self.y_vel
+        elif down:
+            self.y+=self.y_vel
+        elif down_right:
+            self.x+=self.x_vel
+            self.y+=self.y_vel            
