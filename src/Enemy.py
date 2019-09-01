@@ -87,3 +87,8 @@ class Vertical_Enemy(Enemy):
     
 class Multiple_Movement_Enemy(Enemy):
     def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height):
+        super().__init__(x, y, width, height, image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height)
+        self.hitbox = ()
+        self.type = 'Multiple_Movement_Enemy'
+        
+    def move(self):
