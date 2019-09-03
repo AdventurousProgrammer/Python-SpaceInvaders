@@ -118,7 +118,7 @@ class Game():
         sprite_height = 31
         enemy_type = ''
         num_enemy_type = 0
-        enemy = Enemy(0,0,32,31,horizontal_enemy,2,2,1,1,5,random.randint(0,6))
+        enemy = Enemy(0,0,32,31,horizontal_enemy,2,2,1,1,5,random.randint(0,6),screen_width,screen_height)
         j = 0
         levels = list()
         for ii in range(0,len(self.data)):#should only occur once during the execution of the game
@@ -167,8 +167,8 @@ class Game():
                             height = 32
                             x_dir = 0 
                             y_dir = 0
-                            dir = k%8
-                            
+                            dir = 7
+                            #k%8
                             if dir == 0:
                                 x_dir = 1              
                             elif dir == 1:
@@ -187,9 +187,13 @@ class Game():
                             elif dir == 6:
                                 y_dir = 1
                             elif dir == 7:
-                                x_dir == 1
-                                y_dir == 1
-                            
+                                x_dir = 1
+                                y_dir = 1
+                                
+                            x_vel = 3
+                            y_vel = 3
+                            score = 7
+                            shoot = random.randint(0,9)
                             enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height)
                         enemy_list.append(enemy)
                     j+=1
@@ -278,11 +282,11 @@ class Game():
                             print('Too Close vertically')
                             Vertical_Enemy.move_next_level = True
                             
-                if enemy.check_out_of_bounds():
-                    if enemy.type == 'Vertical_Enemy':
-                        Vertical_Enemy.move_next_level = True
-                    elif enemy.type == 'Horizontal_Enemy':
-                        Horizontal_Enemy.move_next_level = True #each enemy needs 
+                #if enemy.check_out_of_bounds():
+                #    if enemy.type == 'Vertical_Enemy':
+                #        Vertical_Enemy.move_next_level = True
+                #    elif enemy.type == 'Horizontal_Enemy':
+                #        Horizontal_Enemy.move_next_level = True #each enemy needs 
                     
                         
             for enemy in self.enemies:

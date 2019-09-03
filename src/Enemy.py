@@ -88,41 +88,42 @@ class Vertical_Enemy(Enemy):
 class Multiple_Movement_Enemy(Enemy):
     def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height):
         super().__init__(x, y, width, height, image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height)
-        self.hitbox = ()
+        self.hitbox = (x,y,width,height)
         self.type = 'Multiple_Movement_Enemy'
-        
     def move(self):
-        will_be_within_left = self.x - self.x_vel >= 20
-        will_be_within_right = self.x + self.width + self.x_vel <= screen_width - 20
-        will_be_within_top = self.y - self.y_vel >= 20
-        will_be_within_bottom = self.y + self.height + self.y_vel <= screen_height
+        will_be_within_left = self.x - self.x_vel >= self.left_boundary
+        will_be_within_right = self.x + self.width + self.x_vel <= self.right_boundary
+        will_be_within_top = self.y - self.y_vel >= self.top_boundary
+        will_be_within_bottom = self.y + self.height + self.y_vel <= self.bottom_boundary
         
-        right = will_be_within_right and self.x_dir == 1 
+        right = will_be_within_right and self.x_dir == 1 and self.y_dir == 0
         up_right = will_be_within_right and will_be_within_top and self.x_dir == 1 and self.y_dir == -1
-        up = will_be_within_top and self.y_dir == -1
+        up = will_be_within_top and self.y_dir == -1 and self.x_dir == 0
         up_left = will_be_within_left and will_be_within_top and self.x_dir == -1 and self.y_dir == -1
-        left = will_be_within_left and self.x_dir == -1
+        left = will_be_within_left and self.x_dir == -1 and self.y_dir == 0
         down_left = will_be_within_left and will_be_within_bottom and self.x_dir == -1 and self.y_dir == 1 
-        down = will_be_within_bottom and self.y_dir == 1
+        down = will_be_within_bottom and self.y_dir == 1 and self.x_dir == 0
         down_right = will_be_within_right and self.x_dir == 1 and will_be_within_bottom and self.y_dir == 1
-        
+#        print('Down Right: ' + str(down_right))
         if right:
-            self.x+=self.x_vel 
+            self.x+=self.x_vel*self.x_dir 
         elif up_right:
-            self.x+=self.x_vel
-            self.y-=self.y_vel
+            self.x+=self.x_vel*self.x_dir
+            self.y+=self.y_vel*self.y_dir
         elif up:
-            self.y-=self.y_vel
+            self.y+=self.y_vel*self.y_dir
         elif up_left:
-            self.x-=self.x_vel
-            self.y-=self.y_vel
+            self.x+=self.x_vel*self.x_dir
+            self.y+=self.y_vel*self.y_dir
         elif left:
-            self.x-=self.x_vel
+            self.x+=self.x_vel*self.x_dir
         elif down_left:
-            self.x-=self.x_vel
-            self.y+=self.y_vel
+            self.x+=self.x_vel*self.x_dir
+            self.y+=self.y_vel*self.y_dir
         elif down:
-            self.y+=self.y_vel
+            self.y+=self.y_vel*self.y_dir
         elif down_right:
-            self.x+=self.x_vel
-            self.y+=self.y_vel            
+            self.x+=self.x_vel*self.x_dir
+            self.y+=self.y_vel*self.y_dir
+            
+        self.hitbox = (self.x,self.y,self.width,self.height)            
