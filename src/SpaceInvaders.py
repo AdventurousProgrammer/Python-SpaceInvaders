@@ -268,26 +268,20 @@ class Game():
                     
             if Vertical_Enemy.move_next_level:
                 Vertical_Enemy.move_next_level = False
+            move_flag = False
             
             for enemy in self.enemies:
-                if 
-            if Multiple_Movement_Enemy.move_next_level:
-                Multiple_Movement_Enemy.move_next_level = False
-                
+                if move_flag:
+                    break
+                move_flag = enemy.check_out_of_bounds()
+            
             for enemy in self.enemies:
+                if move_flag:
+                    enemy.move_next_level()
+                    
+            
                 
-                if enemy.dead == True:
-                    continue
-                
-                if enemy.type == 'Vertical_Enemy':
-                    for e in self.enemies:
-                        if e.type == 'Vertical_Enemy':
-                            continue
-                        distance = math.sqrt((enemy.y - (e.y + e.height))**2)#need to actually place them further away
-                        if distance <= 10.0:
-                            print('Too Close vertically')
-                            Vertical_Enemy.move_next_level = True
-                            
+            
                 #if enemy.check_out_of_bounds():
                 #    if enemy.type == 'Vertical_Enemy':
                 #        Vertical_Enemy.move_next_level = True

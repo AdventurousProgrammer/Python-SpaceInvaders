@@ -22,8 +22,26 @@ class Enemy(object):
         self.top_boundary = 20
         self.bottom_boundary = screen_height - 20
         self.move_next_level = False
+    
+    def right_out_of_bounds(self):
+        return self.x + self.width >= self.right_boundary
+    
+    def left_out_of_bounds(self):
+        return self.x <= self.left_boundary
+    
+    def top_out_of_bounds(self):
+        return self.y <= self.top_boundary
+    
+    def bottom_out_of_bounds(self):
+        return self.y + self.height >= self.bottom_boundary
+    
+    def check_out_of_bounds(self): 
+        if not self.right_out_of_bounds() and not self.left_out_of_bounds() and not self.top_out_of_bounds() and not self.bottom_out_of_bounds():
+            return False #could cause disorder
+        return True
         
     def move(self):
+        #need to move on to the next level first
         will_be_within_left = self.x - self.x_vel >= self.left_boundary
         will_be_within_right = self.x + self.width + self.x_vel <= self.right_boundary
         will_be_within_top = self.y - self.y_vel >= self.top_boundary
@@ -60,7 +78,7 @@ class Enemy(object):
             self.y+=self.y_vel*self.y_dir
             
         self.hitbox = (self.x,self.y,self.width,self.height)
-        
+    
     def draw(self,win):
         win.blit(self.image,(self.x,self.y))
         pygame.draw.rect(win,(255,0,0),self.hitbox,2)
@@ -131,30 +149,6 @@ class Multiple_Movement_Enemy(Enemy):
         self.type = 'Multiple_Movement_Enemy'
     
         
-    def right_out_of_bounds(self):
-        return self.x + self.width >= self.right_boundary
     
-    def left_out_of_bounds(self):
-        return self.x <= self.left_boundary
-    
-    def top_out_of_bounds(self):
-        return self.y <= self.top_boundary
-    
-    def bottom_out_of_bounds(self):
-        return self.y + self.height >= self.bottom_boundary
-    
-    def check_out_of_bounds(self):
-        # if direction is up, and is out of bounds, set direction to down,
-        #case: up right, and only up is out of bounds, then down right,
-        #case: more than 1 direction changing, more than 1 side being out of bounds 
-        if self.x_dir == 1 and self.right_out_of_bounds() and not Multiple_Movement_Enemy.move_next_level:
-            self.x_dir*=-1
-        elif self.x_dir == -1 and self.left_out_of_bounds() and not Multiple_Movement_Enemy.move_next_level:
-            self.x_dir*=-1
-        if self.y_dir == -1 and self.bottom_out_of_bounds() and not Multiple_Movement_Enemy.move_next_level:
-            self.y_dir*=-1
-        elif self.y_dir == 1 and self.top_out_of_bounds() and not Multiple_Movement_Enemy.move_next_level:
-            self.y_dir*=-1
-        
         
                  
