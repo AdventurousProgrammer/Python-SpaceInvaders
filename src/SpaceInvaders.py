@@ -5,7 +5,7 @@ from Enemy import *
 from Projectile import *
 from Player import *
 import math
-from builtins import False
+
 
 #TODO: check level arrangement again 6, enemies, then 10 enemies
 #Level 1: 5 vertical enemies
@@ -263,11 +263,6 @@ class Game():
                 self.running = False
                 break
             
-            if Horizontal_Enemy.move_next_level:
-                Horizontal_Enemy.move_next_level = False
-                    
-            if Vertical_Enemy.move_next_level:
-                Vertical_Enemy.move_next_level = False
             move_flag = False
             
             for enemy in self.enemies:
@@ -277,7 +272,8 @@ class Game():
             
             for enemy in self.enemies:
                 if move_flag:
-                    enemy.move_next_level()
+                    print('Enemy Type: ' + str(type(enemy)))
+                    enemy.descend_next_level()
                     
             
                 
