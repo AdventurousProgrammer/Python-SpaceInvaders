@@ -5,6 +5,7 @@ from Enemy import *
 from Projectile import *
 from Player import *
 import math
+from builtins import False
 
 #TODO: check level arrangement again 6, enemies, then 10 enemies
 #Level 1: 5 vertical enemies
@@ -267,6 +268,11 @@ class Game():
                     
             if Vertical_Enemy.move_next_level:
                 Vertical_Enemy.move_next_level = False
+            
+            for enemy in self.enemies:
+                if 
+            if Multiple_Movement_Enemy.move_next_level:
+                Multiple_Movement_Enemy.move_next_level = False
                 
             for enemy in self.enemies:
                 
@@ -288,7 +294,7 @@ class Game():
                 #    elif enemy.type == 'Horizontal_Enemy':
                 #        Horizontal_Enemy.move_next_level = True #each enemy needs 
                     
-                        
+            
             for enemy in self.enemies:
                 if enemy.dead == True:
                     continue
