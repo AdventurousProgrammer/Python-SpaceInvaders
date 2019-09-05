@@ -168,7 +168,7 @@ class Game():
                             height = 32
                             x_dir = 0 
                             y_dir = 0
-                            dir = 7
+                            dir = 0
                             #k%8
                             if dir == 0:
                                 x_dir = 1              
@@ -272,7 +272,7 @@ class Game():
             
             for enemy in self.enemies:
                 if move_flag:
-                    print('Enemy Type: ' + str(type(enemy)))
+                    #print('Enemy Type: ' + str(type(enemy)))
                     enemy.descend_next_level()
                     
             

@@ -80,10 +80,10 @@ class Enemy(object):
         self.hitbox = (self.x,self.y,self.width,self.height)
     
     def descend_next_level(self):
-        if self.right_out_of_bounds() or self.left_out_of_bounds():
+        if :
             self.x_dir*=-1
             self.y+=self.y_vel*self.y_dir
-            
+            #here is where the problem is, need to check direction
         if self.top_out_of_bounds() or self.bottom_out_of_bounds():
             self.y_dir*=-1
             self.x+=self.x_dir*self.x_vel
