@@ -75,6 +75,7 @@ class Game():
         for enemy in self.enemies:
             if enemy.dead == False:
                 enemy.draw(win)
+            print('Right End Location: ' + str(enemy.x + enemy.width))
             #set enemies and their locations get it from a previous commit
             for bullet in enemy.bullets:
                 bullet.draw(win)
@@ -263,17 +264,18 @@ class Game():
                 self.running = False
                 break
             
+            directions = list()
             move_flag = False
-            
             for enemy in self.enemies:
                 if move_flag:
                     break
-                move_flag = enemy.check_out_of_bounds()
-            
+                directions = enemy.check_out_of_bounds()
+                if len(directions) > 0:
+                    move_flag = True
             for enemy in self.enemies:
                 if move_flag:
                     #print('Enemy Type: ' + str(type(enemy)))
-                    enemy.descend_next_level()
+                    enemy.descend_next_level(directions)
                     
             
                 

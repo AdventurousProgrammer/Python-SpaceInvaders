@@ -24,21 +24,31 @@ class Enemy(object):
         self.move_next_level = False
     
     def right_out_of_bounds(self):
-        return self.x + self.width >= self.right_boundary
+        return self.x + self.width + self.x_vel>= self.right_boundary
     
     def left_out_of_bounds(self):
-        return self.x <= self.left_boundary
+        return self.x - self.x_vel<= self.left_boundary
     
     def top_out_of_bounds(self):
-        return self.y <= self.top_boundary
+        return self.y - self.y_vel<= self.top_boundary
     
     def bottom_out_of_bounds(self):
-        return self.y + self.height >= self.bottom_boundary
+        return self.y + self.height + self.y_vel>= self.bottom_boundary
     
     def check_out_of_bounds(self): 
-        if not self.right_out_of_bounds() and not self.left_out_of_bounds() and not self.top_out_of_bounds() and not self.bottom_out_of_bounds():
-            return False #could cause disorder
-        return True
+        #find out direction to move next layer and return that as tuple
+        directions = list()
+        
+        if self.right_out_of_bounds():
+            directions.append('left')
+        elif self.left_out_of_bounds():
+            directions.append('right')
+        if self.top_out_of_bounds():
+            directions.append('down')
+        elif self.bottom_out_of_bounds():
+            directions.append('up')
+            
+        return directions
         
     def move(self):
         #need to move on to the next level first
@@ -79,14 +89,14 @@ class Enemy(object):
             
         self.hitbox = (self.x,self.y,self.width,self.height)
     
-    def descend_next_level(self):
-        if :
-            self.x_dir*=-1
-            self.y+=self.y_vel*self.y_dir
-            #here is where the problem is, need to check direction
-        if self.top_out_of_bounds() or self.bottom_out_of_bounds():
-            self.y_dir*=-1
-            self.x+=self.x_dir*self.x_vel
+    def descend_next_level(self,directions):
+        for direction in directions:
+            if direction == 'right' or direction == 'left':
+                self.x_dir*=-1
+                self.y+=self.y_vel*self.y_dir
+            else:
+                self.y_dir*=-1
+                self.x+=self.x_vel*self.x_dir
             
         self.hitbox = (self.x,self.y,self.width,self.height)
         
