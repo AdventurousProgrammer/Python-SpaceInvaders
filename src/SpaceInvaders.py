@@ -6,13 +6,6 @@ from Projectile import *
 from Player import *
 import math
 
-
-#TODO: check level arrangement again 6, enemies, then 10 enemies
-#Level 1: 5 vertical enemies
-#Level 2: 5 horizontal enemies
-#Level 3: 10 vertical enemies
-#Level 4: 10 horizontal enemies
-#Level 5: 7 Horizontal enemies, 8 vertical enemies
 pygame.init()
 
 screen_width = 700
@@ -54,7 +47,6 @@ def draw_text(text,size,color,x,y):
     text_rect.midtop = (x,y)
     win.blit(text_surface,text_rect)
     
-#j = 0
 class Game():
     enemies = list()#static variable
     font = pygame.font.SysFont('comicsans', 30, True)
@@ -71,8 +63,6 @@ class Game():
         for enemy in self.enemies:
             if enemy.dead == False:
                 enemy.draw(win)
-            print('Right End Location: ' + str(enemy.x + enemy.width))
-            #set enemies and their locations get it from a previous commit
             for bullet in enemy.bullets:
                 bullet.draw(win)
             
@@ -87,7 +77,6 @@ class Game():
         pygame.display.update()
     
     def overlap_check(self,sprite1,sprite2):
-        #add grazing damage
         top_in = sprite1.hitbox[1] > sprite2.hitbox[1] and sprite1.hitbox[1] < sprite2.hitbox[1] + sprite2.hitbox[3]
         bottom_in = sprite1.hitbox[1] + sprite1.hitbox[3] > sprite2.hitbox[1] and sprite1.hitbox[1] + sprite1.hitbox[3] < sprite2.hitbox[1] + sprite2.hitbox[3]
         left_in = sprite1.hitbox[0] > sprite2.hitbox[0] and sprite1.hitbox[0] < sprite2.hitbox[0] + sprite2.hitbox[2]
@@ -100,10 +89,8 @@ class Game():
         level_layout = open('levels.csv')
         file_reader = csv.reader(level_layout)
         self.data = list(file_reader)
-        #print('Data File Set')
             
     def set_level(self,player_ship):#works
-        #if there are more than 5 enemies then just set as 5
         enemy_list = []
         left_x_boundary = 50
         top_y_boundary = 50
@@ -121,12 +108,9 @@ class Game():
         levels = list()
         for ii in range(0,len(self.data)):#should only occur once during the execution of the game
             levels.append(self.data[ii][0])
-        #need to check if this level is redundant, because screen needs to be split up 
-        #if level is redundant, Horizontal Enemy must be split up (work on this later)    
+        
         while(self.row < len(self.data)):
             if int(self.data[self.row][0]) == self.level:
-                #need to update code
-                #print('Row: ' + str(self.row))
                 num_bullets = int(self.data[self.row][3])
                 player_ship.num_bullets = num_bullets
                 num_enemy_type = int(self.data[self.row][2])
@@ -135,7 +119,6 @@ class Game():
                 margin = 20
                 x_sep = 30
                 n = int((screen_width - 2*margin + x_sep)/(x_sep + sprite_width))
-                
                 
                 while num_enemy_type > 0:
                     if num_enemy_type <n-1:
@@ -169,6 +152,7 @@ class Game():
                             height = 32
                             x_dir = 0 
                             y_dir = 0
+                            dir = random.randint(0,8)
                             
                             if dir == 0:
                                 x_dir = 1              
@@ -196,20 +180,17 @@ class Game():
                             score = 7
                             shoot = random.randint(0,9)
                             enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height)
+                        elif enemy_type == 'Erratic_Movement_Enemy':
+                            pass    
                         enemy_list.append(enemy)
                     j+=1
-                #print(enemy_type)
-                #for enemy in enemy_list:
-                #    print('X Location: ' + str(enemy.x) + ' Y Location: ' + str(enemy.y))
-                #print('================')
-                layer = j                      #if num_enemy_type > 3:
+                layer = j                      
             else:
                 break
         
         return enemy_list
            
     def game_over_screen(self):
-        #print('Game Over')
         while True:
             draw_text('Game Over!',30,(255,0,0),screen_width/2,screen_height/2)
             pygame.display.update()
@@ -217,16 +198,12 @@ class Game():
                 if event.type == pygame.QUIT:
                     pygame.quit()
         
-    def level_transition(self,player_ship):
-        
+    def level_transition(self,player_ship):       
          score = 'Score: ' + str(player_ship.score)
          health = 'Health: ' + str(player_ship.health)
          x = 150
          win.fill((0,0,0))
          while x > 0:
-             
-             #for rectangle in rectangles:
-              #   pygame.draw.rect(win,BLACK,rectangle)
              draw_text(score,30,(0,255,0),45,0)
              draw_text(health,30,(255,0,0),351,0)
              pygame.draw.rect(win,(255,0,0),(450,0,player_ship.health,15))
@@ -254,7 +231,6 @@ class Game():
                 self.num_level_enemies = len(self.enemies)
                 self.level += 1
                 if self.num_level_enemies == 0:
-                    #print('Game Over: All Levels Completed')
                     self.game_over_screen()
                     
             shoot_flag = random.randint(0,9)
@@ -273,19 +249,8 @@ class Game():
                     move_flag = True
             for enemy in self.enemies:
                 if move_flag:
-                    #print('Enemy Type: ' + str(type(enemy)))
                     enemy.descend_next_level(directions)
                     
-            
-                
-            
-                #if enemy.check_out_of_bounds():
-                #    if enemy.type == 'Vertical_Enemy':
-                #        Vertical_Enemy.move_next_level = True
-                #    elif enemy.type == 'Horizontal_Enemy':
-                #        Horizontal_Enemy.move_next_level = True #each enemy needs 
-                    
-            
             for enemy in self.enemies:
                 if enemy.dead == True:
                     continue

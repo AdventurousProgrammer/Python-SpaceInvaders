@@ -1,4 +1,5 @@
 import pygame
+import random
 
 class Enemy(object):
     move_next_level = False
@@ -23,6 +24,34 @@ class Enemy(object):
         self.bottom_boundary = screen_height - 20
         self.move_next_level = False
     
+    def set_direction(self,dir):
+        x_dir = 0 
+        y_dir = 0
+                            
+        if dir == 0:
+            x_dir = 1              
+        elif dir == 1:
+            x_dir = 1
+            y_dir = -1
+        elif dir == 2:
+            y_dir = -1
+        elif dir == 3:
+            x_dir = -1
+            y_dir = -1
+        elif dir == 4:
+            x_dir = -1
+        elif dir == 5:
+            x_dir = -1
+            y_dir = 1
+        elif dir == 6:
+            y_dir = 1
+        elif dir == 7:
+            x_dir = 1
+            y_dir = 1
+            
+        self.x_dir = x_dir
+        self.y_dir = y_dir
+        
     def right_out_of_bounds(self):
         return self.x + self.width + self.x_vel>= self.right_boundary
     
@@ -111,4 +140,18 @@ class Multiple_Movement_Enemy(Enemy):
     def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height):
         super().__init__(x, y, width, height, image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height)
         self.hitbox = (x,y,width,height)
-        self.type = 'Multiple_Movement_Enemy'            
+        self.type = 'Multiple_Movement_Enemy'
+        
+class Erratic_Enemy(Enemy):           
+    def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height):
+        super().__init__(x, y, width, height, image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height)
+        self.hitbox = (x,y,width,height)
+        self.type = 'Erratic_Enemy' 
+    
+    
+        
+    def move(self):
+        direction = random.randint(0,7)
+        super().set_direction(direction)
+        super().move()
+        
