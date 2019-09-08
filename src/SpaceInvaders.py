@@ -34,13 +34,9 @@ small_missile = pygame.image.load('small_missile.png')
 
 num_small_enemies = 6
 
-horizontal_enemy = pygame.image.load('enemy_1.png')
-horizontal_enemy_width = 32
-horizontal_enemy_height = 31
-
-vertical_enemy = pygame.image.load('enemy_2.png')
-vertical_enemy_width = 32
-vertical_enemy_height = 32
+multiple_movement_enemy_image = pygame.image.load('enemy_2.png')
+enemy_width = 32
+enemy_height = 31
 
 enemy_missile = pygame.image.load('enemy_missile.png')
 
@@ -120,7 +116,7 @@ class Game():
         sprite_height = 31
         enemy_type = ''
         num_enemy_type = 0
-        enemy = Enemy(0,0,32,31,horizontal_enemy,2,2,1,1,5,random.randint(0,6),screen_width,screen_height)
+        enemy = Enemy(0,0,32,31,multiple_movement_enemy_image,2,2,1,1,5,random.randint(0,6),screen_width,screen_height)
         j = 0
         levels = list()
         for ii in range(0,len(self.data)):#should only occur once during the execution of the game
@@ -151,26 +147,29 @@ class Game():
                         margin = int(screen_width - (n-2)*(x_sep) - (n-1)*(sprite_width))/2
                         num_enemies = n-1
                         num_enemy_type -= n-1
-                            
+                        
+                    dir = 0  
+                    image = pygame.image.load('enemy_2.png') 
+                         
                     for k in range(0,num_enemies):
                         if enemy_type == 'Horizontal_Enemy':
                             x_loc = margin + (k%n)*(sprite_width + x_sep)
                             y_loc = top_y_boundary + j*(sprite_height + y_sep)
-                            enemy = Horizontal_Enemy(x_loc,y_loc,32,31,horizontal_enemy,2,3,1,1,5,random.randint(0,6),screen_width,screen_height)
+                            enemy = Horizontal_Enemy(x_loc,y_loc,32,31,enemy,2,3,1,1,5,random.randint(0,6),screen_width,screen_height)
+                            dir = 0
                         elif enemy_type == 'Vertical_Enemy':
                             x_loc = left_x_boundary + (k%n)*(sprite_width + x_sep)
                             y_loc = margin + (k%n)*(sprite_height + y_sep) + layer*(30+sprite_height)
                             enemy = Vertical_Enemy(x_loc,y_loc,32,32,vertical_enemy,3,2,1,1,5,random.randint(0,6),screen_width,screen_height)
+                            dir = 2
                         elif enemy_type == 'Multiple_Movement_Enemy':
                             x_loc = margin + (k%n)*(sprite_width + x_sep)
                             y_loc = top_y_boundary + j*(sprite_height + y_sep)
-                            image = pygame.image.load('enemy_2.png')
                             width = 32
                             height = 32
                             x_dir = 0 
                             y_dir = 0
-                            dir = 0
-                            #k%8
+                            
                             if dir == 0:
                                 x_dir = 1              
                             elif dir == 1:
