@@ -150,36 +150,14 @@ class Game():
                             y_loc = top_y_boundary + j*(sprite_height + y_sep)
                             width = 32
                             height = 32
-                            x_dir = 0 
-                            y_dir = 0
-                            dir = random.randint(0,8)
-                            
-                            if dir == 0:
-                                x_dir = 1              
-                            elif dir == 1:
-                                x_dir = 1
-                                y_dir = -1
-                            elif dir == 2:
-                                y_dir = -1
-                            elif dir == 3:
-                                x_dir = -1
-                                y_dir = -1
-                            elif dir == 4:
-                                x_dir = -1
-                            elif dir == 5:
-                                x_dir = -1
-                                y_dir = 1
-                            elif dir == 6:
-                                y_dir = 1
-                            elif dir == 7:
-                                x_dir = 1
-                                y_dir = 1
-                                
+                            dir = 7 #random.randint(0,8)
                             x_vel = 3
                             y_vel = 3
                             score = 7
                             shoot = random.randint(0,9)
-                            enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height)
+                            enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height)
+                            enemy.set_direction(dir)
+                           
                         elif enemy_type == 'Erratic_Movement_Enemy':
                             pass    
                         enemy_list.append(enemy)
