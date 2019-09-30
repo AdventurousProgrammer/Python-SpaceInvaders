@@ -135,29 +135,19 @@ class Game():
                     image = pygame.image.load('enemy_2.png') 
                          
                     for k in range(0,num_enemies):
-                        if enemy_type == 'Horizontal_Enemy':
-                            x_loc = margin + (k%n)*(sprite_width + x_sep)
-                            y_loc = top_y_boundary + j*(sprite_height + y_sep)
-                            enemy = Horizontal_Enemy(x_loc,y_loc,32,31,enemy,2,3,1,1,5,random.randint(0,6),screen_width,screen_height)
-                            dir = 0
-                        elif enemy_type == 'Vertical_Enemy':
-                            x_loc = left_x_boundary + (k%n)*(sprite_width + x_sep)
-                            y_loc = margin + (k%n)*(sprite_height + y_sep) + layer*(30+sprite_height)
-                            enemy = Vertical_Enemy(x_loc,y_loc,32,32,vertical_enemy,3,2,1,1,5,random.randint(0,6),screen_width,screen_height)
-                            dir = 2
-                        elif enemy_type == 'Multiple_Movement_Enemy':
+                        if enemy_type == 'Multiple_Movement_Enemy':
                             x_loc = margin + (k%n)*(sprite_width + x_sep)
                             y_loc = top_y_boundary + j*(sprite_height + y_sep)
                             width = 32
                             height = 32
                             #dir = 0 #random.randint(0,8)
                             x_vel = 3
-                            y_vel = 20
+                            y_vel = 2
                             score = 7
                             shoot = random.randint(0,9)
                             enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height)
                             enemy.set_direction(dir)
-                            dir += 4
+                            dir += 1
                         elif enemy_type == 'Erratic_Movement_Enemy':
                             pass    
                         enemy_list.append(enemy)
