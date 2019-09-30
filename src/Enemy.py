@@ -23,7 +23,8 @@ class Enemy(object):
         self.top_boundary = 20
         self.bottom_boundary = screen_height - 20
         self.move_next_level = False
-    
+        self.switch = 1
+        
     def set_direction(self,dir):
         x_dir = 0 
         y_dir = 0
@@ -122,10 +123,14 @@ class Enemy(object):
         for direction in directions:
             if direction == 'right' or direction == 'left':
                 self.x_dir*=-1
-                self.y+=self.y_vel*self.y_dir
+                if self.top_out_of_bounds() or self.bottom_out_of_bounds():
+                    self.switch *= -1
+                self.y+=self.y_vel*self.switch
             else:
                 self.y_dir*=-1
-                self.x+=self.x_vel*self.x_dir
+                if self.right_out_of_bounds() or self.left_out_of_bounds():
+                    self.switch *= -1
+                self.x+=self.x_vel*self.switch
             
         self.hitbox = (self.x,self.y,self.width,self.height)
         

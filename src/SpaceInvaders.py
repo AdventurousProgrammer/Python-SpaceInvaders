@@ -150,22 +150,24 @@ class Game():
                             y_loc = top_y_boundary + j*(sprite_height + y_sep)
                             width = 32
                             height = 32
-                            dir = 7 #random.randint(0,8)
+                            #dir = 0 #random.randint(0,8)
                             x_vel = 3
-                            y_vel = 3
+                            y_vel = 20
                             score = 7
                             shoot = random.randint(0,9)
                             enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height)
                             enemy.set_direction(dir)
-                           
+                            dir += 4
                         elif enemy_type == 'Erratic_Movement_Enemy':
                             pass    
                         enemy_list.append(enemy)
+                        
                     j+=1
                 layer = j                      
             else:
                 break
-        
+        for enemy in enemy_list:
+            print('X Direction: ' + str(enemy.x_dir) + ' Y Direction: ' + str(enemy.y_dir))
         return enemy_list
            
     def game_over_screen(self):
@@ -223,12 +225,12 @@ class Game():
                 if move_flag:
                     break
                 directions = enemy.check_out_of_bounds()
-                if len(directions) > 0:
-                    move_flag = True
+                if len(directions) > 0:#not being true, even at edge
+                    move_flag = True#not reaching
             for enemy in self.enemies:
-                if move_flag:
+                if move_flag:#not being set true
                     enemy.descend_next_level(directions)
-                    
+                    #not getting executed
             for enemy in self.enemies:
                 if enemy.dead == True:
                     continue
@@ -236,7 +238,7 @@ class Game():
                 if self.overlap_check(enemy,player_ship):
                     if current_frame - old_frame > 3:
                         old_frame = current_frame
-                        #player_ship.hit(5)
+                        player_ship.hit(5)
                 if enemy.shoot == shoot_flag and len(enemy.bullets) < 1 and enemy.dead == False:
                     enemy.bullets.append(Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,enemy_missile,4,'down'))
         
