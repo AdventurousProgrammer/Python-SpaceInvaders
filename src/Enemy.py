@@ -147,14 +147,18 @@ class Multiple_Movement_Enemy(Enemy):
         self.hitbox = (x,y,width,height)
         self.type = 'Multiple_Movement_Enemy'
               
-class Erratic_Enemy(Enemy):             
+class Erratic_Movement_Enemy(Enemy):             
     def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height):
         super().__init__(x, y, width, height, image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height)
         self.hitbox = (x,y,width,height)
-        self.type = 'Erratic_Enemy' 
+        self.type = 'Erratic_Movement_Enemy' 
           
-    def move(self):
-        direction = random.randint(0,7)
-        super().set_direction(direction)
+    def move(self,current_movement,old_movement):
+        x = False
+        if current_movement - old_movement >= 50:
+            direction = random.randint(0,7)
+            super().set_direction(direction)
+            x = True
         super().move()
+        return x
                 
