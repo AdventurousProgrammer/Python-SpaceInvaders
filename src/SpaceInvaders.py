@@ -104,7 +104,7 @@ class Game():
         sprite_height = 31
         enemy_type = ''
         num_enemy_type = 0
-        enemy = Enemy(0,0,32,31,multiple_movement_enemy_image,2,2,1,1,5,random.randint(0,6),screen_width,screen_height)
+        enemy = Enemy(0,0,32,31,multiple_movement_enemy_image,2,2,1,1,5,random.randint(0,6),screen_width,screen_height,0)
         j = 0
         levels = list()
         for ii in range(0,len(self.data)):#should only occur once during the execution of the game
@@ -112,6 +112,7 @@ class Game():
         
         while(self.row < len(self.data)):
             if int(self.data[self.row][0]) == self.level:
+                enemy_bullets = int(self.data[self.row][4])
                 num_bullets = int(self.data[self.row][3])
                 player_ship.num_bullets = num_bullets
                 num_enemy_type = int(self.data[self.row][2])
@@ -146,10 +147,10 @@ class Game():
                         score = 7
                         shoot = random.randint(0,9)
                         if enemy_type == 'Multiple_Movement_Enemy':
-                            enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height)
+                            enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_bullets)
                             
                         elif enemy_type == 'Erratic_Movement_Enemy':
-                            enemy = Erratic_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height)   
+                            enemy = Erratic_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_bullets)   
                         
                         enemy.set_direction(dir)
                         enemy_list.append(enemy)
