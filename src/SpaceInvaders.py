@@ -103,7 +103,7 @@ class Game():
         sprite_height = 31
         enemy_type = ''
         num_enemy_type = 0
-        enemy = Enemy(0,0,32,31,multiple_movement_enemy_image,2,2,1,1,5,random.randint(0,6),screen_width,screen_height,0)
+        enemy = Enemy(0,0,32,31,multiple_movement_enemy_image,2,2,1,1,5,random.randint(0,6),screen_width,screen_height)
         j = 0
         levels = list()
         for ii in range(0,len(self.data)):#should only occur once during the execution of the game
@@ -136,30 +136,25 @@ class Game():
                     image = pygame.image.load('enemy_2.png') 
                          
                     for k in range(0,num_enemies):
+                        x_loc = margin + (k%n)*(sprite_width + x_sep)
+                        y_loc = top_y_boundary + j*(sprite_height + y_sep)
+                        width = 32
+                        height = 32
+                            #dir = 0 #random.randint(0,8)
+                        x_vel = 3
+                        y_vel = 2
+                        score = 7
+                        shoot = random.randint(0,9)
+                        
                         if enemy_type == 'Multiple_Movement_Enemy':
-<<<<<<< HEAD
                             enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_bullets)
                             
                         elif enemy_type == 'Erratic_Movement_Enemy':
-                            enemy = Erratic_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_bullets)   
-                        
+                            enemy = Erratic_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height)   
+                                                
                         enemy.set_direction(dir)
-=======
-                            x_loc = margin + (k%n)*(sprite_width + x_sep)
-                            y_loc = top_y_boundary + j*(sprite_height + y_sep)
-                            width = 32
-                            height = 32
-                            #dir = 0 #random.randint(0,8)
-                            x_vel = 3
-                            y_vel = 2
-                            score = 7
-                            shoot = random.randint(0,9)
-                            enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height)
-                            enemy.set_direction(dir)
-                            dir += 1
-                        elif enemy_type == 'Erratic_Movement_Enemy':
-                            pass    
->>>>>>> parent of b7100bb... Got Random Moving Enemy Working
+                        dir += 1
+                        
                         enemy_list.append(enemy)
                         
                     j+=1
@@ -200,10 +195,14 @@ class Game():
         old_frame = 0
         current_frame = 0
         
+        old_movement = 0
+        current_movement = 0
+        
         while self.running:
             clock.tick(30)
             
             current_frame += 1
+            current_movement += 1
             
             if self.num_level_enemies <= 0:
                 self.level_transition(player_ship)
@@ -234,7 +233,13 @@ class Game():
             for enemy in self.enemies:
                 if enemy.dead == True:
                     continue
-                enemy.move()
+                if enemy.type == 'Erratic_Movement_Enemy':
+
+                    x = enemy.move(current_movement,old_movement)
+                    if x == True:
+                        old_movement = current_movement
+                else:
+                    enemy.move()
                 if self.overlap_check(enemy,player_ship):
                     if current_frame - old_frame > 3:
                         old_frame = current_frame
