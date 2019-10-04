@@ -46,7 +46,8 @@ def draw_text(text,size,color,x,y):
     text_rect = text_surface.get_rect()
     text_rect.midtop = (x,y)
     win.blit(text_surface,text_rect)
-    
+
+
 class Game():
     enemies = list()#static variable
     font = pygame.font.SysFont('comicsans', 30, True)
@@ -55,6 +56,29 @@ class Game():
     level = 1
     row = 1    
     num_level_enemies = 0
+    
+    def process_user_input(self,player_ship,old_frame,current_frame):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.running = False
+    
+        keys = pygame.key.get_pressed()
+            
+        if keys[pygame.K_SPACE] and len(player_ship.bullets) < player_ship.num_bullets:
+            if current_frame - old_frame > 3:
+                old_frame = current_frame
+                player_ship.bullets.append(Player_Projectile(player_ship.x + 0.5*player_ship.width - 12,player_ship.y,12,7,small_missile,5,player_ship.dir))
+           #frame_count += 1
+        if keys[pygame.K_RIGHT] and player_ship.x + player_ship.width + player_ship.vel <= screen_width - 20:
+            player_ship.x += player_ship.vel
+        elif keys[pygame.K_LEFT] and player_ship.x - player_ship.vel >= 20:
+            player_ship.x -= player_ship.vel
+        elif keys[pygame.K_DOWN] and player_ship.y + player_ship.height + player_ship.vel <= screen_height - 20:
+            player_ship.y += player_ship.vel
+        elif keys[pygame.K_UP] and player_ship.y - player_ship.vel >= 500:
+            player_ship.y -= player_ship.vel
+            
+        player_ship.hitbox = (player_ship.x,player_ship.y,player_ship.width,player_ship.height)
     
     def redraw_game_window(self,player_ship):
         win.blit(bg,(0,0))
@@ -76,7 +100,76 @@ class Game():
         pygame.draw.rect(win,(255,0,0),(450,0,player_ship.health,15))
         pygame.display.update()
     
-    def overlap_check(self,sprite1,sprite2):
+    def move_enemies_as_unit(self):
+        directions = list()
+        move_flag = False
+        for enemy in self.enemies:
+            if move_flag:
+                break
+            directions = enemy.check_out_of_bounds()
+            if len(directions) > 0:#not being true, even at edge
+                move_flag = True#not reaching
+            for enemy in self.enemies:
+                if move_flag:#not being set true
+                    enemy.descend_next_level(directions)
+                    
+    def move_enemies_individually(self,old_movement,current_movement):
+        for enemy in self.enemies:
+            if enemy.dead == True:
+                continue
+            if enemy.type == 'Erratic_Movement_Enemy':
+                x = enemy.move(current_movement,old_movement)
+                if x == True:
+                    old_movement = current_movement
+                    break
+        return old_movement
+    
+    def enemy_status_updates(self,old_frame,curent_frame,player_ship,shoot_flag):
+        for enemy in self.enemies:
+            if self.overlap_check(enemy,player_ship):
+                if current_frame - old_frame > 3:
+                    old_frame = current_frame
+                    player_ship.hit(5)
+            if enemy.shoot == shoot_flag and len(enemy.bullets) < 1 and enemy.dead == False:
+                enemy.bullets.append(Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,enemy_missile,4,'down'))
+    
+    def enemy_ship_bullet_updates(self,player_ship):
+        for enemy in self.enemies:
+            for bullet in enemy.bullets:
+                if bullet.y > screen_height:
+                    enemy.bullets.pop(enemy.bullets.index(bullet))
+                    continue
+                bullet.y += bullet.vel
+                bullet.hitbox = (bullet.x + 8,bullet.y,8,bullet.height - 10)
+            
+                if self.overlap_check(bullet,player_ship):
+                    player_ship.hit(5)
+                    enemy.bullets.pop(enemy.bullets.index(bullet))
+                    continue
+                    
+                for p_bullet in player_ship.bullets:
+                    if self.overlap_check(p_bullet,bullet):
+                        enemy.bullets.pop(enemy.bullets.index(bullet))
+                        player_ship.bullets.pop(player_ship.bullets.index(p_bullet))
+    
+    def player_ship_bullet_updates(self,player_ship):
+        for bullet in player_ship.bullets:
+            if bullet.y < 0:
+                player_ship.bullets.pop(player_ship.bullets.index(bullet))
+                continue
+            bullet.y -= bullet.vel
+            bullet.hitbox = (bullet.x + 9,bullet.y + 1,bullet.width - 6,bullet.height + 7)
+                
+            for enemy in self.enemies:
+                if enemy.dead == True:
+                    continue
+                if self.overlap_check(bullet,enemy):
+                    enemy.hit(player_ship)
+                    enemy.dead = True
+                    self.num_level_enemies-=1
+                    player_ship.bullets.pop(player_ship.bullets.index(bullet))        
+    
+    def overlap_check(self,sprite1,sprite2):#O(1)
         top_in = sprite1.hitbox[1] > sprite2.hitbox[1] and sprite1.hitbox[1] < sprite2.hitbox[1] + sprite2.hitbox[3]
         bottom_in = sprite1.hitbox[1] + sprite1.hitbox[3] > sprite2.hitbox[1] and sprite1.hitbox[1] + sprite1.hitbox[3] < sprite2.hitbox[1] + sprite2.hitbox[3]
         left_in = sprite1.hitbox[0] > sprite2.hitbox[0] and sprite1.hitbox[0] < sprite2.hitbox[0] + sprite2.hitbox[2]
@@ -85,6 +178,15 @@ class Game():
         collision = (bottom_in and right_in) or (left_in and bottom_in) or (top_in and right_in) or (top_in and left_in)    
         return collision
     
+    def update_level(self,player_ship):
+        if self.num_level_enemies <= 0:
+            self.level_transition(player_ship)
+            self.enemies = self.set_level(player_ship)
+            self.num_level_enemies = len(self.enemies)
+            self.level += 1
+            if self.num_level_enemies == 0:
+                self.game_over_screen()
+                
     def init(self):
         level_layout = open('levels.csv')
         file_reader = csv.reader(level_layout)
@@ -200,110 +302,24 @@ class Game():
         
         while self.running:
             clock.tick(30)
-            
             current_frame += 1
             current_movement += 1
             
-            if self.num_level_enemies <= 0:
-                self.level_transition(player_ship)
-                self.enemies = self.set_level(player_ship)
-                self.num_level_enemies = len(self.enemies)
-                self.level += 1
-                if self.num_level_enemies == 0:
-                    self.game_over_screen()
-                    
+            self.update_level(player_ship)
             shoot_flag = random.randint(0,9)
             
             if player_ship.health <= 0:
                 self.running = False
                 break
             
-            directions = list()
-            move_flag = False
-            for enemy in self.enemies:
-                if move_flag:
-                    break
-                directions = enemy.check_out_of_bounds()
-                if len(directions) > 0:#not being true, even at edge
-                    move_flag = True#not reaching
-            for enemy in self.enemies:
-                if move_flag:#not being set true
-                    enemy.descend_next_level(directions)
-                    #not getting executed
-            for enemy in self.enemies:
-                if enemy.dead == True:
-                    continue
-                if enemy.type == 'Erratic_Movement_Enemy':
-
-                    x = enemy.move(current_movement,old_movement)
-                    if x == True:
-                        old_movement = current_movement
-                else:
-                    enemy.move()
-                if self.overlap_check(enemy,player_ship):
-                    if current_frame - old_frame > 3:
-                        old_frame = current_frame
-                        player_ship.hit(5)
-                if enemy.shoot == shoot_flag and len(enemy.bullets) < 1 and enemy.dead == False:
-                    enemy.bullets.append(Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,enemy_missile,4,'down'))
-        
-            for enemy in self.enemies:
-                for bullet in enemy.bullets:
-                    if bullet.y > screen_height:
-                        enemy.bullets.pop(enemy.bullets.index(bullet))
-                        continue
-                    bullet.y += bullet.vel
-                    bullet.hitbox = (bullet.x + 8,bullet.y,8,bullet.height - 10)
-            
-                    if self.overlap_check(bullet,player_ship):
-                        #player_ship.hit(5)
-                        enemy.bullets.pop(enemy.bullets.index(bullet))
-                        continue
-                    
-                    for p_bullet in player_ship.bullets:
-                        if self.overlap_check(p_bullet,bullet):
-                            enemy.bullets.pop(enemy.bullets.index(bullet))
-                            player_ship.bullets.pop(player_ship.bullets.index(p_bullet))
-                    
-            for bullet in player_ship.bullets:
-                if bullet.y < 0:
-                    player_ship.bullets.pop(player_ship.bullets.index(bullet))
-                    continue
-                bullet.y -= bullet.vel
-                bullet.hitbox = (bullet.x + 9,bullet.y + 1,bullet.width - 6,bullet.height + 7)
-                
-                for enemy in self.enemies:
-                    if enemy.dead == True:
-                        continue
-                    if self.overlap_check(bullet,enemy):
-                        enemy.hit(player_ship)
-                        enemy.dead = True
-                        self.num_level_enemies -= 1
-                        #self.enemies.pop(self.enemies.index(enemy))
-                        player_ship.bullets.pop(player_ship.bullets.index(bullet))
-    
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.running = False
-    
-            keys = pygame.key.get_pressed()
-            
-            if keys[pygame.K_SPACE] and len(player_ship.bullets) < player_ship.num_bullets:
-                if current_frame - old_frame > 3:
-                    old_frame = current_frame
-                    player_ship.bullets.append(Player_Projectile(player_ship.x + 0.5*player_ship.width - 12,player_ship.y,12,7,small_missile,5,player_ship.dir))
-           #frame_count += 1
-            if keys[pygame.K_RIGHT] and player_ship.x + player_ship.width + player_ship.vel <= screen_width - 20:
-                player_ship.x += player_ship.vel
-            elif keys[pygame.K_LEFT] and player_ship.x - player_ship.vel >= 20:
-                player_ship.x -= player_ship.vel
-            elif keys[pygame.K_DOWN] and player_ship.y + player_ship.height + player_ship.vel <= screen_height - 20:
-                player_ship.y += player_ship.vel
-            elif keys[pygame.K_UP] and player_ship.y - player_ship.vel >= 500:
-                player_ship.y -= player_ship.vel
-            player_ship.hitbox = (player_ship.x,player_ship.y,player_ship.width,player_ship.height)
-    
+            self.move_enemies_as_unit()
+            old_movement = self.move_enemies_individually(old_movement,current_movement)
+            self.enemy_status_updates(old_frame,current_frame,player_ship,shoot_flag)
+            self.enemy_ship_bullet_updates(player_ship)
+            self.player_ship_bullet_updates(player_ship)        
+            self.process_user_input(player_ship,old_frame,current_frame)
             self.redraw_game_window(player_ship)
+            
         self.game_over_screen()
 
 def main():
