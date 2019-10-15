@@ -104,6 +104,8 @@ class Game():
         directions = list()
         move_flag = False
         for enemy in self.enemies:
+            if enemy.type == 'Erratic_Movement_Enemy':
+                continue
             if move_flag:
                 break
             directions = enemy.check_out_of_bounds()
@@ -114,14 +116,20 @@ class Game():
                     enemy.descend_next_level(directions)
                     
     def move_enemies_individually(self,old_movement,current_movement):
+        x = False
         for enemy in self.enemies:
+            #if enemy.type != 'Erratic_Movement_Enemy':
+             #   continue
             if enemy.dead == True:
                 continue
             if enemy.type == 'Erratic_Movement_Enemy':
+                directions = enemy.check_out_of_bounds()
+                if len(directions) > 0:
+                    enemy.descend_next_level(directions)
                 x = enemy.move(current_movement,old_movement)
-                if x == True:
-                    old_movement = current_movement
-                    break
+        if x == True:
+            old_movement = current_movement
+                    #Fenembreak
         return old_movement
     
     def enemy_status_updates(self,old_frame,curent_frame,player_ship,shoot_flag):
@@ -253,7 +261,7 @@ class Game():
                             
                         elif enemy_type == 'Erratic_Movement_Enemy':
                             enemy = Erratic_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height)   
-                                                
+                        enemy.name = 'Enemy: ' + str(k)                        
                         enemy.set_direction(dir)
                         dir += 1
                         
@@ -313,6 +321,7 @@ class Game():
                 break
             
             self.move_enemies_as_unit()
+            
             old_movement = self.move_enemies_individually(old_movement,current_movement)
             self.enemy_status_updates(old_frame,current_frame,player_ship,shoot_flag)
             self.enemy_ship_bullet_updates(player_ship)

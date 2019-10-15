@@ -24,6 +24,7 @@ class Enemy(object):
         self.bottom_boundary = screen_height - 20
         self.move_next_level = False
         self.switch = 1
+        self.name = ''
         #self.num_bullets = enemy_bullets
         
     def set_direction(self,dir):
@@ -159,6 +160,7 @@ class Erratic_Movement_Enemy(Enemy):
         if current_movement - old_movement >= 50:
             direction = random.randint(0,7)
             super().set_direction(direction)
+            print(self.name + ' Direction: ' + str(direction))
             x = True
         super().move()
         return x
