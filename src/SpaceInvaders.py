@@ -100,7 +100,7 @@ class Game():
         pygame.draw.rect(win,(255,0,0),(450,0,player_ship.health,15))
         pygame.display.update()
     
-    def move_enemies_as_unit(self):
+    def move_enemies_as_unit(self,current,old):
         directions = list()
         move_flag = False
         for enemy in self.enemies:
@@ -112,10 +112,13 @@ class Game():
             #    break
             directions = enemy.check_out_of_bounds()
             if len(directions) > 0:#not being true, even at edge
+                print('Enemy y location: ' + str(enemy.y))
                 move_flag = True#not reaching
             for e in self.enemies:
                 if move_flag:#not being set true
                     e.descend_next_level(directions)
+            move_flag = False
+            directions = list()
             enemy.move()
             
     def move_enemies_individually(self,old_movement,current_movement):
@@ -124,6 +127,8 @@ class Game():
             #if enemy.type != 'Erratic_Movement_Enemy':
              #   continue
             if enemy.dead == True:
+                continue
+            if enemy.type == 'Vertical_Enemy' or enemy.type == 'Horizontal_Enemy':
                 continue
             if enemy.type == 'Erratic_Movement_Enemy':
                 directions = enemy.check_out_of_bounds()
@@ -329,8 +334,7 @@ class Game():
                 self.running = False
                 break
             
-            self.move_enemies_as_unit()
-            
+            self.move_enemies_as_unit(current_frame,old_frame) 
             old_movement = self.move_enemies_individually(old_movement,current_movement)
             self.enemy_status_updates(old_frame,current_frame,player_ship,shoot_flag)
             self.enemy_ship_bullet_updates(player_ship)
