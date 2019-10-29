@@ -104,17 +104,20 @@ class Game():
         directions = list()
         move_flag = False
         for enemy in self.enemies:
+            if enemy.dead == True:
+                continue
             if enemy.type == 'Erratic_Movement_Enemy':
                 continue
-            if move_flag:
-                break
+            #if move_flag:
+            #    break
             directions = enemy.check_out_of_bounds()
             if len(directions) > 0:#not being true, even at edge
                 move_flag = True#not reaching
-            for enemy in self.enemies:
+            for e in self.enemies:
                 if move_flag:#not being set true
-                    enemy.descend_next_level(directions)
-                    
+                    e.descend_next_level(directions)
+            enemy.move()
+            
     def move_enemies_individually(self,old_movement,current_movement):
         x = False
         for enemy in self.enemies:
@@ -221,7 +224,7 @@ class Game():
         
         while(self.row < len(self.data)):
             if int(self.data[self.row][0]) == self.level:
-                enemy_bullets = int(self.data[self.row][4])
+                #enemy_bullets = int(self.data[self.row][4])
                 num_bullets = int(self.data[self.row][3])
                 player_ship.num_bullets = num_bullets
                 num_enemy_type = int(self.data[self.row][2])
@@ -256,14 +259,20 @@ class Game():
                         score = 7
                         shoot = random.randint(0,9)
                         
-                        if enemy_type == 'Multiple_Movement_Enemy':
-                            enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_bullets)
-                            
+                        if enemy_type == 'Horizontal_Enemy':
+                            enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height)
+                            dir = 0
+                        elif enemy_type == 'Vertical_Enemy':
+                            enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height)
+                            dir = 2
+                        elif enemy_type == 'Multiple_Movement_Enemy':
+                            enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height)
+                            dir = random.randint(0,7)
                         elif enemy_type == 'Erratic_Movement_Enemy':
                             enemy = Erratic_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height)   
                         enemy.name = 'Enemy: ' + str(k)                        
                         enemy.set_direction(dir)
-                        dir += 1
+                        #dir += 1
                         
                         enemy_list.append(enemy)
                         
