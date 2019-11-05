@@ -152,7 +152,7 @@ class Game():
                 if current_frame - old_frame > 3:
                     old_frame = current_frame
                     player_ship.hit(5)
-            if enemy.shoot == shoot_flag and len(enemy.bullets) < 1 and enemy.dead == False:
+            if enemy.shoot == shoot_flag and len(enemy.bullets) < enemy.num_bullets and enemy.dead == False:
                 enemy.bullets.append(Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,enemy_missile,4,'down'))
     
     def enemy_ship_bullet_updates(self,player_ship):
@@ -227,7 +227,7 @@ class Game():
         sprite_height = 31
         enemy_type = ''
         num_enemy_type = 0
-        enemy = Enemy(0,0,32,31,multiple_movement_enemy_image,2,2,1,1,5,random.randint(0,6),screen_width,screen_height)
+        enemy = Enemy(0,0,32,31,multiple_movement_enemy_image,2,2,1,1,5,random.randint(0,6),screen_width,screen_height,0)
         j = 0
         levels = list()
         for ii in range(0,len(self.data)):#should only occur once during the execution of the game
@@ -240,6 +240,7 @@ class Game():
                 player_ship.num_bullets = num_bullets
                 num_enemy_type = int(self.data[self.row][2])
                 enemy_type = str(self.data[self.row][1])
+                enemy_num_bullets = int(self.data[self.row][4])
                 self.row+=1
                 margin = 20
                 x_sep = 30
@@ -271,16 +272,16 @@ class Game():
                         shoot = random.randint(0,9)
                         
                         if enemy_type == 'Horizontal_Enemy':
-                            enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height)
+                            enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets)
                             dir = 0
                         elif enemy_type == 'Vertical_Enemy':
-                            enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height)
+                            enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets)
                             dir = 2
                         elif enemy_type == 'Multiple_Movement_Enemy':
-                            enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height)
+                            enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets)
                             dir = random.randint(0,7)
                         elif enemy_type == 'Erratic_Movement_Enemy':
-                            enemy = Erratic_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height)   
+                            enemy = Erratic_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets)   
                         enemy.name = 'Enemy: ' + str(k)                        
                         enemy.set_direction(dir)
                         #dir += 1
