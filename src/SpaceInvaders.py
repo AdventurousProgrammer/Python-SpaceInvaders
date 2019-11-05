@@ -110,14 +110,20 @@ class Game():
                 continue
             #if move_flag:
             #    break
-            directions = enemy.check_out_of_bounds()
+            if move_flag == False:
+                directions = enemy.check_out_of_bounds()
+            if current == 15:
+                print('start check')
             if len(directions) > 0:#not being true, even at edge
-                print('Enemy y location: ' + str(enemy.y))
+                if directions[0] == 'up':
+                    print('Enemy y location testing for direction reversal: ' + str(enemy.y + enemy.height))
+                if enemy.name == 'Enemy: 0':
+                    print('Current Frame: ' + str(current) + ' Enemy y location: ' + str(enemy.y))
                 move_flag = True#not reaching
             for e in self.enemies:
                 if move_flag:#not being set true
                     e.descend_next_level(directions)
-            move_flag = False
+            #move_flag = False
             directions = list()
             enemy.move()
             
