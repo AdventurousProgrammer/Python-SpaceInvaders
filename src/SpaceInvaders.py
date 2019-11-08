@@ -57,6 +57,10 @@ class Game():
     row = 1    
     num_level_enemies = 0
     
+    def _distance_delay(self,pixel_delay,x1,y1,x2,y2): 
+        dist = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)  
+        return dist > pixel_delay  
+    
     def process_user_input(self,player_ship,old_frame,current_frame):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -153,7 +157,16 @@ class Game():
                     old_frame = current_frame
                     player_ship.hit(5)
             if enemy.shoot == shoot_flag and len(enemy.bullets) < enemy.num_bullets and enemy.dead == False:
-                enemy.bullets.append(Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,enemy_missile,4,'down'))
+                #do a distance based delay with for loops
+                #for each bullet make sure the distance is greater than 50 pixels
+                fire = True
+                current_bullet_position_x = enemy.x + 0.5*enemy.width
+                current_bullet_position_y = enemy.y + enemy.height
+                for bullet in enemy.bullets:
+                    if self._distance_delay(50,bullet.x,bullet.y,current_bullet_position_x,current_bullet_position_y) == False:
+                        fire = False
+                if fire == True:
+                    enemy.bullets.append(Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,enemy_missile,4,'down'))
     
     def enemy_ship_bullet_updates(self,player_ship):
         for enemy in self.enemies:
