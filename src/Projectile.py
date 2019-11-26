@@ -1,7 +1,9 @@
 import pygame
 
 class Projectile(object):
-    def __init__(self,x,y,width,height,image,vel,dir):
+    bullet_types = ['4','5','6','7','8']
+    
+    def __init__(self,x,y,width,height,type,image,vel,dir):
         self.x = x 
         self.y = y
         self.width = width
@@ -9,36 +11,38 @@ class Projectile(object):
         self.image = image
         self.vel = vel
         self.hitbox = (self.x,self.y,self.width,self.height)
-
+        self.x_dir = 0
+        self.y_dir = 0
+        
     def draw(self,win):
         win.blit(self.image,(self.x,self.y))
         
     def set_direction(self):
-        if self.image == '4':
-            x_dir = 1
-            y_dir = 1
-            x_vel = 2
-            y_vel = 1      
-        elif self.image == '5':
-            x_dir = 1
-            y_dir = 1
-            x_vel = 1
-            y_vel = 2        
-        elif self.image == '6':
-            x_dir = 0
-            y_dir = 1
-            x_vel = 0
-            y_vel = 3     
-        elif self.image == '7':
-            x_dir = -1
-            y_dir = 1
-            x_vel = 1
-            y_vel = 2
-        elif self.image == '8':
-            x_dir = -1
-            y_dir = 1
-            x_vel = 2
-            y_vel = 1
+        if self.type == '4':
+            self.x_dir = 1
+            self.y_dir = 1
+            self.x_vel = 2
+            self.y_vel = 1      
+        elif self.type == '5':
+            self.x_dir = 1
+            self.y_dir = 1
+            self.x_vel = 1
+            self.y_vel = 2        
+        elif self.type == '6':
+            self.x_dir = 0
+            self.y_dir = 1
+            self.x_vel = 0
+            self.y_vel = 3     
+        elif self.type == '7':
+            self.x_dir = -1
+            self.y_dir = 1
+            self.x_vel = 1
+            self.y_vel = 2
+        elif self.type == '8':
+            self.x_dir = -1
+            self.y_dir = 1
+            self.x_vel = 2
+            self.y_vel = 1
             
     def move(self):
         #need to move on to the next level first
@@ -75,8 +79,8 @@ class Projectile(object):
         self.hitbox = (self.x,self.y,self.width,self.height)
 
 class Basic_Enemy_Projectile(Projectile):
-    def __init__(self,x,y,width,height,image,vel,dir):
-        super().__init__(x,y,width,height,image,vel,dir)
+    def __init__(self,x,y,width,height,type,image,vel,dir):
+        super().__init__(x,y,width,height,type,image,vel,dir)
         self.hitbox = (self.x + 8,self.y,8,height - 10)
         
     def draw(self,win):

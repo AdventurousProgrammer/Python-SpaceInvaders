@@ -6,6 +6,7 @@ from Projectile import *
 from Player import *
 import math
 import datetime
+from pygame.examples.aliens import Shot
 
 pygame.init()
 
@@ -57,7 +58,7 @@ class Game():
     level = 1
     row = 1    
     num_level_enemies = 0
-    
+
     def _distance_delay(self,pixel_delay,x1,y1,x2,y2): 
         dist = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)  
         return dist > pixel_delay  
@@ -152,23 +153,45 @@ class Game():
         return old_movement
     
     def enemy_status_updates(self,old_frame,curent_frame,player_ship,shoot_flag):
+        bullet_list_length = len(Projectile.bullet_types)
         for enemy in self.enemies:
             if self.overlap_check(enemy,player_ship):
                 if current_frame - old_frame > 3:
                     old_frame = current_frame
                     player_ship.hit(5)
+                    
             if enemy.shoot == shoot_flag and len(enemy.bullets) < enemy.num_bullets and enemy.dead == False:
                 #do a distance based delay with for loops
                 #for each bullet make sure the distance is greater than 50 pixels
                 fire = True
                 current_bullet_position_x = enemy.x + 0.5*enemy.width
                 current_bullet_position_y = enemy.y + enemy.height
-                for bullet in enemy.bullets:
-                    if self._distance_delay(50,bullet.x,bullet.y,current_bullet_position_x,current_bullet_position_y) == False:
+                #need condition for no bullets having been Shot
+                if len(enemy.bullets) > 0:
+                    last_bullet = enemy.bullets[-1]
+                    if self._distance_delay(50,last_bullet.x,last_bullet.y,current_bullet_position_x,current_bullet_position_y) == False:
                         fire = False
+                
                 if fire == True:
-                    enemy.bullets.append(Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,enemy_missile,4,'down'))
-    
+                    #need to create bullets of different directions
+                    add_bullet = True
+                    if enemy.num_bullets == 1:
+                        enemy.bullets.append(Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,'6',enemy_missile,4,'down'))
+                    else:
+                        bullets_left = enemy.num_bullets - len(enemy.bullets)
+                        while bullets_left > 0:
+                            if len(enemy.bullets) > 0:
+                                last_bullet = enemy.bullets[-1]
+                                if self._distance_delay(50,last_bullet.x,last_bullet.y,current_bullet_position_x,current_bullet_position_y) == False:
+                                    add_bullet=False       
+                                    
+                            if add_bullet == True:
+                                index = random.randint(0,bullet_list_length - 1)
+                                bullet_type = Projectile.bullet_types[index]
+                                enemy.bullets.append(Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,bullet_type,enemy_missile,4,'down')) 
+                                
+                            bullets_left-=1
+                            
     def enemy_ship_bullet_updates(self,player_ship):
         for enemy in self.enemies:
             for bullet in enemy.bullets:
