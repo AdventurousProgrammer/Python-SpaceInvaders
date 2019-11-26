@@ -5,6 +5,7 @@ from Enemy import *
 from Projectile import *
 from Player import *
 import math
+import datetime
 
 pygame.init()
 
@@ -171,7 +172,7 @@ class Game():
     def enemy_ship_bullet_updates(self,player_ship):
         for enemy in self.enemies:
             for bullet in enemy.bullets:
-                if bullet.y > screen_height:
+                if bullet.y + bullet.height > screen_height or bullet.x < 20 or bullet.x + bullet.width >= screen_width:
                     enemy.bullets.pop(enemy.bullets.index(bullet))
                     continue
                 bullet.y += bullet.vel
@@ -341,8 +342,10 @@ class Game():
         
         old_movement = 0
         current_movement = 0
-        
+        a = 0
+        b = 0
         while self.running:
+            a = datetime.datetime.now()
             clock.tick(30)
             current_frame += 1
             current_movement += 1
@@ -361,7 +364,7 @@ class Game():
             self.player_ship_bullet_updates(player_ship)        
             self.process_user_input(player_ship,old_frame,current_frame)
             self.redraw_game_window(player_ship)
-            
+            b = datetime.datetime.now()
         self.game_over_screen()
 
 def main():

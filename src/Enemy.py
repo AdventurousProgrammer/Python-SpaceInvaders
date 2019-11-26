@@ -4,7 +4,7 @@ import random
 class Enemy(object):
     move_next_level = False
     
-    def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height):
+    def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets):
         self.x = x 
         self.y = y
         self.width = width
@@ -25,7 +25,7 @@ class Enemy(object):
         self.move_next_level = False
         self.switch = 1
         self.name = ''
-        #self.num_bullets = enemy_bullets
+        self.num_bullets = num_bullets
         
     def set_direction(self,dir):
         x_dir = 0 
@@ -144,14 +144,14 @@ class Enemy(object):
         player_ship.score += self.score
             
 class Multiple_Movement_Enemy(Enemy):
-    def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height):
-        super().__init__(x, y, width, height, image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height)
+    def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets):
+        super().__init__(x, y, width, height, image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets)
         self.hitbox = (x,y,width,height)
         self.type = 'Multiple_Movement_Enemy'
               
 class Erratic_Movement_Enemy(Enemy):             
-    def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height):
-        super().__init__(x, y, width, height, image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height)
+    def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets):
+        super().__init__(x, y, width, height, image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets)
         self.hitbox = (x,y,width,height)
         self.type = 'Erratic_Movement_Enemy' 
           
