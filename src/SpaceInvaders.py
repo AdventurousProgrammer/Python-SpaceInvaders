@@ -180,17 +180,19 @@ class Game():
                     else:
                         bullets_left = enemy.num_bullets - len(enemy.bullets)
                         while bullets_left > 0:
-                            if len(enemy.bullets) > 0:
-                                last_bullet = enemy.bullets[-1]
-                                if self._distance_delay(50,last_bullet.x,last_bullet.y,current_bullet_position_x,current_bullet_position_y) == False:
-                                    add_bullet=False       
+                            #if len(enemy.bullets) > 0:
+                            #    last_bullet = enemy.bullets[-1]
+                            #    if self._distance_delay(50,last_bullet.x,last_bullet.y,current_bullet_position_x,current_bullet_position_y) == False:
+                            #        add_bullet=False       
                                     
-                            if add_bullet == True:
-                                index = random.randint(0,bullet_list_length - 1)
+                                if enemy.type == 'Erratic_Multishoot_Enemy':
+                                    index = random.randint(0,bullet_list_length - 1)
+                                else:
+                                    index = bullets_left-1
                                 bullet_type = Projectile.bullet_types[index]
                                 enemy.bullets.append(Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,bullet_type,enemy_missile,4,'down')) 
                                 
-                            bullets_left-=1
+                                bullets_left-=1
                             
     def enemy_ship_bullet_updates(self,player_ship):
         for enemy in self.enemies:
