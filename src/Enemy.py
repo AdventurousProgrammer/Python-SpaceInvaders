@@ -1,8 +1,10 @@
 import pygame
 import random
+from Projectile import *
 
 class Enemy(object):
     move_next_level = False
+    
     
     def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets):
         self.x = x 
@@ -26,6 +28,17 @@ class Enemy(object):
         self.switch = 1
         self.name = ''
         self.num_bullets = num_bullets
+        
+    #def shoot(self,bullets_left):
+    #    bullet_list_length = len(Projectile.bullet_types)
+        
+    #    if self.type == 'Erratic_Multishoot_Enemy':
+     #       index = random.randint(0,bullet_list_length - 1)
+    #    else:
+    #        index = bullets_left - 1
+    #    bullet_type = Projectile.bullet_types[index]
+    #    enemy.bullets.append(Basic_Enemy_Projectile(self.x + 0.5*self.width,self.y + self.height,40,26,bullet_type,enemy_missile,4,'down')) 
+                                
         
     def set_direction(self,dir):
         x_dir = 0 

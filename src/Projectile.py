@@ -13,36 +13,50 @@ class Projectile(object):
         self.hitbox = (self.x,self.y,self.width,self.height)
         self.x_dir = 0
         self.y_dir = 0
+        self.type = type
+        
+        self._set_direction()
         
     def draw(self,win):
         win.blit(self.image,(self.x,self.y))
         
-    def set_direction(self):
+    def _set_direction(self):
         if self.type == '4':
+            #print('4 o clock movement')
             self.x_dir = 1
             self.y_dir = 1
             self.x_vel = 2
-            self.y_vel = 1      
+            self.y_vel = 1
+            missile = 'enemy_4_position.png'
+            self.image = pygame.image.load(missile)      
         elif self.type == '5':
             self.x_dir = 1
             self.y_dir = 1
             self.x_vel = 1
-            self.y_vel = 2        
+            self.y_vel = 2
+            missile = 'enemy_5_position.png'        
+            self.image = pygame.image.load(missile)
         elif self.type == '6':
             self.x_dir = 0
             self.y_dir = 1
             self.x_vel = 0
-            self.y_vel = 3     
+            self.y_vel = 3
+            missile = 'enemy_6_position.png'     
+            self.image = pygame.image.load(missile)
         elif self.type == '7':
             self.x_dir = -1
             self.y_dir = 1
             self.x_vel = 1
             self.y_vel = 2
+            missile = 'enemy_7_position.png'
+            self.image = pygame.image.load(missile)
         elif self.type == '8':
             self.x_dir = -1
             self.y_dir = 1
             self.x_vel = 2
             self.y_vel = 1
+            missile = 'enemy_8_position.png'
+            self.image = pygame.image.load(missile)
             
     def move(self):
         #need to move on to the next level first
@@ -55,6 +69,8 @@ class Projectile(object):
         down = self.y_dir == 1 and self.x_dir == 0
         down_right = self.x_dir == 1 and self.y_dir == 1
 #
+        print('Down Right? : ' + str(down_right))
+        
         if right:
             self.x+=self.x_vel*self.x_dir 
         elif up_right:
@@ -73,6 +89,7 @@ class Projectile(object):
         elif down:
             self.y+=self.y_vel*self.y_dir
         elif down_right:
+            #print('Moving Downright')
             self.x+=self.x_vel*self.x_dir
             self.y+=self.y_vel*self.y_dir
             
@@ -85,12 +102,12 @@ class Basic_Enemy_Projectile(Projectile):
         
     def draw(self,win):
         super(Basic_Enemy_Projectile, self).draw(win)
-        pygame.draw.rect(win,(255,0,0),self.hitbox,2)
+        #pygame.draw.rect(win,(255,0,0),self.hitbox,2)
         
 
 class Player_Projectile(Projectile):
-    def __init__(self,x,y,width,height,image,vel,dir):
-        super().__init__(x,y,width,height,image,vel,dir)
+    def __init__(self,x,y,width,height,type,image,vel,dir):
+        super().__init__(x,y,width,height,type,image,vel,dir)
         self.hitbox = (self.x + 9,self.y,self.width,self.height + 10)
     
     def draw(self,win):

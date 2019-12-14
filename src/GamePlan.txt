@@ -1,12 +1,12 @@
 Enemies that game requires:
 
-Ordered Multiple Movement Enemy : Enemies that can move in any direction, in an ordered way,
-Enemies that can move in any direction in a random way, 
+DONE: Ordered Multiple Movement Enemy : Enemies that can move in any direction, in an ordered way,
+DONE: Enemies that can move in any direction in a random way, 
 
 Both extend off of MultipleMovementEnemy
 
-Multishoot enemy, that can shoot any number of bullets, also extends off of Multiple Movement Enemy, can be random or ordered, 
-ErraticMultishoot enemy, can shoot three bullets, extends off of random moving enemy, and multishoot enemy
+DONE Multishoot enemy, that can shoot any number of bullets, also extends off of Multiple Movement Enemy, can be random or ordered, 
+DONE ErraticMultishoot enemy, can shoot three bullets, extends off of random moving enemy, and multishoot enemy
 
 Dynamicshoot enemy, fires multiple bullets which can travel in up to multiple directions, 
 Tank enemy which can take upto n hits to be destroyed, based on multimovement enemy
@@ -20,7 +20,7 @@ Boss 1: Can spawn horizontal and vertical enemies, when health is low will be ab
 Level 7: 10 MultipleMovementEnemy
 Level 8: 10 ErraticMovement enemy
 Level 9: 10 ErraticMovementEnemy, 10 MultipleMovementEnemy
-Level 10: 5 ErraticMovementEnemy, 10 MultishootEnemy,2 ErraticMultishootEnemy
+Level 10: 5 ErraticMovementEnemy, 10 MultishootEnemy,5 ErraticMultishootEnemy
 Boss 1: 
 
 
