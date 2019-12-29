@@ -5,8 +5,7 @@ from Projectile import *
 class Enemy(object):
     move_next_level = False
     
-    
-    def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets):
+    def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health):
         self.x = x 
         self.y = y
         self.width = width
@@ -28,7 +27,7 @@ class Enemy(object):
         self.switch = 1
         self.name = ''
         self.num_bullets = num_bullets
-        
+        self.health = health
     #def shoot(self,bullets_left):
     #    bullet_list_length = len(Projectile.bullet_types)
         
@@ -154,17 +153,22 @@ class Enemy(object):
         pygame.draw.rect(win,(255,0,0),self.hitbox,2)
     
     def hit(self,player_ship):
-        player_ship.score += self.score
+        if self.health <= 0:
+            player_ship.score += self.score
+            return True
+        self.health-=1
+        return False
+        
             
 class Multiple_Movement_Enemy(Enemy):
-    def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets):
-        super().__init__(x, y, width, height, image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets)
+    def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health):
+        super().__init__(x, y, width, height, image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health)
         self.hitbox = (x,y,width,height)
         self.type = 'Multiple_Movement_Enemy'
               
 class Erratic_Movement_Enemy(Enemy):             
-    def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets):
-        super().__init__(x, y, width, height, image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets)
+    def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health):
+        super().__init__(x, y, width, height, image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health)
         self.hitbox = (x,y,width,height)
         self.type = 'Erratic_Movement_Enemy' 
           
@@ -177,4 +181,19 @@ class Erratic_Movement_Enemy(Enemy):
             x = True
         super().move()
         return x
+    
+class Deflector_Enemy(Enemy):
+    def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health):
+        super().__init__(x, y, width, height, image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health)
+        self.hitbox = (x,y,width,height)
+        self.type = 'Deflector_Enemy' 
+        
+    def hit(self,player_ship,bullet):
+        destroyed = super().hit(player_ship)
+        if destroyed == False:
+            bullet.reverse()
+            print('Bullet Deflected')
+        return destroyed
+            
+    
                 

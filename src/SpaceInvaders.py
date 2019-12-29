@@ -65,7 +65,7 @@ class Game():
         dist = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)  
         return dist > pixel_delay  
     
-    def process_user_input(self,player_ship,old_frame,current_frame):
+    def process_user_input(self,player_ship,old_frame,current_frame,a):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
@@ -73,8 +73,11 @@ class Game():
         keys = pygame.key.get_pressed()
             
         if keys[pygame.K_SPACE] and len(player_ship.bullets) < player_ship.num_bullets:
-            if current_frame - old_frame > 3:
+            if current_frame - old_frame > 5:
+               # b = datetime.datetime.now()
                 old_frame = current_frame
+               # delta = b - a
+               # print('Bullet Time Difference: ' + str(delta.total_seconds()*1000))
                 player_ship.bullets.append(Player_Projectile(player_ship.x + 0.5*player_ship.width - 12,player_ship.y,12,7,'0',small_missile,5,player_ship.dir))
            #frame_count += 1
         if keys[pygame.K_RIGHT] and player_ship.x + player_ship.width + player_ship.vel <= screen_width - 20:
@@ -87,6 +90,8 @@ class Game():
             player_ship.y -= player_ship.vel
             
         player_ship.hitbox = (player_ship.x,player_ship.y,player_ship.width,player_ship.height)
+        #a = datetime.datetime.now()
+        return old_frame
     
     def redraw_game_window(self,player_ship):
         win.blit(bg,(0,0))
@@ -154,53 +159,41 @@ class Game():
                     #Fenembreak
         return old_movement
     
-    def enemy_status_updates(self,old_frame,curent_frame,player_ship,shoot_flag):
+    def enemy_status_updates(self,old_frame,curent_frame,player_ship,shoot_flag,index):
         bullet_list_length = len(Projectile.bullet_types)
         for enemy in self.enemies:
             if self.overlap_check(enemy,player_ship):
-                if current_frame - old_frame > 3:
-                    old_frame = current_frame
-                    player_ship.hit(5)
+                
+                    #old_frame = current_frame
+                player_ship.hit(5)
                     
             if enemy.shoot == shoot_flag and len(enemy.bullets) < enemy.num_bullets and enemy.dead == False:
                 #do a distance based delay with for loops
                 #for each bullet make sure the distance is greater than 50 pixels
                 fire = True
-                current_bullet_position_x = enemy.x + 0.5*enemy.width
-                current_bullet_position_y = enemy.y + enemy.height
+                current_bullet_position_x = enemy.x + 0.5*enemy.width - 30
+                current_bullet_position_y = enemy.y + enemy.height - 20
                 #need condition for no bullets having been Shot
                 #if len(enemy.bullets) > 0:
                 #    last_bullet = enemy.bullets[-1]
                 #    if self._distance_delay(50,last_bullet.x,last_bullet.y,current_bullet_position_x,current_bullet_position_y) == False:
                 #        fire = False
+                num_active_bullets = len(enemy.bullets)
+                bullets_left = enemy.num_bullets - num_active_bullets
                 
-                if fire == True:
-                    #need to create bullets of different directions
-                    add_bullet = True
-                    if enemy.num_bullets == 1:
-                        bullet = Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,'4',enemy_missile,4,'down')
-                        #bullet.set_direction()
-                        enemy.bullets.append(bullet)
-                    else:
-                        bullets_left = enemy.num_bullets - len(enemy.bullets)
-            
-                        while bullets_left > 0:
+                if num_active_bullets == 0:                     
+                    while num_active_bullets < enemy.num_bullets:        
+                        if enemy.type == 'Erratic_Multishoot_Enemy':
+                            index = random.randint(0,bullet_list_length - 1)
+                        else:
+                            index = num_active_bullets % bullet_list_length
                             
-                            #if len(enemy.bullets) > 0:
-                            #    last_bullet = enemy.bullets[-1]
-                            #    if self._distance_delay(50,last_bullet.x,last_bullet.y,current_bullet_position_x,current_bullet_position_y) == False:
-                            #        add_bullet=False       
-                                    
-                            if enemy.type == 'Erratic_Multishoot_Enemy':
-                                index = random.randint(0,bullet_list_length - 1)
-                            else:
-                                index = bullets_left-1
-                            bullet_type = Projectile.bullet_types[index]
-                            bullet = Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,bullet_type,enemy_missile,4,'down')
-                            #bullet.set_direction()
-                            enemy.bullets.append(bullet) 
-                                
-                            bullets_left-=1
+                        bullet_type = Projectile.bullet_types[index]
+                        #index+=1
+                        print('Bullet Type: ' + str(bullet_type))
+                        bullet = Basic_Enemy_Projectile(current_bullet_position_x,current_bullet_position_y,40,26,bullet_type,enemy_missile,4,'down')
+                        enemy.bullets.append(bullet)  
+                        num_active_bullets+=1
                             
     def enemy_ship_bullet_updates(self,player_ship):
         for enemy in self.enemies:
@@ -226,16 +219,18 @@ class Game():
             if bullet.y < 0:
                 player_ship.bullets.pop(player_ship.bullets.index(bullet))
                 continue
-            bullet.y -= bullet.vel
-            bullet.hitbox = (bullet.x + 9,bullet.y + 1,bullet.width - 6,bullet.height + 7)
+            bullet.move()
                 
             for enemy in self.enemies:
                 if enemy.dead == True:
                     continue
                 if self.overlap_check(bullet,enemy):
-                    enemy.hit(player_ship)
-                    enemy.dead = True
-                    self.num_level_enemies-=1
+                    if enemy.type == 'Deflector_Enemy':
+                        enemy.dead = enemy.hit(player_ship,bullet)
+                    else:
+                        enemy.dead = enemy.hit(player_ship)
+                    if enemy.dead == True:
+                        self.num_level_enemies-=1
                     player_ship.bullets.pop(player_ship.bullets.index(bullet))        
     
     def overlap_check(self,sprite1,sprite2):#O(1)
@@ -274,7 +269,7 @@ class Game():
         sprite_height = 31
         enemy_type = ''
         num_enemy_type = 0
-        enemy = Enemy(0,0,32,31,multiple_movement_enemy_image,2,2,1,1,5,random.randint(0,6),screen_width,screen_height,0)
+        enemy = Enemy(0,0,32,31,multiple_movement_enemy_image,2,2,1,1,5,random.randint(0,6),screen_width,screen_height,0,0)
         j = 0
         levels = list()
         for ii in range(0,len(self.data)):#should only occur once during the execution of the game
@@ -288,6 +283,7 @@ class Game():
                 num_enemy_type = int(self.data[self.row][2])
                 enemy_type = str(self.data[self.row][1])
                 enemy_num_bullets = int(self.data[self.row][4])
+                enemy_health = int(self.data[self.row][5])
                 self.row+=1
                 margin = 20
                 x_sep = 30
@@ -314,21 +310,23 @@ class Game():
                         height = 32
                             #dir = 0 #random.randint(0,8)
                         x_vel = 3
-                        y_vel = 2
+                        y_vel = 1
                         score = 7
                         shoot = random.randint(0,9)
                         
                         if enemy_type == 'Horizontal_Enemy':
-                            enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets)
+                            enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)
                             dir = 0
                         elif enemy_type == 'Vertical_Enemy':
-                            enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets)
+                            enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)
                             dir = 2
                         elif enemy_type == 'Multiple_Movement_Enemy':
-                            enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets)
+                            enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)
                             dir = random.randint(0,7)
                         elif enemy_type == 'Erratic_Movement_Enemy':
-                            enemy = Erratic_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets)   
+                            enemy = Erratic_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)   
+                        elif enemy_type == 'Deflector_Enemy':
+                            enemy = Deflector_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health) 
                         enemy.name = 'Enemy: ' + str(k)                        
                         enemy.set_direction(dir)
                         #dir += 1
@@ -377,6 +375,8 @@ class Game():
         current_movement = 0
         a = 0
         b = 0
+        index = 0
+        a = datetime.datetime.now()
         while self.running:
             a = datetime.datetime.now()
             clock.tick(30)
@@ -392,12 +392,12 @@ class Game():
             
             self.move_enemies_as_unit(current_frame,old_frame) 
             old_movement = self.move_enemies_individually(old_movement,current_movement)
-            self.enemy_status_updates(old_frame,current_frame,player_ship,shoot_flag)
+            self.enemy_status_updates(old_frame,current_frame,player_ship,shoot_flag,index)
             self.enemy_ship_bullet_updates(player_ship)
             self.player_ship_bullet_updates(player_ship)        
-            self.process_user_input(player_ship,old_frame,current_frame)
+            old_frame = self.process_user_input(player_ship,old_frame,current_frame,a)
             self.redraw_game_window(player_ship)
-            b = datetime.datetime.now()
+           # b = datetime.datetime.now()
         self.game_over_screen()
 
 def main():
