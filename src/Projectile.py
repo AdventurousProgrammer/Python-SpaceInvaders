@@ -99,7 +99,7 @@ class Projectile(object):
             self.x+=self.x_vel*self.x_dir
             self.y+=self.y_vel*self.y_dir
         
-        self.hitbox = self.hitbox + self.offset
+        #self.update_hitbox()
         #if self.missile_type == 'player':
         #    self.hitbox = (self.x + 9,self.y,self.width,self.height + 10)
         #    print('Player Missile hitbox')
