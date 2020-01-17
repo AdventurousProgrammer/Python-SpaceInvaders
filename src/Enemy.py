@@ -1,6 +1,5 @@
 import pygame
 import random
-from Projectile import *
 
 class Enemy(object):
     move_next_level = False
@@ -37,8 +36,7 @@ class Enemy(object):
     #        index = bullets_left - 1
     #    bullet_type = Projectile.bullet_types[index]
     #    enemy.bullets.append(Basic_Enemy_Projectile(self.x + 0.5*self.width,self.y + self.height,40,26,bullet_type,enemy_missile,4,'down')) 
-                                
-        
+                                   
     def set_direction(self,dir):
         x_dir = 0 
         y_dir = 0
@@ -153,10 +151,10 @@ class Enemy(object):
         pygame.draw.rect(win,(255,0,0),self.hitbox,2)
     
     def hit(self,player_ship):
+        self.health-=1
         if self.health <= 0:
             player_ship.score += self.score
             return True
-        self.health-=1
         return False
         
             

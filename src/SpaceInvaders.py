@@ -8,7 +8,6 @@ import math
 import datetime
 from pygame.examples.aliens import Shot
 
-
 pygame.init()
 
 screen_width = 700
@@ -35,7 +34,6 @@ enemy_width = 32
 enemy_height = 31
 
 enemy_missile = pygame.image.load('enemy_missile.png')
-
 
 current_frame = 0
 old_frame = 0
@@ -78,7 +76,8 @@ class Game():
                 old_frame = current_frame
                # delta = b - a
                # print('Bullet Time Difference: ' + str(delta.total_seconds()*1000))
-                player_ship.bullets.append(Player_Projectile(player_ship.x + 0.5*player_ship.width - 12,player_ship.y,12,7,'0',small_missile,5,player_ship.dir))
+                player_ship.bullets.append(Player_Projectile(player_ship.x + 0.5*player_ship.width - 12,player_ship.y,12,7,small_missile,5,player_ship.dir))
+
            #frame_count += 1
         if keys[pygame.K_RIGHT] and player_ship.x + player_ship.width + player_ship.vel <= screen_width - 20:
             player_ship.x += player_ship.vel
@@ -130,8 +129,8 @@ class Game():
             if len(directions) > 0:#not being true, even at edge
                 if directions[0] == 'up':
                     print('Enemy y location testing for direction reversal: ' + str(enemy.y + enemy.height))
-                #if enemy.name == 'Enemy: 0':
-                #    print('Current Frame: ' + str(current) + ' Enemy y location: ' + str(enemy.y))
+                if enemy.name == 'Enemy: 0':
+                    print('Current Frame: ' + str(current) + ' Enemy y location: ' + str(enemy.y))
                 move_flag = True#not reaching
             for e in self.enemies:
                 if move_flag:#not being set true
@@ -174,6 +173,7 @@ class Game():
                 current_bullet_position_x = enemy.x + 0.5*enemy.width - 30
                 current_bullet_position_y = enemy.y + enemy.height - 20
                 #need condition for no bullets having been Shot
+
                 #if len(enemy.bullets) > 0:
                 #    last_bullet = enemy.bullets[-1]
                 #    if self._distance_delay(50,last_bullet.x,last_bullet.y,current_bullet_position_x,current_bullet_position_y) == False:
@@ -191,18 +191,45 @@ class Game():
                         bullet_type = Projectile.bullet_types[index]
                         #index+=1
                         print('Bullet Type: ' + str(bullet_type))
-                        bullet = Basic_Enemy_Projectile(current_bullet_position_x,current_bullet_position_y,40,26,bullet_type,enemy_missile,4,'down')
+                        bullet = Basic_Enemy_Projectile(current_bullet_position_x,current_bullet_position_y,40,26,enemy_missile,4,'down')
                         enemy.bullets.append(bullet)  
                         num_active_bullets+=1
+
+                if len(enemy.bullets) > 0:
+                    last_bullet = enemy.bullets[-1]
+                    if self._distance_delay(50,last_bullet.x,last_bullet.y,current_bullet_position_x,current_bullet_position_y) == False:
+                        fire = False
+                
+                if fire == True:
+                    #need to create bullets of different directions
+                    add_bullet = True
+                    if enemy.num_bullets == 1:
+                        enemy.bullets.append(Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,enemy_missile,4,'down'))
+                    else:
+                        bullets_left = enemy.num_bullets - len(enemy.bullets)
+                        while bullets_left > 0:
+                            #if len(enemy.bullets) > 0:
+                            #    last_bullet = enemy.bullets[-1]
+                            #    if self._distance_delay(50,last_bullet.x,last_bullet.y,current_bullet_position_x,current_bullet_position_y) == False:
+                            #        add_bullet=False       
+                                    
+                                if enemy.type == 'Erratic_Multishoot_Enemy':
+                                    index = random.randint(0,bullet_list_length - 1)
+                                else:
+                                    index = bullets_left-1
+                                bullet_type = Projectile.bullet_types[index]
+                                enemy.bullets.append(Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,enemy_missile,4,'down')) 
+                                
+                                bullets_left-=1
                             
     def enemy_ship_bullet_updates(self,player_ship):
         for enemy in self.enemies:
             for bullet in enemy.bullets:
-                out_of_bounds = bullet.y + bullet.height > screen_height or bullet.x < 20 or bullet.x + bullet.width >= screen_width
-                if out_of_bounds:
+                if bullet.y + bullet.height > screen_height or bullet.x < 20 or bullet.x + bullet.width >= screen_width:
                     enemy.bullets.pop(enemy.bullets.index(bullet))
                     continue
-                bullet.move()
+                bullet.y += bullet.vel
+                bullet.hitbox = (bullet.x + 8,bullet.y,8,bullet.height - 10)
             
                 if self.overlap_check(bullet,player_ship):
                     player_ship.hit(5)
@@ -224,7 +251,8 @@ class Game():
             for enemy in self.enemies:
                 if enemy.dead == True:
                     continue
-                if self.overlap_check(bullet,enemy):
+                overlap = self.overlap_check(bullet,enemy)
+                if overlap:#possible issue here
                     if enemy.type == 'Deflector_Enemy':
                         enemy.dead = enemy.hit(player_ship,bullet)
                     else:
@@ -337,8 +365,8 @@ class Game():
                 layer = j                      
             else:
                 break
-        #for enemy in enemy_list:
-        #    print('X Direction: ' + str(enemy.x_dir) + ' Y Direction: ' + str(enemy.y_dir))
+        for enemy in enemy_list:
+            print('X Direction: ' + str(enemy.x_dir) + ' Y Direction: ' + str(enemy.y_dir))
         return enemy_list
            
     def game_over_screen(self):
