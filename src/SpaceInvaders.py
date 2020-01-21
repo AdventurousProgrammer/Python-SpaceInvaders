@@ -124,13 +124,13 @@ class Game():
             #    break
             if move_flag == False:
                 directions = enemy.check_out_of_bounds()
-            if current == 15:
-                print('start check')
+            #if current == 15:
+            #    print('start check')
             if len(directions) > 0:#not being true, even at edge
                 if directions[0] == 'up':
                     print('Enemy y location testing for direction reversal: ' + str(enemy.y + enemy.height))
-                if enemy.name == 'Enemy: 0':
-                    print('Current Frame: ' + str(current) + ' Enemy y location: ' + str(enemy.y))
+                #if enemy.name == 'Enemy: 0':
+                #    print('Current Frame: ' + str(current) + ' Enemy y location: ' + str(enemy.y))
                 move_flag = True#not reaching
             for e in self.enemies:
                 if move_flag:#not being set true
@@ -190,8 +190,10 @@ class Game():
                             
                         bullet_type = Projectile.bullet_types[index]
                         #index+=1
-                        print('Bullet Type: ' + str(bullet_type))
-                        bullet = Basic_Enemy_Projectile(current_bullet_position_x,current_bullet_position_y,40,26,enemy_missile,4,'down')
+                        #print('Bullet Type: ' + str(bullet_type))
+                        #bullet type is changing, but image is not, it is staying at 6 o clock position
+                        #enemy_missile: 6 o'clock missile image position
+                        bullet = Basic_Enemy_Projectile(current_bullet_position_x,current_bullet_position_y,40,26,bullet_type,4,'down')
                         enemy.bullets.append(bullet)  
                         num_active_bullets+=1
 
@@ -218,7 +220,7 @@ class Game():
                                 else:
                                     index = bullets_left-1
                                 bullet_type = Projectile.bullet_types[index]
-                                enemy.bullets.append(Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,enemy_missile,4,'down')) 
+                                enemy.bullets.append(Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,bullet_type,4,'down'))#7 arguments
                                 
                                 bullets_left-=1
                             
@@ -365,8 +367,8 @@ class Game():
                 layer = j                      
             else:
                 break
-        for enemy in enemy_list:
-            print('X Direction: ' + str(enemy.x_dir) + ' Y Direction: ' + str(enemy.y_dir))
+        #for enemy in enemy_list:
+        #    print('X Direction: ' + str(enemy.x_dir) + ' Y Direction: ' + str(enemy.y_dir))
         return enemy_list
            
     def game_over_screen(self):

@@ -3,18 +3,21 @@ import pygame
 class Projectile(object):
     bullet_types = ['6','5','7','4','8']
     
-    def __init__(self,x,y,width,height,image,vel,dir):
+    def __init__(self,x,y,width,height,type,vel,dir):#7 arguments
         self.x = x 
         self.y = y
         self.x_vel = 3
         self.y_vel = 3
         self.width = width
         self.height = height
-        self.image = image
+        self.image = pygame.image.load('enemy_missile.png')
         self.vel = vel
         self.hitbox = (self.x,self.y,self.width,self.height)
         self.x_dir = 0
         self.y_dir = 0
+        self.type = type
+        
+        self.set_direction()
         
     def draw(self,win):
         win.blit(self.image,(self.x,self.y))
@@ -32,22 +35,30 @@ class Projectile(object):
             self.x_dir = 1
             self.y_dir = 1
             self.x_vel = 1
-            self.y_vel = 2        
+            self.y_vel = 2     
+            missile = 'enemy_5_position.png'
+            self.image = pygame.image.load(missile)    
         elif self.type == '6':
             self.x_dir = 0
             self.y_dir = 1
             self.x_vel = 0
-            self.y_vel = 3     
+            self.y_vel = 3  
+            missile = 'enemy_6_position.png'
+            self.image = pygame.image.load(missile)    
         elif self.type == '7':
             self.x_dir = -1
             self.y_dir = 1
             self.x_vel = 1
             self.y_vel = 2
+            missile = 'enemy_7_position.png'
+            self.image = pygame.image.load(missile) 
         elif self.type == '8':
             self.x_dir = -1
             self.y_dir = 1
             self.x_vel = 2
             self.y_vel = 1
+            missile = 'enemy_8_position.png'
+            self.image = pygame.image.load(missile) 
             
     def reverse(self):
         self.x_dir*=-1
@@ -96,8 +107,8 @@ class Projectile(object):
         #    self.hitbox = (self.x,self.y,self.width,self.height)
 
 class Basic_Enemy_Projectile(Projectile):
-    def __init__(self,x,y,width,height,image,vel,dir):
-        super().__init__(x,y,width,height,image,vel,dir)
+    def __init__(self,x,y,width,height,type,vel,dir):
+        super().__init__(x,y,width,height,type,vel,dir)#always choosing 6 o clock image
         self.hitbox = (self.x+20,self.y,8,height+20)
         
     def draw(self,win):
