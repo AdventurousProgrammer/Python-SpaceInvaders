@@ -240,8 +240,8 @@ class Game():
                 if bullet.y + bullet.height > screen_height or bullet.x < 20 or bullet.x + bullet.width >= screen_width:
                     enemy.bullets.pop(enemy.bullets.index(bullet))
                     continue
-                bullet.y += bullet.vel
-                bullet.hitbox = (bullet.x + 28,bullet.y + 25,7,bullet.height - 10)
+                bullet.move()
+                
                 #(self.x+20,self.y,8,height+20)
             
                 if self.overlap_check(bullet,player_ship):

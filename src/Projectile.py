@@ -3,7 +3,9 @@ import pygame
 class Projectile(object):
     bullet_types = ['6','5','7','4','8']
     
-    def __init__(self,x,y,width,height,type,vel,dir):#7 arguments
+    # dir is not being used right now, it probably will not be
+    # type is used to update hitbox of all enemy types, right now only Basic_Enemy_Projectile, and Player_Projectile
+    def __init__(self,x,y,width,height,type,vel,dir):
         self.x = x 
         self.y = y
         self.x_vel = 3
@@ -118,6 +120,9 @@ class Basic_Enemy_Projectile(Projectile):
         #print('Drawing Enemy Missile hitbox')
         pygame.draw.rect(win,(255,0,0),self.hitbox,2)
         
+    def move(self):
+        super().move()
+        self.hitbox = (self.x + 28,self.y + 25,7,self.height - 10)
 class Player_Projectile(Projectile):
     #def __init__(self,x,y,width,height,type,image,vel,dir):
     #    super().__init__(x,y,width,height,type,image,vel,dir)
@@ -132,7 +137,7 @@ class Player_Projectile(Projectile):
     
     def draw(self,win):
         super(Player_Projectile,self).draw(win)
-        print(self.hitbox)
+        #print(self.hitbox)
         #pygame.draw.rect(win,(255,0,0),self.hitbox+self.offset,2)
         
     def move(self):
