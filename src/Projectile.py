@@ -16,7 +16,7 @@ class Projectile(object):
         self.x_dir = 0
         self.y_dir = 0
         self.type = type
-        
+
         self.set_direction()
         
     def draw(self,win):
@@ -75,7 +75,8 @@ class Projectile(object):
         down = self.y_dir == 1 and self.x_dir == 0
         down_right = self.x_dir == 1 and self.y_dir == 1
 #
-
+    #TODO: update hitboxes dependent on missile types
+    #update_hitboxes(missile_type)
        # print('Down Right? : ' + str(down_right))
         
         if right:
@@ -99,7 +100,7 @@ class Projectile(object):
             self.x+=self.x_vel*self.x_dir
             self.y+=self.y_vel*self.y_dir
         
-        #self.update_hitbox()
+        #self.hitbox = 
         #if self.missile_type == 'player':
         #    self.hitbox = (self.x + 9,self.y,self.width,self.height + 10)
         #    print('Player Missile hitbox')
@@ -110,9 +111,11 @@ class Basic_Enemy_Projectile(Projectile):
     def __init__(self,x,y,width,height,type,vel,dir):
         super().__init__(x,y,width,height,type,vel,dir)#always choosing 6 o clock image
         self.hitbox = (self.x+20,self.y,8,height+20)
+        self.number = -1
         
     def draw(self,win):
         super(Basic_Enemy_Projectile, self).draw(win)
+        #print('Drawing Enemy Missile hitbox')
         pygame.draw.rect(win,(255,0,0),self.hitbox,2)
         
 class Player_Projectile(Projectile):

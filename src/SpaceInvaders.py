@@ -161,6 +161,7 @@ class Game():
     def enemy_status_updates(self,old_frame,curent_frame,player_ship,shoot_flag,index):
         bullet_list_length = len(Projectile.bullet_types)
         for enemy in self.enemies:
+            #print('Num Bullets: ' + str(enemy.num_bullets))
             if self.overlap_check(enemy,player_ship):
                 
                     #old_frame = current_frame
@@ -180,7 +181,7 @@ class Game():
                 #        fire = False
                 num_active_bullets = len(enemy.bullets)
                 bullets_left = enemy.num_bullets - num_active_bullets
-                
+                '''
                 if num_active_bullets == 0:                     
                     while num_active_bullets < enemy.num_bullets:        
                         if enemy.type == 'Erratic_Multishoot_Enemy':
@@ -196,19 +197,27 @@ class Game():
                         bullet = Basic_Enemy_Projectile(current_bullet_position_x,current_bullet_position_y,40,26,bullet_type,4,'down')
                         enemy.bullets.append(bullet)  
                         num_active_bullets+=1
+                        
+                '''
 
+                '''
                 if len(enemy.bullets) > 0:
                     last_bullet = enemy.bullets[-1]
                     if self._distance_delay(50,last_bullet.x,last_bullet.y,current_bullet_position_x,current_bullet_position_y) == False:
                         fire = False
-                
+                '''
+                        
                 if fire == True:
                     #need to create bullets of different directions
                     add_bullet = True
                     if enemy.num_bullets == 1:
-                        enemy.bullets.append(Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,enemy_missile,4,'down'))
+                        bullet = Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,'6',4,'down')
+                        enemy.bullets.append(bullet)
+                        bullet.number = len(enemy.bullets)
+                        #print('Shot bullet Hitbox: ' + str(bullet.hitbox))
                     else:
                         bullets_left = enemy.num_bullets - len(enemy.bullets)
+                        print('Number of Bullets Left: ' + str(bullets_left))
                         while bullets_left > 0:
                             #if len(enemy.bullets) > 0:
                             #    last_bullet = enemy.bullets[-1]
@@ -220,6 +229,7 @@ class Game():
                                 else:
                                     index = bullets_left-1
                                 bullet_type = Projectile.bullet_types[index]
+                                print('Bullet Type: '+ str(bullet_type))
                                 enemy.bullets.append(Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,bullet_type,4,'down'))#7 arguments
                                 
                                 bullets_left-=1
@@ -231,11 +241,13 @@ class Game():
                     enemy.bullets.pop(enemy.bullets.index(bullet))
                     continue
                 bullet.y += bullet.vel
-                bullet.hitbox = (bullet.x + 8,bullet.y,8,bullet.height - 10)
+                bullet.hitbox = (bullet.x + 28,bullet.y + 25,7,bullet.height - 10)
+                #(self.x+20,self.y,8,height+20)
             
                 if self.overlap_check(bullet,player_ship):
                     player_ship.hit(5)
                     enemy.bullets.pop(enemy.bullets.index(bullet))
+                    print('Bullet ID: ' + str(bullet.number))
                     continue
                     
                 for p_bullet in player_ship.bullets:
