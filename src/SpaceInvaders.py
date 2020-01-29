@@ -447,6 +447,7 @@ class Game():
             old_frame = self.process_user_input(player_ship,old_frame,current_frame,a)
             self.redraw_game_window(player_ship)
            # b = datetime.datetime.now()
+           
         self.game_over_screen()
 
 def main():
