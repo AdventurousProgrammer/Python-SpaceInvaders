@@ -112,7 +112,7 @@ class Projectile(object):
 class Basic_Enemy_Projectile(Projectile):
     def __init__(self,x,y,width,height,type,vel,dir):
         super().__init__(x,y,width,height,type,vel,dir)#always choosing 6 o clock image
-        self.hitbox = (self.x+20,self.y,8,height+20)
+        self.hitbox = (self.x + 28,self.y + 25,7,self.height - 10)
         self.number = -1
         
     def draw(self,win):

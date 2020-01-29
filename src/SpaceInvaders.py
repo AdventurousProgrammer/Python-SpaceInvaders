@@ -6,7 +6,7 @@ from Projectile import *
 from Player import *
 import math
 import datetime
-from pygame.examples.aliens import Shot
+
 
 pygame.init()
 
@@ -104,6 +104,12 @@ class Game():
             
         for bullet in player_ship.bullets:
             bullet.draw(win) 
+        
+        
+        #enemy = self.enemies[0]
+        #bullet = Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width - 30,enemy.y + enemy.height - 25,40,26,'6',4,'down')
+        #win.blit(bullet.image,(bullet.x,bullet.y))
+        
             
         score = 'Score: ' + str(player_ship.score)
         health = 'Health: ' + str(player_ship.health)
@@ -172,7 +178,7 @@ class Game():
                 #for each bullet make sure the distance is greater than 50 pixels
                 fire = True
                 current_bullet_position_x = enemy.x + 0.5*enemy.width - 30
-                current_bullet_position_y = enemy.y + enemy.height - 20
+                current_bullet_position_y = enemy.y + enemy.height - 25
                 #need condition for no bullets having been Shot
 
                 #if len(enemy.bullets) > 0:
@@ -211,7 +217,8 @@ class Game():
                     #need to create bullets of different directions
                     add_bullet = True
                     if enemy.num_bullets == 1:
-                        bullet = Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,'6',4,'down')
+                        #original x location: enemy.x + 0.5*enemy.width
+                        bullet = Basic_Enemy_Projectile(current_bullet_position_x,current_bullet_position_y,40,26,'6',4,'down')
                         enemy.bullets.append(bullet)
                         bullet.number = len(enemy.bullets)
                         #print('Shot bullet Hitbox: ' + str(bullet.hitbox))
@@ -230,7 +237,7 @@ class Game():
                                     index = bullets_left-1
                                 bullet_type = Projectile.bullet_types[index]
                                 print('Bullet Type: '+ str(bullet_type))
-                                enemy.bullets.append(Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width,enemy.y + enemy.height,40,26,bullet_type,4,'down'))#7 arguments
+                                enemy.bullets.append(Basic_Enemy_Projectile(current_bullet_position_x,current_bullet_position_y,40,26,bullet_type,4,'down'))#7 arguments
                                 
                                 bullets_left-=1
                             
