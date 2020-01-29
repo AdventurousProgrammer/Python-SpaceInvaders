@@ -90,8 +90,30 @@ class Game():
             
         player_ship.hitbox = (player_ship.x,player_ship.y,player_ship.width,player_ship.height)
         #a = datetime.datetime.now()
+        self._process_weapons(player_ship,old_frame,current_frame)
+        
         return old_frame
     
+    def _process_weapons(self,player_ship,old_frame,current_frame):
+        keys = pygame.key.get_pressed()
+        
+        if keys[pygame.K_1]:
+            player_ship.weapon = 'REGULAR SHOOTING'
+            print('REGULAR SHOOTING')
+        elif keys[pygame.K_2]:
+            player_ship.weapon = 'RAPID FIRE'
+            print('RAPID FIRE')
+        elif keys[pygame.K_3]:
+            player_ship.weapon = 'MULTI SHOOTING'
+            print('MULTI SHOOTING')
+        elif keys[pygame.K_4]:
+            player_ship.weapon = 'ROCKET'
+            print('ROCKET')
+        elif keys[pygame.K_5]:
+            player_ship.weapon = 'LASER'
+            print('LASER')
+            
+
     def redraw_game_window(self,player_ship):
         win.blit(bg,(0,0))
         player_ship.draw(win)
@@ -105,11 +127,13 @@ class Game():
         for bullet in player_ship.bullets:
             bullet.draw(win) 
         
-        
-        #enemy = self.enemies[0]
-        #bullet = Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width - 30,enemy.y + enemy.height - 25,40,26,'6',4,'down')
-        #win.blit(bullet.image,(bullet.x,bullet.y))
-        
+        '''
+        Code Added for debugging purposes to figure out proper missile locations
+    
+        enemy = self.enemies[0]
+        bullet = Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width - 30,enemy.y + enemy.height - 25,40,26,'6',4,'down')
+        win.blit(bullet.image,(bullet.x,bullet.y))
+        '''
             
         score = 'Score: ' + str(player_ship.score)
         health = 'Health: ' + str(player_ship.health)

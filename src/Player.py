@@ -17,6 +17,7 @@ class Player(object):
         self.hitbox = (self.x,self.y,self.width,self.height)
         self.bullets = list()
         self.num_bullets = 50
+        self.weapon = 'REGULAR SHOOTING'
         
     def draw(self,win):
         win.blit(self.image,(self.x,self.y))
