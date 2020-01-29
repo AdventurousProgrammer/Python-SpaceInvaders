@@ -326,7 +326,6 @@ class Game():
         
         while(self.row < len(self.data)):
             if int(self.data[self.row][0]) == self.level:
-                #enemy_bullets = int(self.data[self.row][4])
                 num_bullets = int(self.data[self.row][3])
                 player_ship.num_bullets = num_bullets
                 num_enemy_type = int(self.data[self.row][2])
