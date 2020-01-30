@@ -58,7 +58,9 @@ class Game():
     level = 1
     row = 1    
     num_level_enemies = 0
-
+    prev = False
+    current = False
+    
     def _distance_delay(self,pixel_delay,x1,y1,x2,y2): 
         dist = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)  
         return dist > pixel_delay  
@@ -90,30 +92,44 @@ class Game():
             
         player_ship.hitbox = (player_ship.x,player_ship.y,player_ship.width,player_ship.height)
         #a = datetime.datetime.now()
-        self._process_weapons(player_ship,old_frame,current_frame)
+        #self._process_weapons(player_ship,old_frame,current_frame)
         
         return old_frame
     
-    def _process_weapons(self,player_ship,old_frame,current_frame):
+    def process_weapons(self,player_ship):
+        #time start
         keys = pygame.key.get_pressed()
-        
-        if keys[pygame.K_1]:
-            player_ship.weapon = 'REGULAR SHOOTING'
-            print('REGULAR SHOOTING')
-        elif keys[pygame.K_2]:
-            player_ship.weapon = 'RAPID FIRE'
-            print('RAPID FIRE')
-        elif keys[pygame.K_3]:
-            player_ship.weapon = 'MULTI SHOOTING'
-            print('MULTI SHOOTING')
-        elif keys[pygame.K_4]:
-            player_ship.weapon = 'ROCKET'
-            print('ROCKET')
-        elif keys[pygame.K_5]:
-            player_ship.weapon = 'LASER'
-            print('LASER')
+        #need to add a delay here
+        #if initialize:
+        #    prev = False
+        #    current = False
+        #if not initialize:
+        self.prev = self.current
+        self.current = keys[pygame.K_1] or keys[pygame.K_2] or keys[pygame.K_3] or keys[pygame.K_4] or keys[pygame.K_5]
+        if self.current and not self.prev:
+        #BUTTONS WILL NEVER BE PRESSED AT SAME TIME MOST LIKELY
+            if keys[pygame.K_1]:
+                player_ship.weapon = 'REGULAR SHOOTING' 
+                print('Current 1 Key Pressed: ' + str(self.current))
+                print('Previous 1 Key Pressed: ' + str(self.prev))
+                print('REGULAR SHOOTING')
+            elif keys[pygame.K_2]:
+                player_ship.weapon = 'RAPID FIRE'
+                print('Current 2 Key Pressed: ' + str(self.current))
+                print('Previous 2 Key Pressed: ' + str(self.prev))
+                print('RAPID FIRE')
+            elif keys[pygame.K_3]:
+                player_ship.weapon = 'MULTI SHOOTING'
+                print('MULTI SHOOTING')
+            elif keys[pygame.K_4]:
+                player_ship.weapon = 'ROCKET'
+                print('ROCKET')
+            elif keys[pygame.K_5]:
+                player_ship.weapon = 'LASER'
+                print('LASER')
             
-
+            
+            
     def redraw_game_window(self,player_ship):
         win.blit(bg,(0,0))
         player_ship.draw(win)
@@ -133,6 +149,7 @@ class Game():
         enemy = self.enemies[0]
         bullet = Basic_Enemy_Projectile(enemy.x + 0.5*enemy.width - 30,enemy.y + enemy.height - 25,40,26,'6',4,'down')
         win.blit(bullet.image,(bullet.x,bullet.y))
+        
         '''
             
         score = 'Score: ' + str(player_ship.score)
@@ -450,9 +467,13 @@ class Game():
         b = 0
         index = 0
         a = datetime.datetime.now()
+        x = datetime.datetime.now()
+        initialize = True
         while self.running:
+            #START OF FRAME
             a = datetime.datetime.now()
             clock.tick(30)
+            #print('Frames Per Second: ' + str(clock.get_fps()))
             current_frame += 1
             current_movement += 1
             
@@ -467,11 +488,20 @@ class Game():
             old_movement = self.move_enemies_individually(old_movement,current_movement)
             self.enemy_status_updates(old_frame,current_frame,player_ship,shoot_flag,index)
             self.enemy_ship_bullet_updates(player_ship)
-            self.player_ship_bullet_updates(player_ship)        
+            self.player_ship_bullet_updates(player_ship)      
             old_frame = self.process_user_input(player_ship,old_frame,current_frame,a)
+            delta = datetime.datetime.now() - x
+            #print('Time Period of Self Process Weapons: ' + str(delta.total_seconds() * 1000))
+            #x = datetime.datetime.now()
+            #print(datetime.datetime.now())
+            self.process_weapons(player_ship)
+            initialize = False
             self.redraw_game_window(player_ship)
-           # b = datetime.datetime.now()
-           
+            b = datetime.datetime.now()
+            delta = b - a
+            #print('Frame Duration: ' + str(delta.total_seconds() * 1000))
+            #Frame Duration = 33 to 36 ms
+            #END OF FRAME
         self.game_over_screen()
 
 def main():
