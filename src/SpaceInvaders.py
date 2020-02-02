@@ -299,7 +299,7 @@ class Game():
         enemy = Enemy(0,0,32,31,multiple_movement_enemy_image,2,2,1,1,5,random.randint(0,6),screen_width,screen_height,0,0)
         j = 0
         levels = list()
-        for ii in range(0,len(self.data))
+        for ii in range(0,len(self.data)):
             levels.append(self.data[ii][0])
         
         while(self.row < len(self.data)):
