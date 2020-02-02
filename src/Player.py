@@ -26,4 +26,7 @@ class Player(object):
     def hit(self,pts_lost):
         self.health -= pts_lost
         
+    def shoot(self):
+        pass
+        
             
