@@ -60,6 +60,9 @@ class Game():
     num_level_enemies = 0
     prev = False
     current = False
+    prev_spacebar = False
+    current_spacebar = True
+    count = 0
     
     def _distance_delay(self,pixel_delay,x1,y1,x2,y2): 
         dist = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)  
@@ -85,14 +88,31 @@ class Game():
         
         self._process_weapons(player_ship)
         
-        if keys[pygame.K_SPACE] and len(player_ship.bullets) < player_ship.num_bullets:
+        #if keys[pygame.K_SPACE] and len(player_ship.bullets) < player_ship.num_bullets:
+        #    print('INSIDE PROCESS USER INPUT: CREATING BULLET NOW')
+        #    initialize = False
+        if self.count == 0:
+            initialize = True
+        else:
+            initialize = False
+                  
+        if initialize:
+            self.prev_spacebar = False
+        else:
+            self.prev_spacebar = self.current_spacebar
+                
+        keys = pygame.key.get_pressed()
+        self.current_spacebar = keys[pygame.K_SPACE]
+        player_ship.shoot(self,old_frame,current_frame,initialize)
+        initialize = False
+        self.count = 1
             #trigger shoot method
-            if current_frame - old_frame > 5:
+            ### DO NOT REMOVE WILL NEED CODE LATER: if current_frame - old_frame > 5:
                # b = datetime.datetime.now()
-                old_frame = current_frame
+            ### DO NOT REMOVE WILL NEED CODE LATER: old_frame = current_frame
                # delta = b - a
                # print('Bullet Time Difference: ' + str(delta.total_seconds()*1000))
-                player_ship.bullets.append(Player_Projectile(player_ship.x + 0.5*player_ship.width - 12,player_ship.y,12,7,small_missile,5,player_ship.dir))
+               # player_ship.bullets.append(Player_Projectile(player_ship.x + 0.5*player_ship.width - 12,player_ship.y,12,7,small_missile,5,player_ship.dir))
         
         return old_frame
     
@@ -122,7 +142,6 @@ class Game():
             elif keys[pygame.K_5]:
                 player_ship.weapon = 'LASER'
                 print('LASER')
-            
             
             
     def redraw_game_window(self,player_ship):
@@ -426,12 +445,13 @@ class Game():
             self.enemy_ship_bullet_updates(player_ship)
             self.player_ship_bullet_updates(player_ship)      
             old_frame = self.process_user_input(player_ship,old_frame,current_frame,a)
+            #initialize = False
             delta = datetime.datetime.now() - x
             #print('Time Period of Self Process Weapons: ' + str(delta.total_seconds() * 1000))
             #x = datetime.datetime.now()
             #print(datetime.datetime.now())
             #self._process_weapons(player_ship)
-            initialize = False
+            
             self.redraw_game_window(player_ship)
             b = datetime.datetime.now()
             delta = b - a

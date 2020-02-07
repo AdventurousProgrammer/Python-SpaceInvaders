@@ -133,14 +133,14 @@ class Player_Projectile(Projectile):
         
     def __init__(self,x,y,width,height,image,vel,dir):#not doing anything with dir field
         super().__init__(x,y,width,height,image,vel,dir)#7 arguments
-        self.hitbox = (self.x + 9,self.y,self.width,self.height + 10)
+        self.hitbox = (self.x + 9,self.y,self.width - 5,self.height + 10)
     
     def draw(self,win):
         super(Player_Projectile,self).draw(win)
         #print(self.hitbox)
-        #pygame.draw.rect(win,(255,0,0),self.hitbox+self.offset,2)
+        pygame.draw.rect(win,(255,0,0),self.hitbox,2)
         
     def move(self):
         self.y-=self.y_vel
-        self.hitbox = (self.x + 9,self.y,self.width,self.height + 10)
+        self.hitbox = (self.x + 9,self.y,self.width - 5,self.height + 10)
         
