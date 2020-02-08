@@ -103,10 +103,10 @@ class Game():
                 
         keys = pygame.key.get_pressed()
         self.current_spacebar = keys[pygame.K_SPACE]
-        player_ship.shoot(self,old_frame,current_frame,initialize)
+        old_frame = player_ship.shoot(self,old_frame,current_frame,initialize)
         initialize = False
         self.count = 1
-            #trigger shoot method
+            #trigger shoot method  
             ### DO NOT REMOVE WILL NEED CODE LATER: if current_frame - old_frame > 5:
                # b = datetime.datetime.now()
             ### DO NOT REMOVE WILL NEED CODE LATER: old_frame = current_frame
@@ -123,25 +123,32 @@ class Game():
         self.current = keys[pygame.K_1] or keys[pygame.K_2] or keys[pygame.K_3] or keys[pygame.K_4] or keys[pygame.K_5]
         if self.current and not self.prev:
         #BUTTONS WILL NEVER BE PRESSED AT SAME TIME MOST LIKELY
+            orange = (255,165,0)
+            size = 20
+            x = screen_width/2
+            y = 500
+            
             if keys[pygame.K_1]:
                 player_ship.weapon = 'REGULAR SHOOTING' 
-                print('Current 1 Key Pressed: ' + str(self.current))
-                print('Previous 1 Key Pressed: ' + str(self.prev))
+                draw_text('REGULAR SHOOTING',size,orange,x,y)
+                #print('Current 1 Key Pressed: ' + str(self.current))
+                #print('Previous 1 Key Pressed: ' + str(self.prev))
                 print('REGULAR SHOOTING')
             elif keys[pygame.K_2]:
                 player_ship.weapon = 'RAPID FIRE'
-                print('Current 2 Key Pressed: ' + str(self.current))
-                print('Previous 2 Key Pressed: ' + str(self.prev))
-                print('RAPID FIRE')
+                draw_text('REGULAR SHOOTING',size,orange,x,y)
+                #print('Current 2 Key Pressed: ' + str(self.current))
+                #print('Previous 2 Key Pressed: ' + str(self.prev))
+                #print('RAPID FIRE')
             elif keys[pygame.K_3]:
                 player_ship.weapon = 'MULTI SHOOTING'
-                print('MULTI SHOOTING')
+                #print('MULTI SHOOTING')
             elif keys[pygame.K_4]:
                 player_ship.weapon = 'ROCKET'
-                print('ROCKET')
+                #print('ROCKET')
             elif keys[pygame.K_5]:
                 player_ship.weapon = 'LASER'
-                print('LASER')
+                #print('LASER')
             
             
     def redraw_game_window(self,player_ship):

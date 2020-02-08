@@ -31,7 +31,9 @@ class Player(object):
     def shoot(self,game,old_frame,current_frame,initialize):
         #decide how many bullets can be fired based on how many bullets are in list and capacity
         num_bullets_to_add = self.num_bullets - len(self.bullets)
-       
+        small_missile = pygame.image.load('small_missile.png')
+        ship_center_x = self.x + 0.5*self.width - 12
+        ship_center_y = self.y
         #if initialize:
        #     game.prev_spacebar = False
        # else:
@@ -40,21 +42,30 @@ class Player(object):
             #always call shoot, how to deal with initialization
         #game.prev_spacebar = game.current_spacebar
        
-        #if statements on weapon types
+        #if statements on weapon types 
         #if normal shooting, pass in code for press and release here, decide how many bullets must be fired
         if num_bullets_to_add > 0:
-            print('CAN ADD BULLET')
+            #print('CAN ADD BULLET')
             if self.weapon == 'REGULAR SHOOTING':
                 print('previous spacebar: ' + str(game.prev_spacebar))
                 print('current spacebar: ' + str(game.current_spacebar))
                 if game.current_spacebar and not game.prev_spacebar:
                     print(datetime.datetime.now())
-                    ship_center_x = self.x + 0.5*self.width - 12
-                    ship_center_y = self.y
-                    small_missile = pygame.image.load('small_missile.png')
                     bullet = Player_Projectile(ship_center_x,ship_center_y,12,7,small_missile,5,self.dir)
                     self.bullets.append(bullet)
                     print('Inside Player Shoot Method: Executing Normal Shooting' )
+            
+            elif self.weapon == 'RAPID FIRE':
+                if game.current_spacebar and current_frame - old_frame > 10:
+                    print('Inside Player Shoot Method: Executing Rapid Fire Shooting')
+                    old_frame = current_frame
+                    bullet = Player_Projectile(ship_center_x,ship_center_y,12,7,small_missile,5,self.dir)
+                    self.bullets.append(bullet)
+        
+        return old_frame       
+               # print('Bullet Time Difference: ' + str(delta.total_seconds()*1000))
+                
+
         #if rapid fire shooting pass in code for using delays here, same code in process_input, currently being used on spacebar
         #no other code should have rapid fire settings
         #Multi shooting
