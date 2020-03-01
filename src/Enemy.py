@@ -175,7 +175,7 @@ class Erratic_Movement_Enemy(Enemy):
         if current_movement - old_movement >= 50:
             direction = random.randint(0,7)
             super().set_direction(direction)
-            print(self.name + ' Direction: ' + str(direction))
+            #print(self.name + ' Direction: ' + str(direction))
             x = True
         super().move()
         return x
@@ -190,7 +190,7 @@ class Deflector_Enemy(Enemy):
         destroyed = super().hit(player_ship)
         if destroyed == False:
             bullet.reverse()
-            print('Bullet Deflected')
+            #print('Bullet Deflected')
         return destroyed
             
     

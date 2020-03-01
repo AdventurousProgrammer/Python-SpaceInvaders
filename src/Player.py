@@ -47,20 +47,50 @@ class Player(object):
         if num_bullets_to_add > 0:
             #print('CAN ADD BULLET')
             if self.weapon == 'REGULAR SHOOTING':
-                print('previous spacebar: ' + str(game.prev_spacebar))
-                print('current spacebar: ' + str(game.current_spacebar))
+                #print('previous spacebar: ' + str(game.prev_spacebar))
+                #print('current spacebar: ' + str(game.current_spacebar))
                 if game.current_spacebar and not game.prev_spacebar:
-                    print(datetime.datetime.now())
+                #    print(datetime.datetime.now())
                     bullet = Player_Projectile(ship_center_x,ship_center_y,12,7,small_missile,5,self.dir)
                     self.bullets.append(bullet)
-                    print('Inside Player Shoot Method: Executing Normal Shooting' )
+                #    print('Inside Player Shoot Method: Executing Normal Shooting' )
             
             elif self.weapon == 'RAPID FIRE':
                 if game.current_spacebar and current_frame - old_frame > 10:
-                    print('Inside Player Shoot Method: Executing Rapid Fire Shooting')
+                    #print('Inside Player Shoot Method: Executing Rapid Fire Shooting')
                     old_frame = current_frame
                     bullet = Player_Projectile(ship_center_x,ship_center_y,12,7,small_missile,5,self.dir)
                     self.bullets.append(bullet)
+                    
+            elif self.weapon == 'MULTI SHOOTING':
+                #press and release spacebar for each 5 missile or 3 missile shot
+                cur_i = 0
+                offset = 10 #pixel offset from center
+                if num_bullets_to_add > 3 and num_bullets_to_add < 5:
+                    max_i = 1
+                else:
+                    max_i = 2
+                bullet_position_x = 0
+                if game.current_spacebar and not game.prev_spacebar:
+                    while cur_i <= max_i:
+                        if cur_i == 0:
+                            bullet_position_x = ship_center_x
+                            bullet = Player_Projectile(bullet_position_x,ship_center_y,12,7,small_missile,5,self.dir)
+                            self.bullets.append(bullet)
+                            cur_i += 1
+                        else:
+                            bullet_position_x = ship_center_x + cur_i*offset
+                            bullet = Player_Projectile(bullet_position_x,ship_center_y,12,7,small_missile,10,self.dir)
+                            #print('Bullet Position x = ' + str(bullet_position_x))
+                            self.bullets.append(bullet)
+                            bullet_position_x = ship_center_x + cur_i*offset*-1 # for left bullet
+                            #print('Bullet Position x = ' + str(bullet_position_x))
+                            self.bullets.append(bullet)
+                            cur_i += 1
+                        
+                        
+                
+                
         
         return old_frame       
                # print('Bullet Time Difference: ' + str(delta.total_seconds()*1000))

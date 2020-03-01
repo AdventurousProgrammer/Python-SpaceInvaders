@@ -117,6 +117,7 @@ class Game():
         return old_frame
     
     def _process_weapons(self,player_ship):
+        
         keys = pygame.key.get_pressed()
     
         self.prev = self.current
@@ -151,7 +152,10 @@ class Game():
                 #print('LASER')
             
             
-    def redraw_game_window(self,player_ship):
+    def redraw_game_window(self,player_ship,old,cur,debugging_dump):
+        '''
+        @debugging_dump : added for debugging purposes, to check if one missile is moving faster than the others
+        '''
         win.blit(bg,(0,0))
         player_ship.draw(win)
         
@@ -160,16 +164,37 @@ class Game():
                 enemy.draw(win)
             for bullet in enemy.bullets:
                 bullet.draw(win)
-            
+        index = 0    
         for bullet in player_ship.bullets:
-            bullet.draw(win) 
+            text_x = 100
+            text_y = 580
+            bullet_location_x = 'Bullet X: ' + str(bullet.x) 
+            bullet_location_y = ' Bullet Y: ' + str(bullet.y)
             
+            if cur - old > 30:
+                print('UPDATE FRAME NOW')
+                
+                print('CUR: ' + str(cur))
+                print('OLD: ' + str(old))
+                
+                draw_text(bullet_location_x,20,(255,51,153),text_x + index*150,text_y)
+                draw_text(bullet_location_y,20,(255,51,153),text_x + index*150,text_y + 75)
+                index += 1
+                old = cur
+                       
+            bullet.draw(win) 
+    
         score = 'Score: ' + str(player_ship.score)
         health = 'Health: ' + str(player_ship.health)
+        weapon = 'Current Weapon: ' + str(player_ship.weapon)
         draw_text(score,30,(0,255,0),45,0)
         draw_text(health,30,(255,0,0),351,0)
+        draw_text(weapon,20,(255,165,0),150,500)
+        
         pygame.draw.rect(win,(255,0,0),(450,0,player_ship.health,15))
         pygame.display.update()
+    
+        return old
     
     def move_enemies_as_unit(self,current,old):
         directions = list()
@@ -230,7 +255,7 @@ class Game():
                         #print('Shot bullet Hitbox: ' + str(bullet.hitbox))
                     else:
                         bullets_left = enemy.num_bullets - len(enemy.bullets)
-                        print('Number of Bullets Left: ' + str(bullets_left))
+                        #print('Number of Bullets Left: ' + str(bullets_left))
                         while bullets_left > 0:
                             #if len(enemy.bullets) > 0:
                             #    last_bullet = enemy.bullets[-1]
@@ -242,7 +267,7 @@ class Game():
                                 else:
                                     index = bullets_left-1
                                 bullet_type = Projectile.bullet_types[index]
-                                print('Bullet Type: '+ str(bullet_type))
+                                #print('Bullet Type: '+ str(bullet_type))
                                 enemy.bullets.append(Basic_Enemy_Projectile(current_bullet_position_x,current_bullet_position_y,40,26,bullet_type,4,'down'))#7 arguments
                                 
                                 bullets_left-=1
@@ -258,7 +283,7 @@ class Game():
                 if self.overlap_check(bullet,player_ship):
                     player_ship.hit(5)
                     enemy.bullets.pop(enemy.bullets.index(bullet))
-                    print('Bullet ID: ' + str(bullet.number))
+                    #print('Bullet ID: ' + str(bullet.number))
                     continue
                     
                 for p_bullet in player_ship.bullets:
@@ -427,6 +452,10 @@ class Game():
         current_movement = 0
         a = 0
         b = 0
+        ###START: variables for redraw game window
+        old = 0
+        cur = 0
+        ##END: variables for redraw game window
         index = 0
         a = datetime.datetime.now()
         x = datetime.datetime.now()
@@ -438,6 +467,7 @@ class Game():
             #print('Frames Per Second: ' + str(clock.get_fps()))
             current_frame += 1
             current_movement += 1
+            cur += 1
             
             self.update_level(player_ship)
             shoot_flag = random.randint(0,9)
@@ -453,15 +483,15 @@ class Game():
             self.player_ship_bullet_updates(player_ship)      
             old_frame = self.process_user_input(player_ship,old_frame,current_frame,a)
             #initialize = False
-            delta = datetime.datetime.now() - x
+            #delta = datetime.datetime.now() - x
             #print('Time Period of Self Process Weapons: ' + str(delta.total_seconds() * 1000))
             #x = datetime.datetime.now()
             #print(datetime.datetime.now())
             #self._process_weapons(player_ship)
             
-            self.redraw_game_window(player_ship)
+            old = self.redraw_game_window(player_ship,old,cur)
             b = datetime.datetime.now()
-            delta = b - a
+            #delta = b - a
             #print('Frame Duration: ' + str(delta.total_seconds() * 1000))
             #Frame Duration = 33 to 36 ms
             #END OF FRAME
