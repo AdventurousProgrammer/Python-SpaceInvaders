@@ -18,7 +18,7 @@ class Projectile(object):
         self.x_dir = 0
         self.y_dir = 0
         self.type = type
-
+        self.dead = False
         self.set_direction()
         
     def draw(self,win):

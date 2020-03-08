@@ -42,6 +42,18 @@ num_levels = 10
 distance_index = 0
 clock = pygame.time.Clock()
 
+def draw_debugging_dump_output(debugging_dump):
+    index = 0
+    for i in range(0,len(debugging_dump) - 1):
+        text_x = 100
+        text_y = 580           
+        bullet_description_x = debugging_dump[i]
+        bullet_description_y = debugging_dump[i + 1]
+        draw_text(bullet_description_x,20,(255,51,153),text_x + index*150,text_y)
+        draw_text(bullet_description_y,20,(255,51,153),text_x + index*150,text_y + 75)
+        i += 1
+        index += 1
+        
 def draw_text(text,size,color,x,y):
     font = pygame.font.SysFont('comicsans',size)
     text_surface = font.render(text,True,color)
@@ -68,7 +80,7 @@ class Game():
         dist = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)  
         return dist > pixel_delay  
     
-    def process_user_input(self,player_ship,old_frame,current_frame,a):
+    def process_user_input(self,player_ship,old_frame,current_frame,a,debugging_dump):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
@@ -103,7 +115,7 @@ class Game():
                 
         keys = pygame.key.get_pressed()
         self.current_spacebar = keys[pygame.K_SPACE]
-        old_frame = player_ship.shoot(self,old_frame,current_frame,initialize)
+        old_frame = player_ship.shoot(self,old_frame,current_frame,initialize,debugging_dump)
         initialize = False
         self.count = 1
             #trigger shoot method  
@@ -154,9 +166,14 @@ class Game():
             
     def redraw_game_window(self,player_ship,old,cur,debugging_dump):
         '''
+        @
         @debugging_dump : added for debugging purposes, to check if one missile is moving faster than the others
+        
+        What I need to do is get the position at frame 1, then 30 frames later get y position for all the missiles and display the difference
+        keep the difference up for 30 frames, where again the difference is updated and displayed until 30 frames pass
         '''
         win.blit(bg,(0,0))
+        draw_debugging_dump_output(debugging_dump)
         player_ship.draw(win)
         
         for enemy in self.enemies:
@@ -173,10 +190,10 @@ class Game():
             
             if cur - old > 30:
                 print('UPDATE FRAME NOW')
-                
+                # add flag to update difference, so when flag is set, then display all differences, which is stored in debugging dump at beginning
                 print('CUR: ' + str(cur))
                 print('OLD: ' + str(old))
-                
+                #take difference in position here debugging_dump[i] -== bullet.y
                 draw_text(bullet_location_x,20,(255,51,153),text_x + index*150,text_y)
                 draw_text(bullet_location_y,20,(255,51,153),text_x + index*150,text_y + 75)
                 index += 1
@@ -272,29 +289,43 @@ class Game():
                                 
                                 bullets_left-=1
                             
-    def enemy_ship_bullet_updates(self,player_ship):
+    def enemy_ship_bullet_updates(self,player_ship,debugging_dump):
         for enemy in self.enemies:
             for bullet in enemy.bullets:
                 if bullet.y + bullet.height > screen_height or bullet.x < 20 or bullet.x + bullet.width >= screen_width:
-                    enemy.bullets.pop(enemy.bullets.index(bullet))
+                    removal_index = enemy.bullets.index(bullet)
+                    enemy.bullets.pop(removal_index)
+                    #removing the x and y bullet descriptions, which are subsequent elements, so 2 pops needed
+                   
                     continue
                 bullet.move()
             
                 if self.overlap_check(bullet,player_ship):
                     player_ship.hit(5)
-                    enemy.bullets.pop(enemy.bullets.index(bullet))
-                    #print('Bullet ID: ' + str(bullet.number))
+                    removal_index = enemy.bullets.index(bullet)
+                    enemy.bullets.pop(removal_index)
+                    #removing the x and y bullet descriptions, which are subsequent elements, so 2 pops needed
+                    
                     continue
                     
                 for p_bullet in player_ship.bullets:
                     if self.overlap_check(p_bullet,bullet):
-                        enemy.bullets.pop(enemy.bullets.index(bullet))
-                        player_ship.bullets.pop(player_ship.bullets.index(p_bullet))
-    
-    def player_ship_bullet_updates(self,player_ship):
+                        removal_index = enemy.bullets.index(bullet)
+                        enemy.bullets.pop(removal_index)
+                    #removing the x and y bullet descriptions, which are subsequent elements, so 2 pops needed
+                        
+                        #enemy.bullets.pop(enemy.bullets.index(bullet))
+                        
+                        debugging_dump.pop(2*removal_index)
+                        debugging_dump.pop(2*removal_index)
+                        
+    def player_ship_bullet_updates(self,player_ship,debugging_dump):
         for bullet in player_ship.bullets:
             if bullet.y < 0:
-                player_ship.bullets.pop(player_ship.bullets.index(bullet))
+                removal_index = player_ship.bullets.index(bullet)
+                player_ship.bullets.pop(removal_index)   
+                debugging_dump.pop(2*removal_index)
+                debugging_dump.pop(2*removal_index)
                 continue
             bullet.move()
                 
@@ -309,7 +340,10 @@ class Game():
                         enemy.dead = enemy.hit(player_ship)
                     if enemy.dead == True:
                         self.num_level_enemies-=1
-                    player_ship.bullets.pop(player_ship.bullets.index(bullet))        
+                    removal_index = player_ship.bullets.index(bullet)
+                    player_ship.bullets.pop(removal_index)   
+                    debugging_dump.pop(2*removal_index)
+                    debugging_dump.pop(2*removal_index)        
     
     def overlap_check(self,sprite1,sprite2):
         top_in = sprite1.hitbox[1] > sprite2.hitbox[1] and sprite1.hitbox[1] < sprite2.hitbox[1] + sprite2.hitbox[3]
@@ -459,6 +493,7 @@ class Game():
         index = 0
         a = datetime.datetime.now()
         x = datetime.datetime.now()
+        debugging_dump = list()
         initialize = True
         while self.running:
             #START OF FRAME
@@ -479,9 +514,9 @@ class Game():
             self.move_enemies_as_unit(current_frame,old_frame) 
             old_movement = self.move_enemies_individually(old_movement,current_movement)
             self.enemy_status_updates(old_frame,current_frame,player_ship,shoot_flag,index)
-            self.enemy_ship_bullet_updates(player_ship)
-            self.player_ship_bullet_updates(player_ship)      
-            old_frame = self.process_user_input(player_ship,old_frame,current_frame,a)
+            self.enemy_ship_bullet_updates(player_ship,debugging_dump)
+            self.player_ship_bullet_updates(player_ship,debugging_dump)      
+            old_frame = self.process_user_input(player_ship,old_frame,current_frame,a,debugging_dump)
             #initialize = False
             #delta = datetime.datetime.now() - x
             #print('Time Period of Self Process Weapons: ' + str(delta.total_seconds() * 1000))
@@ -489,7 +524,7 @@ class Game():
             #print(datetime.datetime.now())
             #self._process_weapons(player_ship)
             
-            old = self.redraw_game_window(player_ship,old,cur)
+            old = self.redraw_game_window(player_ship,old,cur,debugging_dump)
             b = datetime.datetime.now()
             #delta = b - a
             #print('Frame Duration: ' + str(delta.total_seconds() * 1000))
