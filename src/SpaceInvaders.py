@@ -269,24 +269,17 @@ class Game():
                         bullet = Basic_Enemy_Projectile(current_bullet_position_x,current_bullet_position_y,40,26,'6',4,'down')
                         enemy.bullets.append(bullet)
                         bullet.number = len(enemy.bullets)
-                        #print('Shot bullet Hitbox: ' + str(bullet.hitbox))
+                       
                     else:
                         bullets_left = enemy.num_bullets - len(enemy.bullets)
                         #print('Number of Bullets Left: ' + str(bullets_left))
-                        while bullets_left > 0:
-                            #if len(enemy.bullets) > 0:
-                            #    last_bullet = enemy.bullets[-1]
-                            #    if self._distance_delay(50,last_bullet.x,last_bullet.y,current_bullet_position_x,current_bullet_position_y) == False:
-                            #        add_bullet=False       
-                                    
+                        while bullets_left > 0:           
                                 if enemy.type == 'Erratic_Multishoot_Enemy':
                                     index = random.randint(0,bullet_list_length - 1)
                                 else:
                                     index = bullets_left-1
                                 bullet_type = Projectile.bullet_types[index]
-                                #print('Bullet Type: '+ str(bullet_type))
                                 enemy.bullets.append(Basic_Enemy_Projectile(current_bullet_position_x,current_bullet_position_y,40,26,bullet_type,4,'down'))#7 arguments
-                                
                                 bullets_left-=1
                             
     def enemy_ship_bullet_updates(self,player_ship,debugging_dump):
@@ -295,8 +288,6 @@ class Game():
                 if bullet.y + bullet.height > screen_height or bullet.x < 20 or bullet.x + bullet.width >= screen_width:
                     removal_index = enemy.bullets.index(bullet)
                     enemy.bullets.pop(removal_index)
-                    #removing the x and y bullet descriptions, which are subsequent elements, so 2 pops needed
-                   
                     continue
                 bullet.move()
             
@@ -304,18 +295,12 @@ class Game():
                     player_ship.hit(5)
                     removal_index = enemy.bullets.index(bullet)
                     enemy.bullets.pop(removal_index)
-                    #removing the x and y bullet descriptions, which are subsequent elements, so 2 pops needed
-                    
                     continue
                     
                 for p_bullet in player_ship.bullets:
                     if self.overlap_check(p_bullet,bullet):
                         removal_index = enemy.bullets.index(bullet)
                         enemy.bullets.pop(removal_index)
-                    #removing the x and y bullet descriptions, which are subsequent elements, so 2 pops needed
-                        
-                        #enemy.bullets.pop(enemy.bullets.index(bullet))
-                        
                         debugging_dump.pop(2*removal_index)
                         debugging_dump.pop(2*removal_index)
                         
@@ -419,7 +404,6 @@ class Game():
                         y_loc = top_y_boundary + j*(sprite_height + y_sep)
                         width = 32
                         height = 32
-                            #dir = 0 #random.randint(0,8)
                         x_vel = 3
                         y_vel = 1
                         score = 7
@@ -440,8 +424,6 @@ class Game():
                             enemy = Deflector_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health) 
                         enemy.name = 'Enemy: ' + str(k)                        
                         enemy.set_direction(dir)
-                        #dir += 1
-                        
                         enemy_list.append(enemy)
                         
                     j+=1
@@ -486,20 +468,16 @@ class Game():
         current_movement = 0
         a = 0
         b = 0
-        ###START: variables for redraw game window
         old = 0
         cur = 0
-        ##END: variables for redraw game window
         index = 0
         a = datetime.datetime.now()
         x = datetime.datetime.now()
         debugging_dump = list()
         initialize = True
         while self.running:
-            #START OF FRAME
             a = datetime.datetime.now()
             clock.tick(30)
-            #print('Frames Per Second: ' + str(clock.get_fps()))
             current_frame += 1
             current_movement += 1
             cur += 1
@@ -517,19 +495,9 @@ class Game():
             self.enemy_ship_bullet_updates(player_ship,debugging_dump)
             self.player_ship_bullet_updates(player_ship,debugging_dump)      
             old_frame = self.process_user_input(player_ship,old_frame,current_frame,a,debugging_dump)
-            #initialize = False
-            #delta = datetime.datetime.now() - x
-            #print('Time Period of Self Process Weapons: ' + str(delta.total_seconds() * 1000))
-            #x = datetime.datetime.now()
-            #print(datetime.datetime.now())
-            #self._process_weapons(player_ship)
-            
             old = self.redraw_game_window(player_ship,old,cur,debugging_dump)
             b = datetime.datetime.now()
-            #delta = b - a
-            #print('Frame Duration: ' + str(delta.total_seconds() * 1000))
-            #Frame Duration = 33 to 36 ms
-            #END OF FRAME
+            
         self.game_over_screen()
 
 def main():
