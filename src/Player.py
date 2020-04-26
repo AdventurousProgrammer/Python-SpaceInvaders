@@ -29,15 +29,8 @@ class Player(object):
         
     def hit(self,pts_lost):
         self.health -= pts_lost
-        
-    def update_dump(self,bullet,dump):
-        last_bullet = self.bullets[len(self.bullets) - 1]                
-        bullet_description_x = 'Bullet X Location: ' + str(last_bullet.x)
-        bullet_description_y = 'Bullet Y Location: ' + str(last_bullet.y)                
-        dump.append(bullet_description_x)
-        dump.append(bullet_description_y) 
             
-    def shoot(self,game,old_frame,current_frame,initialize,debugging_dump):#any debugging dump can be passed in
+    def shoot(self,game,old_frame,current_frame,initialize):#any debugging dump can be passed in
         '''
         @FUTURE_NOTICE: really should try to create own test suite, to isolate these problems, or own test functions
         overloading original functions, do not know if that is a good idea
@@ -53,14 +46,12 @@ class Player(object):
                 if game.current_spacebar and not game.prev_spacebar:
                     bullet = Player_Projectile(ship_center_x,ship_center_y,12,7,small_missile,5,self.dir)
                     self.bullets.append(bullet)
-                    self.update_dump(bullet,debugging_dump)
             
             elif self.weapon == 'RAPID FIRE':
                 if game.current_spacebar and current_frame - old_frame > 10:
                     old_frame = current_frame
                     bullet = Player_Projectile(ship_center_x,ship_center_y,12,7,small_missile,5,self.dir)
                     self.bullets.append(bullet)
-                    self.update_dump(bullet,debugging_dump)
                     
             elif self.weapon == 'MULTI SHOOTING':
                 # press and release spacebar for each 5 missile or 3 missile shot
@@ -77,16 +68,13 @@ class Player(object):
                             bullet_position_x = ship_center_x
                             bullet = Player_Projectile(bullet_position_x,ship_center_y,12,7,small_missile,5,self.dir)
                             self.bullets.append(bullet)
-                            self.update_dump(bullet,debugging_dump)
                             cur_i += 1
                         else:
                             bullet_position_x = ship_center_x + cur_i*offset
                             bullet = Player_Projectile(bullet_position_x,ship_center_y,12,7,small_missile,10,self.dir)
                             self.bullets.append(bullet)
-                            self.update_dump(bullet,debugging_dump)
                             bullet_position_x = ship_center_x + cur_i*offset*-1 
-                            bullet = Player_Projectile(bullet_position_x,ship_center_y,12,7,small_missile,10,self.dir)
-                            self.update_dump(bullet,debugging_dump)                   
+                            bullet = Player_Projectile(bullet_position_x,ship_center_y,12,7,small_missile,10,self.dir)                   
                             self.bullets.append(bullet)
                             cur_i += 1
                  
