@@ -190,7 +190,7 @@ class Deflector_Enemy(Enemy):
         destroyed = super().hit(player_ship)
         if destroyed == False:
             bullet.reverse()
-            #print('Bullet Deflected')
+            print('Bullet Deflected')
         return destroyed
             
     

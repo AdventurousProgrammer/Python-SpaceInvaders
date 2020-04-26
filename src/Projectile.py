@@ -118,7 +118,13 @@ class Player_Projectile(Projectile):
         super(Player_Projectile,self).draw(win)
         #print(self.hitbox)
         pygame.draw.rect(win,(255,0,0),self.hitbox,2)
-        
+    
+    '''
+    TODO
+    1. Quit overriding the move method in Projectile
+    2. Set x and y directions to bullet
+    
+    '''    
     def move(self):
         self.y-=self.y_vel
         self.hitbox = (self.x + 9,self.y,self.width - 5,self.height + 10)

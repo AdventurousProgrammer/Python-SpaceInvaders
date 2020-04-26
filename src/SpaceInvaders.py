@@ -44,18 +44,9 @@ clock = pygame.time.Clock()
 
 # need a debugging function
 
-def draw_debugging_dump_output(debugging_dump):
-    index = 0
-    for i in range(0,len(debugging_dump) - 1):
-        text_x = 100
-        text_y = 580           
-        bullet_description_x = debugging_dump[i]
-        bullet_description_y = debugging_dump[i + 1]
-        draw_text(bullet_description_x,20,(255,51,153),text_x + index*150,text_y)
-        draw_text(bullet_description_y,20,(255,51,153),text_x + index*150,text_y + 75)
-        i += 1
-        index += 1
-        
+def log(text,x,y):
+    draw_text(text,20,(255,255,255),x,y)   
+    
 def draw_text(text,size,color,x,y):
     font = pygame.font.SysFont('comicsans',size)
     text_surface = font.render(text,True,color)
@@ -473,6 +464,7 @@ class Game():
         x = datetime.datetime.now()
         
         initialize = True
+        
         while self.running:
             a = datetime.datetime.now()
             clock.tick(30)
