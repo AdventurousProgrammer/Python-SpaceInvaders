@@ -152,6 +152,7 @@ class Enemy(object):
     
     def hit(self,player_ship):
         self.health-=1
+        print('Enemy Health: ' + str(self.health))
         if self.health <= 0:
             player_ship.score += self.score
             return True
@@ -186,10 +187,14 @@ class Deflector_Enemy(Enemy):
         self.hitbox = (x,y,width,height)
         self.type = 'Deflector_Enemy' 
         
-    def hit(self,player_ship,bullet):
+    def hit(self,player_ship,bullet,current_frame):
+        '''
+        Enemy is hit, now there needs to be a delay, of a few (< 9) frames, and the bullet can move again later
+        '''
         destroyed = super().hit(player_ship)
         if destroyed == False:
-            bullet.reverse()
+            bullet.reverse(current_frame)
+            print()
             print('Bullet Deflected')
         return destroyed
             
