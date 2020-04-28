@@ -305,30 +305,30 @@ class Game():
                 player_ship.bullets.pop(removal_index)   
                 continue
             bullet.move(current_frame)
-                
-            for enemy in self.enemies:
-                if enemy.dead == True:
-                    continue
-                overlap = self.overlap_check(bullet,enemy)
-                if overlap:#possible issue here
-                    if enemy.type == 'Deflector_Enemy':
-                        # if bullet is not reversed you can go ahead and hit enemy
-                        # otherwise you cannot hit any enemy or enemy bullet
-                        # but can hit player
-                        enemy.dead = enemy.hit(player_ship,bullet,current_frame)
-                        print()
-                        print('Bullet Direction: ' + str(bullet.y_dir))
-                        if enemy.dead == True:
-                            removal_index = player_ship.bullets.index(bullet)
-                            player_ship.bullets.pop(removal_index)                        
-                    else:
-                        removal_index = player_ship.bullets.index(bullet)
-                        player_ship.bullets.pop(removal_index)
-                        enemy.dead = enemy.hit(player_ship)
+            
+            if bullet.reversed == False:   
+                for enemy in self.enemies:
                     if enemy.dead == True:
-                        self.num_level_enemies-=1
+                        continue
+                    overlap = self.overlap_check(bullet,enemy)
+                    if overlap:#possible issue here
+                        if enemy.type == 'Deflector_Enemy':
+                            # if bullet is not reversed you can go ahead and hit enemy
+                            # otherwise you cannot hit any enemy or enemy bullet
+                            # but can hit player
+                            enemy.dead = enemy.hit(player_ship,bullet,current_frame)
+                            print()
+                            print('Bullet Direction: ' + str(bullet.y_dir))
+                            if enemy.dead == True:
+                                removal_index = player_ship.bullets.index(bullet)
+                                player_ship.bullets.pop(removal_index)                        
+                        else:
+                            removal_index = player_ship.bullets.index(bullet)
+                            player_ship.bullets.pop(removal_index)
+                            enemy.dead = enemy.hit(player_ship)
+                        if enemy.dead == True:
+                            self.num_level_enemies-=1
                                
-    
     def overlap_check(self,sprite1,sprite2):
         top_in = sprite1.hitbox[1] > sprite2.hitbox[1] and sprite1.hitbox[1] < sprite2.hitbox[1] + sprite2.hitbox[3]
         bottom_in = sprite1.hitbox[1] + sprite1.hitbox[3] > sprite2.hitbox[1] and sprite1.hitbox[1] + sprite1.hitbox[3] < sprite2.hitbox[1] + sprite2.hitbox[3]
@@ -367,6 +367,7 @@ class Game():
         num_enemy_type = 0
         enemy = Enemy(0,0,32,31,multiple_movement_enemy_image,2,2,1,1,5,random.randint(0,6),screen_width,screen_height,0,0)
         j = 0
+        
         levels = list()
         for ii in range(0,len(self.data)):
             levels.append(self.data[ii][0])
@@ -379,11 +380,12 @@ class Game():
                 enemy_type = str(self.data[self.row][1])
                 enemy_num_bullets = int(self.data[self.row][4])
                 enemy_health = int(self.data[self.row][5])
-                #print(str(self.data[self.row]))
+                
                 if str(self.data[self.row][6]) == 'True':
                     self.testing = True
                 else:
                     self.testing = False
+                    
                 self.row+=1
                 margin = 20
                 x_sep = 30
@@ -434,8 +436,7 @@ class Game():
                 layer = j                      
             else:
                 break
-        #for enemy in enemy_list:
-        #    print('X Direction: ' + str(enemy.x_dir) + ' Y Direction: ' + str(enemy.y_dir))
+       
         return enemy_list
            
     def game_over_screen(self):

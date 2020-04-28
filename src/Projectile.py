@@ -140,7 +140,7 @@ class Player_Projectile(Projectile):
     '''    
     def move(self,current_frame):
         if self.reversed == True:
-            if current_frame - self.last_stopped > 5:
+            if current_frame - self.last_stopped > 0:
                 print('Move Again')
                 self.reversed = False
                 super().move()

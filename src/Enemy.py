@@ -157,8 +157,7 @@ class Enemy(object):
             player_ship.score += self.score
             return True
         return False
-        
-            
+                    
 class Multiple_Movement_Enemy(Enemy):
     def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health):
         super().__init__(x, y, width, height, image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health)
@@ -196,7 +195,4 @@ class Deflector_Enemy(Enemy):
             bullet.reverse(current_frame)
             print()
             print('Bullet Deflected')
-        return destroyed
-            
-    
-                
+        return destroyed          
