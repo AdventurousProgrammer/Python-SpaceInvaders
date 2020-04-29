@@ -124,20 +124,6 @@ class Player_Projectile(Projectile):
         super(Player_Projectile,self).draw(win)
         pygame.draw.rect(win,(255,0,0),self.hitbox,2)
     
-    '''
-    TODO
-    1. Quit overriding the move method in Projectile
-    2. Set x and y directions to bullet
-    
-    IF bullet has been reversed
-       IF time difference is great enough
-           SET reversal to FALSE, DO NOT set self.last_stopped
-               MOVE BULLET AND HIT BOX
-        ELSE DO NOT do anything
-               
-    ELSE (bullet has not been reversed)
-    MOVE BULLET AND HITBOX ACCORDINGLY
-    '''    
     def move(self,current_frame):
         if self.reversed == True:
             if current_frame - self.last_stopped > 0:

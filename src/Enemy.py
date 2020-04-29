@@ -1,5 +1,6 @@
 import pygame
 import random
+from SpaceInvaders import current_frame
 
 class Enemy(object):
     move_next_level = False
@@ -196,3 +197,42 @@ class Deflector_Enemy(Enemy):
             print()
             print('Bullet Deflected')
         return destroyed          
+    
+class Boss(Enemy):
+    def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health,current_movement,previous_movement):
+        super().__init__(x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health)
+        self.hitbox = (x,y,width,height)
+        self.previous_health = health
+        self.wave = 1
+        self.current_movement = 0
+        self.previous_movement = 0
+        
+    def set_wave(self):
+        three_quarter_health = 0.75 * self.health
+        half_health = 0.5 * self.health
+        quarter_health = 0.25 * self.health
+        
+        if self.previous_health > three_quarter_health and self.health < three_quarter_health:
+            self.wave = 2
+            # can shoot multi directional bullets
+            
+        elif self.previous_health > self.half_health and self.health < half_health:
+            self.x_vel = 5
+            self.wave = 3
+            
+        elif self.previous_health > self.quarter_health and self.health < quarter_health:
+            # move like a random movement enemy 
+            self.wave = 4
+            
+    def move(self):
+        if self.wave == 1 or self.wave == 2 or self.wave == 3:
+            self.set_direction(0)
+            Multiple_Movement_Enemy.move()
+            
+        elif self.wave == 4:
+            Erratic_Movement_Enemy.move()
+            
+        
+        
+        
+        

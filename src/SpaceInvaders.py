@@ -34,6 +34,7 @@ enemy_width = 32
 enemy_height = 31
 
 enemy_missile = pygame.image.load('enemy_missile.png')
+print('Missile Image Type: ' + str(type(enemy_missile)))
 
 current_frame = 0
 old_frame = 0
@@ -214,6 +215,8 @@ class Game():
             if enemy.dead == True:
                 continue
             if enemy.type == 'Erratic_Movement_Enemy':
+                continue
+            if 'Boss' in enemy.type:
                 continue         
             if move_flag == False:
                 directions = enemy.check_out_of_bounds()    
@@ -246,9 +249,10 @@ class Game():
         bullet_list_length = len(Projectile.bullet_types)
         for enemy in self.enemies:
             if self.overlap_check(enemy,player_ship):
-                player_ship.hit(5)        
+                player_ship.hit(5) # 2. update code to reflect bullet's damage capacity field        
             if enemy.shoot == shoot_flag and len(enemy.bullets) < enemy.num_bullets and enemy.dead == False:
                 fire = True
+                # 1. position can be encapsulated by set bullet position function, just call enemy.shoot function, returns tuple with x and y position of bullry
                 current_bullet_position_x = enemy.x + 0.5*enemy.width - 30
                 current_bullet_position_y = enemy.y + enemy.height - 25
 
@@ -256,19 +260,19 @@ class Game():
                 bullets_left = enemy.num_bullets - num_active_bullets
                 
                 if fire == True:
-                    #need to create bullets of different directions
                     add_bullet = True
+                    default_position = '6'
                     if enemy.num_bullets == 1:
-                        #original x location: enemy.x + 0.5*enemy.width
-                        bullet = Basic_Enemy_Projectile(current_bullet_position_x,current_bullet_position_y,40,26,'6','enemy_missile.png',4,'down')
+                        # will eventually need to change instantiation based on bullet type, will refactor that later
+                        
+                        bullet = Basic_Enemy_Projectile(current_bullet_position_x,current_bullet_position_y,40,26,default_position,'enemy_missile.png',4,'down')
                         enemy.bullets.append(bullet)
                         bullet.number = len(enemy.bullets)
                        
                     else:
                         bullets_left = enemy.num_bullets - len(enemy.bullets)
-                        #print('Number of Bullets Left: ' + str(bullets_left))
                         while bullets_left > 0:           
-                                if enemy.type == 'Erratic_Multishoot_Enemy':
+                                if enemy.type == 'Erratic_Multishoot_Enemy': 
                                     index = random.randint(0,bullet_list_length - 1)
                                 else:
                                     index = bullets_left-1
@@ -286,12 +290,12 @@ class Game():
                 bullet.move()
             
                 if self.overlap_check(bullet,player_ship):
-                    player_ship.hit(5)
+                    player_ship.hit(5) # 3. update code to reflect bullet's damage capacity field
                     removal_index = enemy.bullets.index(bullet)
                     enemy.bullets.pop(removal_index)
                     continue
                     
-                for p_bullet in player_ship.bullets:
+                for p_bullet in player_ship.bullets: 
                     if self.overlap_check(p_bullet,bullet):
                         removal_index = enemy.bullets.index(bullet)
                         enemy.bullets.pop(removal_index)
@@ -313,9 +317,6 @@ class Game():
                     overlap = self.overlap_check(bullet,enemy)
                     if overlap:#possible issue here
                         if enemy.type == 'Deflector_Enemy':
-                            # if bullet is not reversed you can go ahead and hit enemy
-                            # otherwise you cannot hit any enemy or enemy bullet
-                            # but can hit player
                             enemy.dead = enemy.hit(player_ship,bullet,current_frame)
                             print()
                             print('Bullet Direction: ' + str(bullet.y_dir))
@@ -352,7 +353,7 @@ class Game():
         file_reader = csv.reader(level_layout)
         self.data = list(file_reader)
             
-    def set_level(self,player_ship):
+    def set_level(self,player_ship,current_frame,old_frame):
         enemy_list = []
         left_x_boundary = 50
         top_y_boundary = 50
@@ -428,6 +429,9 @@ class Game():
                             enemy = Erratic_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)   
                         elif enemy_type == 'Deflector_Enemy':
                             enemy = Deflector_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health) 
+                        elif enemy_type == 'Boss':
+                            enemy = Boss(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)
+                            
                         enemy.name = 'Enemy: ' + str(k)                        
                         enemy.set_direction(dir)
                         enemy_list.append(enemy)
@@ -495,11 +499,29 @@ class Game():
                 self.running = False
                 break
             
+            '''
+            Call set_wave function for bosses
+            
+                set_wave checks for health transition and puts boss in proper wave, which sets proper wave properties
+                
+           Add Bosses to levels.csv
+           Added boss to bosses list in game class based on whether enemy contains Boss in name
+           Place Boss in proper location
+           
+           Cannot call enemy_status_updates for bosses, they have different bullet positions (that is one thing that I know of that is different)
+           need separate boss_status_updates function for each boss, keep it in Game class for now, might move to Boss class later
+           
+           Will be able to call enemy_status_updates for bosses as well, after numbered changes are made 
+            '''
             if self.testing == False:
                 self.move_enemies_as_unit(current_frame,old_frame) 
                 old_movement = self.move_enemies_individually(old_movement,current_movement)
                 self.enemy_status_updates(old_frame,current_frame,player_ship,shoot_flag,index)
                 self.enemy_ship_bullet_updates(player_ship)
+                for boss in self.bosses:
+                    boss.set_wave()
+                    
+                    
                 
             self.player_ship_bullet_updates(player_ship,current_frame)      
             old_frame = self.process_user_input(player_ship,old_frame,current_frame,a)
