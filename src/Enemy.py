@@ -1,6 +1,7 @@
 import pygame
 import random
 from SpaceInvaders import current_frame
+from Projectile import *
 
 class Enemy(object):
     move_next_level = False
@@ -36,7 +37,7 @@ class Enemy(object):
     #    else:
     #        index = bullets_left - 1
     #    bullet_type = Projectile.bullet_types[index]
-    #    enemy.bullets.append(Basic_Enemy_Projectile(self.x + 0.5*self.width,self.y + self.height,40,26,bullet_type,enemy_missile,4,'down')) 
+    #    self.bullets.append(Basic_Enemy_Projectile(self.x + 0.5*self.width,self.y + self.height,40,26,bullet_type,enemy_missile,4,'down')) 
                                    
     def set_direction(self,dir):
         x_dir = 0 
@@ -158,6 +159,39 @@ class Enemy(object):
             player_ship.score += self.score
             return True
         return False
+    
+    def _bullet_creation(self):
+        current_bullet_position_x = self.x + 0.5*self.width - 30
+        current_bullet_position_y = self.y + self.height - 25
+        
+        return (current_bullet_position_x,current_bullet_position_y)
+    def shoot(self,fire):
+        current_bullet_position_x, current_bullet_position_y = self._bullet_creation()
+        num_active_bullets = len(self.bullets)
+        bullets_left = self.num_bullets - num_active_bullets
+                
+        if fire == True:
+            add_bullet = True
+            default_position = '6'
+            if self.num_bullets == 1:
+                # will eventually need to change instantiation based on bullet type, will refactor that later
+                
+                bullet = Basic_Enemy_Projectile(current_bullet_position_x,current_bullet_position_y,40,26,default_position,'enemy_missile.png',4,'down')
+                self.bullets.append(bullet)
+                bullet.number = len(self.bullets)
+               
+            else:
+                bullet_list_length = len(Projectile.bullet_types)
+                bullets_left = self.num_bullets - len(self.bullets)
+                while bullets_left > 0:           
+                        if self.type == 'Erratic_Multishoot_Enemy': 
+                            index = random.randint(0,bullet_list_length - 1)
+                        else:
+                            index = bullets_left-1
+                        bullet_type = Projectile.bullet_types[index]
+                        self.bullets.append(Basic_Enemy_Projectile(current_bullet_position_x,current_bullet_position_y,40,26,bullet_type,'enemy_missile.png',4,'down'))#7 arguments
+                        bullets_left-=1
+                  
                     
 class Multiple_Movement_Enemy(Enemy):
     def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health):
@@ -221,7 +255,7 @@ class Boss(Enemy):
             self.wave = 3
             
         elif self.previous_health > self.quarter_health and self.health < quarter_health:
-            # move like a random movement enemy 
+            # move like a random movement self 
             self.wave = 4
             
     def move(self):
@@ -231,6 +265,17 @@ class Boss(Enemy):
             
         elif self.wave == 4:
             Erratic_Movement_Enemy.move()
+            
+    def _bullet_creation(self):
+        current_bullet_position_x = self.x + 0.5*self.width - 30
+        current_bullet_position_y = self.y + self.height - 25
+        
+    def shoot(self,fire):
+        current_bullet_position_x,current_bullet_position_y = self._bullet_creation()
+        super().shoot(fire)
+        # create red bullets
+        # have them going all positions 4 - 8 o'clock 
+        # make them red color
             
         
         

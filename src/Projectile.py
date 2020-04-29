@@ -19,18 +19,18 @@ class Projectile(object):
         self.dead = False
         
         if self.type != 'player':
-            self.set_direction()
+            self.set_direction(image)
             
     def draw(self,win):
         win.blit(self.image,(self.x,self.y))
         
-    def set_direction(self):
+    def set_direction(self,image_name):
         if self.type == '4':
             self.x_dir = 1
             self.y_dir = 1
             self.x_vel = 2
             self.y_vel = 3
-            missile = 'enemy_4_position.png'
+            missile = image_name
             self.image = pygame.image.load(missile)      
             self.y_vel = 1      
         elif self.type == '5':
@@ -38,28 +38,28 @@ class Projectile(object):
             self.y_dir = 1
             self.x_vel = 1
             self.y_vel = 2     
-            missile = 'enemy_5_position.png'
+            missile = image_name
             self.image = pygame.image.load(missile)    
         elif self.type == '6':
             self.x_dir = 0
             self.y_dir = 1
             self.x_vel = 0
             self.y_vel = 3  
-            missile = 'enemy_6_position.png'
+            missile = image_name
             self.image = pygame.image.load(missile)    
         elif self.type == '7':
             self.x_dir = -1
             self.y_dir = 1
             self.x_vel = 1
             self.y_vel = 2
-            missile = 'enemy_7_position.png'
+            missile = image_name
             self.image = pygame.image.load(missile) 
         elif self.type == '8':
             self.x_dir = -1
             self.y_dir = 1
             self.x_vel = 2
             self.y_vel = 1
-            missile = 'enemy_8_position.png'
+            missile = image_name
             self.image = pygame.image.load(missile) 
             
     def reverse(self,current_frame):
