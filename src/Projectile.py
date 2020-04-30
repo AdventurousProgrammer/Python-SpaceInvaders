@@ -2,21 +2,22 @@ import pygame
 
 class Projectile(object):
     bullet_types = ['6','5','7','4','8']
-    
-    def __init__(self,x,y,width,height,type,image,vel,dir):
+    images = ['']
+    def __init__(self,x,y,width,height,type,image,vel,dir,damage):
         self.x = x 
         self.y = y
         self.x_vel = 5
         self.y_vel = 7
-        self.width = width
-        self.height = height
         self.image = pygame.image.load(image)
         self.vel = vel
+        self.width = self.image.get_width()
+        self.height = height
         self.hitbox = (self.x,self.y,self.width,self.height)
         self.x_dir = 0
         self.y_dir = 0
         self.type = type
         self.dead = False
+        self.damage = damage
         
         if self.type != 'player':
             self.set_direction(image)
@@ -100,8 +101,8 @@ class Projectile(object):
             self.y+=self.y_vel*self.y_dir
         
 class Basic_Enemy_Projectile(Projectile):
-    def __init__(self,x,y,width,height,type,image,vel,dir):
-        super().__init__(x,y,width,height,type,image,vel,dir)
+    def __init__(self,x,y,width,height,type,image,vel,dir,damage):
+        super().__init__(x,y,width,height,type,image,vel,dir,damage)
         self.hitbox = (self.x + 28,self.y + 25,7,self.height - 10)
         self.number = -1
         
@@ -114,8 +115,8 @@ class Basic_Enemy_Projectile(Projectile):
         self.hitbox = (self.x + 28,self.y + 25,7,self.height - 10)
         
 class Player_Projectile(Projectile):
-    def __init__(self,x,y,width,height,type,image,vel,dir):
-        super().__init__(x,y,width,height,type,image,vel,dir)
+    def __init__(self,x,y,width,height,type,image,vel,dir,damage):
+        super().__init__(x,y,width,height,type,image,vel,dir,damage)
         self.y_dir = -1
         self.reversed = False
         self.hitbox = (self.x + 9,self.y,self.width - 5,self.height + 10)

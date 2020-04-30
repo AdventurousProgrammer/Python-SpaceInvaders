@@ -219,7 +219,7 @@ class Game():
             if 'Boss' in enemy.type:
                 continue         
             if move_flag == False:
-                directions = self.check_out_of_bounds()    
+                directions = enemy.check_out_of_bounds()    
             if len(directions) > 0:   
                 move_flag = True
             for e in self.enemies:
@@ -233,10 +233,10 @@ class Game():
         for enemy in self.enemies:
             if enemy.dead == True:
                 continue
-            if enemy.type == 'Vertical_Enemy' or self.type == 'Horizontal_Enemy':
+            if enemy.type == 'Vertical_Enemy' or enemy.type == 'Horizontal_Enemy':
                 continue
             if enemy.type == 'Erratic_Movement_Enemy':
-                directions = self.check_out_of_bounds()
+                directions = enemy.check_out_of_bounds()
                 if len(directions) > 0:
                     enemy.descend_next_level(directions)
                 x = enemy.move(current_movement,old_movement)
@@ -248,9 +248,9 @@ class Game():
     def enemy_status_updates(self,old_frame,curent_frame,player_ship,shoot_flag,index):
         bullet_list_length = len(Projectile.bullet_types)
         for enemy in self.enemies:
-            if self.overlap_check(self,player_ship):
-                player_ship.hit() # 2. update code to reflect bullet's damage capacity field        
-            if enemy.shoot == shoot_flag and len(enemy.bullets) < enemy.num_bullets and enemy.dead == False:
+            if self.overlap_check(enemy,player_ship):
+                player_ship.hit(5) # 2. update code to reflect bullet's damage capacity field        
+            if enemy.shoot_flag == shoot_flag and len(enemy.bullets) < enemy.num_bullets and enemy.dead == False:
                 fire = True
                 enemy.shoot(fire) 
                 
@@ -259,13 +259,13 @@ class Game():
         for enemy in self.enemies:
             for bullet in enemy.bullets:
                 if bullet.y + bullet.height > screen_height or bullet.x < 20 or bullet.x + bullet.width >= screen_width:
-                    removal_index = self.bullets.index(bullet)
+                    removal_index = enemy.bullets.index(bullet)
                     enemy.bullets.pop(removal_index)
                     continue
                 bullet.move()
             
                 if self.overlap_check(bullet,player_ship):
-                    player_ship.hit(5) # 3. update code to reflect bullet's damage capacity field
+                    player_ship.hit(bullet.damage) # 3. update code to reflect bullet's damage capacity field
                     removal_index = enemy.bullets.index(bullet)
                     enemy.bullets.pop(removal_index)
                     continue
@@ -328,7 +328,7 @@ class Game():
         file_reader = csv.reader(level_layout)
         self.data = list(file_reader)
             
-    def set_level(self,player_ship,current_frame,old_frame):
+    def set_level(self,player_ship):
         enemy_list = []
         left_x_boundary = 50
         top_y_boundary = 50
@@ -405,7 +405,9 @@ class Game():
                         elif enemy_type == 'Deflector_Enemy':
                             enemy = Deflector_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health) 
                         elif enemy_type == 'Boss':
-                            image = pygame.image.load()
+                            image = pygame.image.load('boss_1.png')
+                            width = image.get_width()
+                            height = image.get_height()
                             enemy = Boss(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)
                             
                         enemy.name = 'Enemy: ' + str(k)                        
@@ -494,8 +496,7 @@ class Game():
                 old_movement = self.move_enemies_individually(old_movement,current_movement)
                 self.enemy_status_updates(old_frame,current_frame,player_ship,shoot_flag,index)
                 self.enemy_ship_bullet_updates(player_ship)
-                for boss in self.bosses:
-                    boss.set_wave()
+                
                     
                     
                 

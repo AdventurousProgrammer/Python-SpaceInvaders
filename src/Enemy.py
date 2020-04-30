@@ -18,7 +18,7 @@ class Enemy(object):
         self.y_dir = y_dir
         self.dead = False
         self.score = score
-        self.shoot = shoot
+        self.shoot_flag = shoot
         self.bullets = list()
         self.right_boundary = screen_width - 20
         self.left_boundary = 20
@@ -29,15 +29,6 @@ class Enemy(object):
         self.name = ''
         self.num_bullets = num_bullets
         self.health = health
-    #def shoot(self,bullets_left):
-    #    bullet_list_length = len(Projectile.bullet_types)
-        
-    #    if self.type == 'Erratic_Multishoot_Enemy':
-     #       index = random.randint(0,bullet_list_length - 1)
-    #    else:
-    #        index = bullets_left - 1
-    #    bullet_type = Projectile.bullet_types[index]
-    #    self.bullets.append(Basic_Enemy_Projectile(self.x + 0.5*self.width,self.y + self.height,40,26,bullet_type,enemy_missile,4,'down')) 
                                    
     def set_direction(self,dir):
         x_dir = 0 
@@ -160,23 +151,36 @@ class Enemy(object):
             return True
         return False
     
-    def _bullet_creation(self):
+    def _set_bullet_position(self):
         current_bullet_position_x = self.x + 0.5*self.width - 30
         current_bullet_position_y = self.y + self.height - 25
         
         return (current_bullet_position_x,current_bullet_position_y)
     def shoot(self,fire):
-        current_bullet_position_x, current_bullet_position_y = self._bullet_creation()
+        current_bullet_position_x,current_bullet_position_y = self._set_bullet_position()
         num_active_bullets = len(self.bullets)
         bullets_left = self.num_bullets - num_active_bullets
                 
         if fire == True:
             add_bullet = True
             default_position = '6'
+            if self.type == 'Boss':
+                damage = 10
+            else:
+                damage = 5
+                
             if self.num_bullets == 1:
                 # will eventually need to change instantiation based on bullet type, will refactor that later
                 
-                bullet = Basic_Enemy_Projectile(current_bullet_position_x,current_bullet_position_y,40,26,default_position,'enemy_missile.png',4,'down')
+                # now that the Projectile constructor has changed a bit, image_name is now a field, coming right after type, which 
+                # which needs to get set alongside the type 
+                if self.type == 'Boss':
+                    image = 'boss_6_position.png'
+                else:
+                    image = 'enemy_6_position.png'
+                     # need to change the damage
+                     # need to change the image
+                bullet = Basic_Enemy_Projectile(current_bullet_position_x,current_bullet_position_y,40,26,default_position,image,4,'down',damage)
                 self.bullets.append(bullet)
                 bullet.number = len(self.bullets)
                
@@ -189,7 +193,11 @@ class Enemy(object):
                         else:
                             index = bullets_left-1
                         bullet_type = Projectile.bullet_types[index]
-                        self.bullets.append(Basic_Enemy_Projectile(current_bullet_position_x,current_bullet_position_y,40,26,bullet_type,'enemy_missile.png',4,'down'))#7 arguments
+                        if self.type == 'Boss':
+                            image = 'boss_' + bullet_type + '_position.png'
+                        else:
+                            image = 'enemy_' + bullet_type + '_position.png'
+                        self.bullets.append(Basic_Enemy_Projectile(current_bullet_position_x,current_bullet_position_y,40,26,bullet_type,image,4,'down',damage))#7 arguments
                         bullets_left-=1
                   
                     
@@ -225,7 +233,7 @@ class Deflector_Enemy(Enemy):
         '''
         Enemy is hit, now there needs to be a delay, of a few (< 9) frames, and the bullet can move again later
         '''
-        destroyed = super().hit(player_ship)
+        destroyed = super().hit(player_ship) # going to change next iteration
         if destroyed == False:
             bullet.reverse(current_frame)
             print()
@@ -233,13 +241,14 @@ class Deflector_Enemy(Enemy):
         return destroyed          
     
 class Boss(Enemy):
-    def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health,current_movement,previous_movement):
+    def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health):
         super().__init__(x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health)
         self.hitbox = (x,y,width,height)
         self.previous_health = health
         self.wave = 1
         self.current_movement = 0
         self.previous_movement = 0
+        self.type = 'Boss'
         
     def set_wave(self):
         three_quarter_health = 0.75 * self.health
@@ -266,12 +275,13 @@ class Boss(Enemy):
         elif self.wave == 4:
             Erratic_Movement_Enemy.move()
             
-    def _bullet_creation(self):
+    def _set_bullet_position(self):
         current_bullet_position_x = self.x + 0.5*self.width - 30
         current_bullet_position_y = self.y + self.height - 25
-        
+        return (current_bullet_position_x,current_bullet_position_y)
+    
     def shoot(self,fire):
-        current_bullet_position_x,current_bullet_position_y = self._bullet_creation()
+
         super().shoot(fire)
         # create red bullets
         # have them going all positions 4 - 8 o'clock 
