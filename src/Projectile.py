@@ -24,6 +24,8 @@ class Projectile(object):
             
     def draw(self,win):
         win.blit(self.image,(self.x,self.y))
+
+        pygame.draw.rect(win,(255,255,0),self.hitbox,2)
         
     def set_direction(self,image_name):
         if self.type == '4':
@@ -40,12 +42,15 @@ class Projectile(object):
             self.x_vel = 1
             self.y_vel = 2     
             missile = image_name
+            print('Five O Clock Missile - Image Width: ' + str(self.width))
+            print('Five O Clock Missile - Image Height: ' + str(self.height))
             self.image = pygame.image.load(missile)    
         elif self.type == '6':
             self.x_dir = 0
             self.y_dir = 1
             self.x_vel = 0
-            self.y_vel = 3  
+            self.y_vel = 3
+            self.hitbox = (self.x+20,self.y-30,self.width,self.height)  
             missile = image_name
             self.image = pygame.image.load(missile)    
         elif self.type == '7':
@@ -103,16 +108,17 @@ class Projectile(object):
 class Basic_Enemy_Projectile(Projectile):
     def __init__(self,x,y,width,height,type,image,vel,dir,damage):
         super().__init__(x,y,width,height,type,image,vel,dir,damage)
-        self.hitbox = (self.x + 28,self.y + 25,7,self.height - 10)
+        self.hitbox = (self.x + 35,self.y + 25,7,self.height - 10)
         self.number = -1
         
     def draw(self,win):
         super(Basic_Enemy_Projectile, self).draw(win)
-        pygame.draw.rect(win,(255,0,0),self.hitbox,2)
+        #pygame.draw.rect(win,(255,0,0),self.hitbox,2)
         
     def move(self):
         super().move()
-        self.hitbox = (self.x + 28,self.y + 25,7,self.height - 10)
+        self.hitbox = (self.x+51,self.y+8,self.width-99,self.height-7)
+        #self.hitbox = (self.x + 28,self.y + 25,7,self.height - 10)
         
 class Player_Projectile(Projectile):
     def __init__(self,x,y,width,height,type,image,vel,dir,damage):
