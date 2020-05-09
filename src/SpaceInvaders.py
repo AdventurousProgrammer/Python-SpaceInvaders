@@ -6,7 +6,7 @@ from Projectile import *
 from Player import *
 import math
 import datetime
-
+import sys
 
 pygame.init()
 
@@ -34,7 +34,7 @@ enemy_width = 32
 enemy_height = 31
 
 enemy_missile = pygame.image.load('enemy_missile.png')
-print('Missile Image Type: ' + str(type(enemy_missile)))
+#print('Missile Image Type: ' + str(type(enemy_missile)))
 
 current_frame = 0
 old_frame = 0
@@ -49,16 +49,24 @@ def log(text,x,y):
     draw_text(text,20,(255,255,255),x,y)   
     
 def draw_text(text,size,color,x,y):
-    font = pygame.font.SysFont('comicsans',size)
-    text_surface = font.render(text,True,color)
-    text_rect = text_surface.get_rect()
-    text_rect.midtop = (x,y)
-    win.blit(text_surface,text_rect)
+    try:
+        font = pygame.font.SysFont('comicsans',size)
+        text_surface = font.render(text,True,color)
+        text_rect = text_surface.get_rect()
+        text_rect.midtop = (x,y)
+        win.blit(text_surface,text_rect)
+    except:
+        print('Text = ' + str(text))
 
-
+def print_location(objects):
+    location = ''
+    for object in objects:
+        location = 'X= ' + object.x + ' Y= ' + object.y + ' '
+    print(location)
+        
 class Game():
     enemies = list()
-    font = pygame.font.SysFont('comicsans', 30, True)
+    #font = pygame.font.SysFont('comicsansms', 30, True)
     data = ()
     running = True
     level = 1
@@ -78,7 +86,8 @@ class Game():
     def process_user_input(self,player_ship,old_frame,current_frame,a):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.running = False
+                pygame.quit()
+                exit()
     
         keys = pygame.key.get_pressed()
         
@@ -141,7 +150,7 @@ class Game():
                 draw_text('REGULAR SHOOTING',size,orange,x,y)
                 #print('Current 1 Key Pressed: ' + str(self.current))
                 #print('Previous 1 Key Pressed: ' + str(self.prev))
-                print('REGULAR SHOOTING')
+                # print('REGULAR SHOOTING')
             elif keys[pygame.K_2]:
                 player_ship.weapon = 'RAPID FIRE'
                 draw_text('REGULAR SHOOTING',size,orange,x,y)
@@ -184,10 +193,10 @@ class Game():
             bullet_location_y = ' Bullet Y: ' + str(bullet.y)
             
             if cur - old > 30:
-                print('UPDATE FRAME NOW')
+                # print('UPDATE FRAME NOW')
                 # add flag to update difference, so when flag is set, then display all differences, which is stored in debugging dump at beginning
-                print('CUR: ' + str(cur))
-                print('OLD: ' + str(old))
+                # print('CUR: ' + str(cur))
+                # print('OLD: ' + str(old))
                 #take difference in position here debugging_dump[i] -== bullet.y
                 draw_text(bullet_location_x,20,(255,51,153),text_x + index*150,text_y)
                 draw_text(bullet_location_y,20,(255,51,153),text_x + index*150,text_y + 75)
@@ -249,7 +258,7 @@ class Game():
         bullet_list_length = len(Projectile.bullet_types)
         for enemy in self.enemies:
             if self.overlap_check(enemy,player_ship):
-                player_ship.hit(5) # 2. update code to reflect bullet's damage capacity field        
+                player_ship.hit(5) # 2. update code to reflect bullet's damage capacity field      
             if enemy.shoot_flag == shoot_flag and len(enemy.bullets) < enemy.num_bullets and enemy.dead == False:
                 fire = True
                 enemy.shoot(fire) 
@@ -263,6 +272,7 @@ class Game():
                     enemy.bullets.pop(removal_index)
                     continue
                 bullet.move()
+            #print_location()    
             
                 if self.overlap_check(bullet,player_ship):
                     player_ship.hit(bullet.damage) # 3. update code to reflect bullet's damage capacity field
@@ -294,7 +304,7 @@ class Game():
                         if enemy.type == 'Deflector_Enemy':
                             enemy.dead = enemy.hit(player_ship,bullet,current_frame)
                             print()
-                            print('Bullet Direction: ' + str(bullet.y_dir))
+                            #print('Bullet Direction: ' + str(bullet.y_dir))
                             if enemy.dead == True:
                                 removal_index = player_ship.bullets.index(bullet)
                                 player_ship.bullets.pop(removal_index)                        
@@ -425,9 +435,11 @@ class Game():
         while True:
             draw_text('Game Over!',30,(255,0,0),screen_width/2,screen_height/2)
             pygame.display.update()
+            #pygame.quit()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
+                    exit()
         
     def level_transition(self,player_ship):       
          score = 'Score: ' + str(player_ship.score)
@@ -496,10 +508,7 @@ class Game():
                 old_movement = self.move_enemies_individually(old_movement,current_movement)
                 self.enemy_status_updates(old_frame,current_frame,player_ship,shoot_flag,index)
                 self.enemy_ship_bullet_updates(player_ship)
-                
-                    
-                    
-                
+                          
             self.player_ship_bullet_updates(player_ship,current_frame)      
             old_frame = self.process_user_input(player_ship,old_frame,current_frame,a)
             old = self.redraw_game_window(player_ship,old,cur)

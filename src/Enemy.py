@@ -156,6 +156,7 @@ class Enemy(object):
         current_bullet_position_y = self.y + self.height - 25
         
         return (current_bullet_position_x,current_bullet_position_y)
+    
     def shoot(self,fire):
         current_bullet_position_x,current_bullet_position_y = self._set_bullet_position()
         num_active_bullets = len(self.bullets)
@@ -185,22 +186,23 @@ class Enemy(object):
                 bullet.number = len(self.bullets)
                
             else:
+                bullet_type = '6'
                 bullet_list_length = len(Projectile.bullet_types)
                 bullets_left = self.num_bullets - len(self.bullets)
+                print('Num Bullets Left: ' + str(bullets_left))
+                bullet_number = 0
+                horizontal_gap = 20
                 while bullets_left > 0:           
-                        if self.type == 'Erratic_Multishoot_Enemy': 
-                            index = random.randint(0,bullet_list_length - 1)
-                        else:
-                            index = bullets_left-1
-                        bullet_type = Projectile.bullet_types[index]
-                        if self.type == 'Boss':
-                            image = 'boss_' + bullet_type + '_position.png'
-                        else:
-                            image = 'enemy_' + bullet_type + '_position.png'
-                        self.bullets.append(Basic_Enemy_Projectile(current_bullet_position_x,current_bullet_position_y,40,26,bullet_type,image,4,'down',damage))#7 arguments
-                        bullets_left-=1
+                    if self.type == 'Boss':
+                        image = 'boss_6_position.png'
+                    else:
+                        image = 'enemy_6_position.png'
+                    x = current_bullet_position_x + bullet_number*horizontal_gap - 50
+                    bullet_number+=1
+                    bullet = Basic_Enemy_Projectile(x,current_bullet_position_y,40,26,bullet_type,image,4,'down',damage)
+                    self.bullets.append(bullet)
+                    bullets_left-=1
                   
-                    
 class Multiple_Movement_Enemy(Enemy):
     def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health):
         super().__init__(x, y, width, height, image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health)
@@ -210,7 +212,7 @@ class Multiple_Movement_Enemy(Enemy):
 class Erratic_Movement_Enemy(Enemy):             
     def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health):
         super().__init__(x, y, width, height, image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health)
-        self.hitbox = (x,y,width,height)
+        self.hitbox = (x+10,y,width,height)
         self.type = 'Erratic_Movement_Enemy' 
           
     def move(self,current_movement,old_movement):
@@ -243,7 +245,7 @@ class Deflector_Enemy(Enemy):
 class Boss(Enemy):
     def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health):
         super().__init__(x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health)
-        self.hitbox = (x,y,width,height)
+        self.hitbox = (x+3,y,width-5,height-23)
         self.previous_health = health
         self.wave = 1
         self.current_movement = 0
@@ -275,6 +277,8 @@ class Boss(Enemy):
         elif self.wave == 4:
             Erratic_Movement_Enemy.move()
             
+        self.hitbox = (self.x,self.y,self.width,self.height)
+             
     def _set_bullet_position(self):
         current_bullet_position_x = self.x + 0.5*self.width - 30
         current_bullet_position_y = self.y + self.height - 25

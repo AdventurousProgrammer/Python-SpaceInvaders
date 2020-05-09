@@ -24,7 +24,6 @@ class Projectile(object):
             
     def draw(self,win):
         win.blit(self.image,(self.x,self.y))
-
         pygame.draw.rect(win,(255,255,0),self.hitbox,2)
         
     def set_direction(self,image_name):
@@ -50,7 +49,7 @@ class Projectile(object):
             self.y_dir = 1
             self.x_vel = 0
             self.y_vel = 3
-            self.hitbox = (self.x+20,self.y-30,self.width,self.height)  
+            #self.hitbox = (self.x+20,self.y-30,self.width,self.height)  
             missile = image_name
             self.image = pygame.image.load(missile)    
         elif self.type == '7':
@@ -108,8 +107,9 @@ class Projectile(object):
 class Basic_Enemy_Projectile(Projectile):
     def __init__(self,x,y,width,height,type,image,vel,dir,damage):
         super().__init__(x,y,width,height,type,image,vel,dir,damage)
-        self.hitbox = (self.x + 35,self.y + 25,7,self.height - 10)
+        self.hitbox = (self.x+51,self.y+8,self.width-99,self.height-7)
         self.number = -1
+        #print('Initial Enemy Bullet Position: ' + str((self.x,self.y)))
         
     def draw(self,win):
         super(Basic_Enemy_Projectile, self).draw(win)
@@ -125,7 +125,7 @@ class Player_Projectile(Projectile):
         super().__init__(x,y,width,height,type,image,vel,dir,damage)
         self.y_dir = -1
         self.reversed = False
-        self.hitbox = (self.x + 9,self.y,self.width - 5,self.height + 10)
+        self.hitbox = (self.x + 9,self.y,self.width - 20,self.height + 10)
     
     def draw(self,win):
         super(Player_Projectile,self).draw(win)
@@ -137,10 +137,10 @@ class Player_Projectile(Projectile):
                 print('Move Again')
                 self.reversed = False
                 super().move()
-                self.hitbox = (self.x + 9,self.y,self.width - 5,self.height + 10)
+                self.hitbox = (self.x + 9,self.y,self.width - 20,self.height + 10)
         else:
             super().move()
-            self.hitbox = (self.x + 9,self.y,self.width - 5,self.height + 10)
+            self.hitbox = (self.x + 9,self.y,self.width - 20,self.height + 10)
             
         
         #self.y-=self.y_vel
