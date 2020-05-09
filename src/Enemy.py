@@ -2,7 +2,12 @@ import pygame
 import random
 from SpaceInvaders import current_frame
 from Projectile import *
+import math
 
+def vertical_distance_delay(pixel_delay,y1,y2): 
+    dist = math.sqrt((y2 - y1)**2)  
+    return dist > pixel_delay  
+    
 class Enemy(object):
     move_next_level = False
     
@@ -186,6 +191,12 @@ class Enemy(object):
                 bullet.number = len(self.bullets)
                
             else:
+                
+                if len(self.bullets) > 0:
+                    last_bullet = self.bullets[-1]
+                    if vertical_distance_delay(30,current_bullet_position_y,last_bullet.y) == False:
+                        return
+                # multi shot    
                 bullet_type = '6'
                 bullet_list_length = len(Projectile.bullet_types)
                 bullets_left = self.num_bullets - len(self.bullets)

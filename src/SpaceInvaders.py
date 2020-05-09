@@ -4,7 +4,6 @@ import csv
 from Enemy import *
 from Projectile import *
 from Player import *
-import math
 import datetime
 import sys
 
@@ -78,10 +77,6 @@ class Game():
     current_spacebar = True
     count = 0
     testing = False
-    
-    def _distance_delay(self,pixel_delay,x1,y1,x2,y2): 
-        dist = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)  
-        return dist > pixel_delay  
     
     def process_user_input(self,player_ship,old_frame,current_frame,a):
         for event in pygame.event.get():

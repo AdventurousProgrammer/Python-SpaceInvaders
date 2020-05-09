@@ -25,7 +25,7 @@ class Projectile(object):
             
     def draw(self,win):
         win.blit(self.image,(self.x,self.y))
-        pygame.draw.rect(win,(255,255,0),self.hitbox,2)
+        #pygame.draw.rect(win,(255,255,0),self.hitbox,2)
         
     def set_direction(self,image_name):
         if self.type == '4':
