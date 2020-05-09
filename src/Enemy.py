@@ -247,25 +247,27 @@ class Boss(Enemy):
         super().__init__(x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health)
         self.hitbox = (x+3,y,width-5,height-23)
         self.previous_health = health
+        self.current_health = health
         self.wave = 1
         self.current_movement = 0
         self.previous_movement = 0
         self.type = 'Boss'
+        self.score = 10
         
     def set_wave(self):
         three_quarter_health = 0.75 * self.health
         half_health = 0.5 * self.health
         quarter_health = 0.25 * self.health
         
-        if self.previous_health > three_quarter_health and self.health < three_quarter_health:
+        if self.previous_health > three_quarter_health and self.current_health <= three_quarter_health:
             self.wave = 2
             # can shoot multi directional bullets
             
-        elif self.previous_health > self.half_health and self.health < half_health:
+        elif self.previous_health > half_health and self.current_health <= half_health:
             self.x_vel = 5
             self.wave = 3
             
-        elif self.previous_health > self.quarter_health and self.health < quarter_health:
+        elif self.previous_health > quarter_health and self.current_health <= quarter_health:
             # move like a random movement self 
             self.wave = 4
             
@@ -285,11 +287,18 @@ class Boss(Enemy):
         return (current_bullet_position_x,current_bullet_position_y)
     
     def shoot(self,fire):
-
         super().shoot(fire)
-        # create red bullets
-        # have them going all positions 4 - 8 o'clock 
-        # make them red color
+    
+    # also returns if boss is destroyed    
+    def hit(self,player_ship,bullet):
+        self.previous_health = self.current_health
+        self.current_health -= bullet.damage
+        
+        if self.current_health <= 0:
+            player_ship.score += self.score
+        return self.current_health <= 0
+        # set previous health to current_health
+       # need to take bullet in, update boss health with bullet damage
             
         
         

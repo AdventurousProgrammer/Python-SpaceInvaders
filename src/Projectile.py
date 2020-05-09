@@ -18,6 +18,7 @@ class Projectile(object):
         self.type = type
         self.dead = False
         self.damage = damage
+        self.reversed = False
         
         if self.type != 'player':
             self.set_direction(image)

@@ -177,14 +177,16 @@ class Game():
         keep the difference up for 30 frames, where again the difference is updated and displayed until 30 frames pass
         '''
         win.blit(bg,(0,0))
-        
         player_ship.draw(win)
         
-        for self in self.enemies:
-            if self.dead == False:
-                self.draw(win)
-            for bullet in self.bullets:
+        for enemy in self.enemies:
+            if enemy.dead == False:
+                enemy.draw(win)
+            for bullet in enemy.bullets:
                 bullet.draw(win)
+            if 'Boss' in enemy.type:
+                draw_text('Wave: ' + str(enemy.wave),30,(255,100,10),100,200)
+                draw_text('Health: ' + str(enemy.current_health),30,(255,100,10),100,250)
         index = 0    
         for bullet in player_ship.bullets:
             text_x = 100
@@ -255,6 +257,10 @@ class Game():
         return old_movement
     
     def enemy_status_updates(self,old_frame,curent_frame,player_ship,shoot_flag,index):
+        for enemy in self.enemies:
+            if 'Boss' in enemy.type:
+                enemy.set_wave()
+                          
         bullet_list_length = len(Projectile.bullet_types)
         for enemy in self.enemies:
             if self.overlap_check(enemy,player_ship):
@@ -303,15 +309,20 @@ class Game():
                     if overlap:#possible issue here
                         if enemy.type == 'Deflector_Enemy':
                             enemy.dead = enemy.hit(player_ship,bullet,current_frame)
-                            print()
-                            #print('Bullet Direction: ' + str(bullet.y_dir))
                             if enemy.dead == True:
                                 removal_index = player_ship.bullets.index(bullet)
-                                player_ship.bullets.pop(removal_index)                        
+                                player_ship.bullets.pop(removal_index)
+                        
+                        if 'Boss' in enemy.type:
+                            enemy.dead = enemy.hit(player_ship,bullet)
+                            removal_index = player_ship.bullets.index(bullet)
+                            player_ship.bullets.pop(removal_index)
+                                                    
                         else:
                             removal_index = player_ship.bullets.index(bullet)
                             player_ship.bullets.pop(removal_index)
                             enemy.dead = enemy.hit(player_ship)
+                            
                         if enemy.dead == True:
                             self.num_level_enemies-=1
                                
@@ -508,6 +519,8 @@ class Game():
                 old_movement = self.move_enemies_individually(old_movement,current_movement)
                 self.enemy_status_updates(old_frame,current_frame,player_ship,shoot_flag,index)
                 self.enemy_ship_bullet_updates(player_ship)
+                
+                    
                           
             self.player_ship_bullet_updates(player_ship,current_frame)      
             old_frame = self.process_user_input(player_ship,old_frame,current_frame,a)
