@@ -1,7 +1,6 @@
 import pygame
-from Projectile import *
 import datetime
-
+from src.Projectile import *
     
 
 class Player(object):
@@ -30,12 +29,7 @@ class Player(object):
     def hit(self,pts_lost):
         self.health -= pts_lost
             
-    def shoot(self,game,old_frame,current_frame,initialize):#any debugging dump can be passed in
-        '''
-        @FUTURE_NOTICE: really should try to create own test suite, to isolate these problems, or own test functions
-        overloading original functions, do not know if that is a good idea
-        '''
-     
+    def shoot(self,game,old_frame,current_frame,initialize):
         num_bullets_to_add = self.num_bullets - len(self.bullets)
         small_missile = 'small_missile.png'
         ship_center_x = self.x + 0.5*self.width - 12
@@ -61,7 +55,6 @@ class Player(object):
                     max_i = 1
                 elif num_bullets_to_add >= 5:
                     max_i = 2
-                bullet_position_x = 0
                 if game.current_spacebar and not game.prev_spacebar:
                     while cur_i <= max_i:
                         if cur_i == 0:
