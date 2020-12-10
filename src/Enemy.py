@@ -1,6 +1,13 @@
 import pygame
 import random
+from SpaceInvaders import current_frame
+from Projectile import *
+import math
 
+def vertical_distance_delay(pixel_delay,y1,y2): 
+    dist = math.sqrt((y2 - y1)**2)  
+    return dist > pixel_delay  
+    
 class Enemy(object):
     move_next_level = False
     
@@ -16,7 +23,7 @@ class Enemy(object):
         self.y_dir = y_dir
         self.dead = False
         self.score = score
-        self.shoot = shoot
+        self.shoot_flag = shoot
         self.bullets = list()
         self.right_boundary = screen_width - 20
         self.left_boundary = 20
@@ -27,15 +34,6 @@ class Enemy(object):
         self.name = ''
         self.num_bullets = num_bullets
         self.health = health
-    #def shoot(self,bullets_left):
-    #    bullet_list_length = len(Projectile.bullet_types)
-        
-    #    if self.type == 'Erratic_Multishoot_Enemy':
-     #       index = random.randint(0,bullet_list_length - 1)
-    #    else:
-    #        index = bullets_left - 1
-    #    bullet_type = Projectile.bullet_types[index]
-    #    enemy.bullets.append(Basic_Enemy_Projectile(self.x + 0.5*self.width,self.y + self.height,40,26,bullet_type,enemy_missile,4,'down')) 
                                    
     def set_direction(self,dir):
         x_dir = 0 
@@ -152,12 +150,70 @@ class Enemy(object):
     
     def hit(self,player_ship):
         self.health-=1
+        print('Enemy Health: ' + str(self.health))
         if self.health <= 0:
             player_ship.score += self.score
             return True
         return False
+    
+    def _set_bullet_position(self):
+        current_bullet_position_x = self.x + 0.5*self.width - 30
+        current_bullet_position_y = self.y + self.height - 25
         
-            
+        return (current_bullet_position_x,current_bullet_position_y)
+    
+    def shoot(self,fire):
+        current_bullet_position_x,current_bullet_position_y = self._set_bullet_position()
+        num_active_bullets = len(self.bullets)
+        bullets_left = self.num_bullets - num_active_bullets
+                
+        if fire == True:
+            add_bullet = True
+            default_position = '6'
+            if self.type == 'Boss':
+                damage = 10
+            else:
+                damage = 5
+                
+            if self.num_bullets == 1:
+                # will eventually need to change instantiation based on bullet type, will refactor that later
+                
+                # now that the Projectile constructor has changed a bit, image_name is now a field, coming right after type, which 
+                # which needs to get set alongside the type 
+                if self.type == 'Boss':
+                    image = 'boss_6_position.png'
+                else:
+                    image = 'enemy_6_position.png'
+                     # need to change the damage
+                     # need to change the image
+                bullet = Basic_Enemy_Projectile(current_bullet_position_x,current_bullet_position_y,40,26,default_position,image,4,'down',damage)
+                self.bullets.append(bullet)
+                bullet.number = len(self.bullets)
+               
+            else:
+                
+                if len(self.bullets) > 0:
+                    last_bullet = self.bullets[-1]
+                    if vertical_distance_delay(30,current_bullet_position_y,last_bullet.y) == False:
+                        return
+                # multi shot    
+                bullet_type = '6'
+                bullet_list_length = len(Projectile.bullet_types)
+                bullets_left = self.num_bullets - len(self.bullets)
+                print('Num Bullets Left: ' + str(bullets_left))
+                bullet_number = 0
+                horizontal_gap = 20
+                while bullets_left > 0:           
+                    if self.type == 'Boss':
+                        image = 'boss_6_position.png'
+                    else:
+                        image = 'enemy_6_position.png'
+                    x = current_bullet_position_x + bullet_number*horizontal_gap - 50
+                    bullet_number+=1
+                    bullet = Basic_Enemy_Projectile(x,current_bullet_position_y,40,26,bullet_type,image,4,'down',damage)
+                    self.bullets.append(bullet)
+                    bullets_left-=1
+                  
 class Multiple_Movement_Enemy(Enemy):
     def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health):
         super().__init__(x, y, width, height, image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health)
@@ -167,7 +223,7 @@ class Multiple_Movement_Enemy(Enemy):
 class Erratic_Movement_Enemy(Enemy):             
     def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health):
         super().__init__(x, y, width, height, image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health)
-        self.hitbox = (x,y,width,height)
+        self.hitbox = (x+10,y,width,height)
         self.type = 'Erratic_Movement_Enemy' 
           
     def move(self,current_movement,old_movement):
@@ -175,7 +231,7 @@ class Erratic_Movement_Enemy(Enemy):
         if current_movement - old_movement >= 50:
             direction = random.randint(0,7)
             super().set_direction(direction)
-            print(self.name + ' Direction: ' + str(direction))
+            #print(self.name + ' Direction: ' + str(direction))
             x = True
         super().move()
         return x
@@ -186,12 +242,76 @@ class Deflector_Enemy(Enemy):
         self.hitbox = (x,y,width,height)
         self.type = 'Deflector_Enemy' 
         
-    def hit(self,player_ship,bullet):
-        destroyed = super().hit(player_ship)
+    def hit(self,player_ship,bullet,current_frame):
+        '''
+        Enemy is hit, now there needs to be a delay, of a few (< 9) frames, and the bullet can move again later
+        '''
+        destroyed = super().hit(player_ship) # going to change next iteration
         if destroyed == False:
-            bullet.reverse()
+            bullet.reverse(current_frame)
+            print()
             print('Bullet Deflected')
-        return destroyed
-            
+        return destroyed          
     
-                
+class Boss(Enemy):
+    def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health):
+        super().__init__(x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health)
+        self.hitbox = (x+3,y,width-5,height-23)
+        self.previous_health = health
+        self.current_health = health
+        self.wave = 1
+        self.current_movement = 0
+        self.previous_movement = 0
+        self.type = 'Boss'
+        self.score = 10
+        
+    def set_wave(self):
+        three_quarter_health = 0.75 * self.health
+        half_health = 0.5 * self.health
+        quarter_health = 0.25 * self.health
+        
+        if self.previous_health > three_quarter_health and self.current_health <= three_quarter_health:
+            self.wave = 2
+            # can shoot multi directional bullets
+            
+        elif self.previous_health > half_health and self.current_health <= half_health:
+            self.x_vel = 5
+            self.wave = 3
+            
+        elif self.previous_health > quarter_health and self.current_health <= quarter_health:
+            # move like a random movement self 
+            self.wave = 4
+            
+    def move(self):
+        if self.wave == 1 or self.wave == 2 or self.wave == 3:
+            self.set_direction(0)
+            Multiple_Movement_Enemy.move()
+            
+        elif self.wave == 4:
+            Erratic_Movement_Enemy.move()
+            
+        self.hitbox = (self.x,self.y,self.width,self.height)
+             
+    def _set_bullet_position(self):
+        current_bullet_position_x = self.x + 0.5*self.width - 30
+        current_bullet_position_y = self.y + self.height - 25
+        return (current_bullet_position_x,current_bullet_position_y)
+    
+    def shoot(self,fire):
+        super().shoot(fire)
+    
+    # also returns if boss is destroyed    
+    def hit(self,player_ship,bullet):
+        self.previous_health = self.current_health
+        self.current_health -= bullet.damage
+        
+        if self.current_health <= 0:
+            player_ship.score += self.score
+        return self.current_health <= 0
+        # set previous health to current_health
+       # need to take bullet in, update boss health with bullet damage
+            
+        
+        
+        
+        
