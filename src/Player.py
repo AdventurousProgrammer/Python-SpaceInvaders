@@ -1,7 +1,7 @@
 import pygame
 import datetime
 from src.Projectile import *
-    
+from pygame import mixer
 
 class Player(object):
     
@@ -42,17 +42,20 @@ class Player(object):
         small_missile = 'small_missile.png'
         ship_center_x = self.x + 0.5*self.width - 12
         ship_center_y = self.y
-    
+        bullet_sound = mixer.Sound('laser.wav')
+
         if num_bullets_to_add > 0:
             if self.weapon == 'REGULAR SHOOTING':
                 if game.current_spacebar and not game.prev_spacebar:
                     bullet = Player_Projectile(ship_center_x,ship_center_y,12,7,'player',small_missile,5,self.dir,1)
+                    bullet_sound.play()
                     self.bullets.append(bullet)
             
             elif self.weapon == 'RAPID FIRE':
                 if game.current_spacebar and current_frame - old_frame > 10:
                     old_frame = current_frame
                     bullet = Player_Projectile(ship_center_x,ship_center_y,12,7,'player',small_missile,5,self.dir,1)
+                    bullet_sound.play()
                     self.bullets.append(bullet)
                     
             elif self.weapon == 'MULTI SHOOTING':
@@ -68,14 +71,17 @@ class Player(object):
                         if cur_i == 0:
                             bullet_position_x = ship_center_x
                             bullet = Player_Projectile(bullet_position_x,ship_center_y,12,7,'player',small_missile,5,self.dir,1)
+                            bullet_sound.play()
                             self.bullets.append(bullet)
                             cur_i += 1
                         else:
                             bullet_position_x = ship_center_x + cur_i*offset
                             bullet = Player_Projectile(bullet_position_x,ship_center_y,12,7,'player',small_missile,5,self.dir,1)
+                            bullet_sound.play()
                             self.bullets.append(bullet)
                             bullet_position_x = ship_center_x + cur_i*offset*-1 
-                            bullet = Player_Projectile(bullet_position_x,ship_center_y,12,7,'player',small_missile,5,self.dir,1)                   
+                            bullet = Player_Projectile(bullet_position_x,ship_center_y,12,7,'player',small_missile,5,self.dir,1)
+                            bullet_sound.play()
                             self.bullets.append(bullet)
                             cur_i += 1
                  

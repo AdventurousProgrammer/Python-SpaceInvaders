@@ -5,9 +5,11 @@ import csv
 from src.Player import *
 from src.Enemy import *
 import datetime
-
+from pygame import mixer
 
 pygame.init()
+mixer.music.load('background.wav')
+mixer.music.play(-1)
 
 screen_width = 700
 screen_height = 700
@@ -266,6 +268,8 @@ class Game():
                 
                             
     def enemy_ship_bullet_updates(self,player_ship):
+        explosion_sound = mixer.Sound('explosion.wav')
+
         for enemy in self.enemies:
             for bullet in enemy.bullets:
                 if bullet.y + bullet.height > screen_height or bullet.x < 20 or bullet.x + bullet.width >= screen_width:
@@ -276,19 +280,22 @@ class Game():
             #print_location()    
             
                 if self.overlap_check(bullet,player_ship):
+                    explosion_sound.play()
                     player_ship.hit(bullet.damage) # 3. update code to reflect bullet's damage capacity field
                     removal_index = enemy.bullets.index(bullet)
                     enemy.bullets.pop(removal_index)
                     continue
                     
-                for p_bullet in player_ship.bullets: 
+                for p_bullet in player_ship.bullets:
                     if self.overlap_check(p_bullet,bullet):
+                        explosion_sound.play()
                         removal_index = enemy.bullets.index(bullet)
                         enemy.bullets.pop(removal_index)
                         removal_index = player_ship.bullets.index(p_bullet)
                         player_ship.bullets.pop(removal_index)
                         
     def player_ship_bullet_updates(self,player_ship,current_frame):
+        explosion_sound = mixer.Sound('explosion.wav')
         for bullet in player_ship.bullets:
             if bullet.y < 0 or bullet.y + bullet.hitbox[3] > screen_height:
                 removal_index = player_ship.bullets.index(bullet)
@@ -309,11 +316,12 @@ class Game():
                                 player_ship.bullets.pop(removal_index)
                         
                         if 'Boss' in enemy.type:
+                            explosion_sound.play()
                             enemy.dead = enemy.hit(player_ship,bullet)
                             removal_index = player_ship.bullets.index(bullet)
                             player_ship.bullets.pop(removal_index)
-                                                    
                         else:
+                            explosion_sound.play()
                             removal_index = player_ship.bullets.index(bullet)
                             player_ship.bullets.pop(removal_index)
                             enemy.dead = enemy.hit(player_ship)

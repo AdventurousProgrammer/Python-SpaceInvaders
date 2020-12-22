@@ -5,10 +5,9 @@ import random
 #import game
 #from Projectile import *
 import math
-
+from pygame import mixer
 import src.Projectile
 from src.Projectile import Basic_Enemy_Projectile
-
 
 def vertical_distance_delay(pixel_delay,y1,y2):
     dist = math.sqrt((y2 - y1)**2)  
@@ -172,7 +171,7 @@ class Enemy(object):
         current_bullet_position_x,current_bullet_position_y = self._set_bullet_position()
         num_active_bullets = len(self.bullets)
         bullets_left = self.num_bullets - num_active_bullets
-                
+        bullet_sound = mixer.Sound('laser.wav')
         if fire == True:
             add_bullet = True
             default_position = '6'
@@ -194,10 +193,9 @@ class Enemy(object):
                      # need to change the image
                 bullet = Basic_Enemy_Projectile(current_bullet_position_x,current_bullet_position_y,40,26,default_position,image,4,'down',damage)
                 self.bullets.append(bullet)
+                bullet_sound.play()
                 bullet.number = len(self.bullets)
-               
             else:
-                
                 if len(self.bullets) > 0:
                     last_bullet = self.bullets[-1]
                     if vertical_distance_delay(30,current_bullet_position_y,last_bullet.y) == False:
@@ -218,6 +216,7 @@ class Enemy(object):
                     bullet_number+=1
                     bullet = Basic_Enemy_Projectile(x,current_bullet_position_y,40,26,bullet_type,image,4,'down',damage)
                     self.bullets.append(bullet)
+                    bullet_sound.play()
                     bullets_left-=1
                   
 class Multiple_Movement_Enemy(Enemy):
