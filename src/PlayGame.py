@@ -1,16 +1,11 @@
 import pygame
 import random
 import csv
-#import Enemy
-import Projectile
-import Player
-from Enemy import *
-'''
-from Projectile import *
-from Player import *
-'''
+
+from src.Player import *
+from src.Enemy import *
 import datetime
-import sys
+
 
 pygame.init()
 
@@ -91,14 +86,14 @@ class Game():
     
         keys = pygame.key.get_pressed()
         
-        if keys[pygame.K_RIGHT] and player_ship.x + player_ship.width + player_ship.vel <= screen_width - 20:
-            player_ship.x += player_ship.vel
-        elif keys[pygame.K_LEFT] and player_ship.x - player_ship.vel >= 20:
-            player_ship.x -= player_ship.vel
-        elif keys[pygame.K_DOWN] and player_ship.y + player_ship.height + player_ship.vel <= screen_height - 20:
-            player_ship.y += player_ship.vel
-        elif keys[pygame.K_UP] and player_ship.y - player_ship.vel >= 500:
-            player_ship.y -= player_ship.vel
+        if keys[pygame.K_RIGHT] and player_ship.x + player_ship.width + player_ship.x_speed <= screen_width - 20:
+            player_ship.x += player_ship.x_speed
+        elif keys[pygame.K_LEFT] and player_ship.x - player_ship.x_speed >= 20:
+            player_ship.x -= player_ship.x_speed
+        elif keys[pygame.K_DOWN] and player_ship.y + player_ship.height + player_ship.y_speed <= screen_height - 20:
+            player_ship.y += player_ship.y_speed
+        elif keys[pygame.K_UP] and player_ship.y - player_ship.y_speed >= 500:
+            player_ship.y -= player_ship.y_speed
             
         player_ship.hitbox = (player_ship.x,player_ship.y,player_ship.width,player_ship.height)
         
@@ -331,7 +326,6 @@ class Game():
         bottom_in = sprite1.hitbox[1] + sprite1.hitbox[3] > sprite2.hitbox[1] and sprite1.hitbox[1] + sprite1.hitbox[3] < sprite2.hitbox[1] + sprite2.hitbox[3]
         left_in = sprite1.hitbox[0] > sprite2.hitbox[0] and sprite1.hitbox[0] < sprite2.hitbox[0] + sprite2.hitbox[2]
         right_in = sprite1.hitbox[0] + sprite1.hitbox[2] > sprite2.hitbox[0] and sprite1.hitbox[0] + sprite1.hitbox[2] < sprite2.hitbox[0] + sprite2.hitbox[2]
-    
         collision = (bottom_in and right_in) or (left_in and bottom_in) or (top_in and right_in) or (top_in and left_in)    
         return collision
     
@@ -377,8 +371,12 @@ class Game():
                 enemy_type = str(self.data[self.row][1])
                 enemy_num_bullets = int(self.data[self.row][4])
                 enemy_health = int(self.data[self.row][5])
-                
-                if str(self.data[self.row][6]) == 'True':
+                enemy_x_speed = int(self.data[self.row][6])
+                enemy_y_speed = int(self.data[self.row][7])
+                player_ship.set_x_speed(int(self.data[self.row][8]))
+                player_ship.set_y_speed(int(self.data[self.row][9]))
+
+                if str(self.data[self.row][10]) == 'True':
                     self.testing = True
                 else:
                     self.testing = False
@@ -393,7 +391,6 @@ class Game():
                         margin = int(screen_width - (num_enemy_type-1)*(x_sep) - (num_enemy_type-1)*(sprite_width))/2
                         num_enemies = num_enemy_type 
                         num_enemy_type = 0
-                        
                     else:
                         margin = int(screen_width - (n-2)*(x_sep) - (n-1)*(sprite_width))/2
                         num_enemies = n-1
@@ -407,29 +404,27 @@ class Game():
                         y_loc = top_y_boundary + j*(sprite_height + y_sep)
                         width = 32
                         height = 32
-                        x_vel = 3
-                        y_vel = 1
                         score = 7
                         shoot = random.randint(0,9)
                         
                         if enemy_type == 'Horizontal_Enemy':
-                            enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)
+                            enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,enemy_x_speed,enemy_y_speed,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)
                             dir = 0
                         elif enemy_type == 'Vertical_Enemy':
-                            enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)
+                            enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,enemy_x_speed,enemy_y_speed,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)
                             dir = 2
                         elif enemy_type == 'Multiple_Movement_Enemy':
-                            enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)
+                            enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,enemy_x_speed,enemy_y_speed,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)
                             dir = random.randint(0,7)
                         elif enemy_type == 'Erratic_Movement_Enemy':
-                            enemy = Erratic_Movement_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)   
+                            enemy = Erratic_Movement_Enemy(x_loc,y_loc,width,height,image,enemy_x_speed,enemy_y_speed,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)
                         elif enemy_type == 'Deflector_Enemy':
-                            enemy = Deflector_Enemy(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health) 
+                            enemy = Deflector_Enemy(x_loc,y_loc,width,height,image,enemy_x_speed,enemy_y_speed,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)
                         elif enemy_type == 'Boss':
                             image = pygame.image.load('boss_1.png')
                             width = image.get_width()
                             height = image.get_height()
-                            enemy = Boss(x_loc,y_loc,width,height,image,x_vel,y_vel,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)
+                            enemy = Boss(x_loc,y_loc,width,height,image,enemy_x_speed,enemy_y_speed,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)
                             
                         enemy.name = 'Enemy: ' + str(k)                        
                         enemy.set_direction(dir)

@@ -21,14 +21,22 @@ class Player(object):
         self.bullets = list()
         self.num_bullets = 50
         self.weapon = 'REGULAR SHOOTING'
-        
+        self.x_speed = 0
+        self.y_speed = 0
+
     def draw(self,win):
         win.blit(self.image,(self.x,self.y))
         pygame.draw.rect(win,(255,0,0),self.hitbox,2)
         
     def hit(self,pts_lost):
         self.health -= pts_lost
-            
+
+    def set_x_speed(self,speed):
+        self.x_speed = speed
+
+    def set_y_speed(self,speed):
+        self.y_speed = speed
+
     def shoot(self,game,old_frame,current_frame,initialize):
         num_bullets_to_add = self.num_bullets - len(self.bullets)
         small_missile = 'small_missile.png'
