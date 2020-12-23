@@ -265,11 +265,9 @@ class Game():
             if enemy.shoot_flag == shoot_flag and len(enemy.bullets) < enemy.num_bullets and enemy.dead == False:
                 fire = True
                 enemy.shoot(fire) 
-                
-                            
+
     def enemy_ship_bullet_updates(self,player_ship):
         explosion_sound = mixer.Sound('explosion.wav')
-
         for enemy in self.enemies:
             for bullet in enemy.bullets:
                 if bullet.y + bullet.height > screen_height or bullet.x < 20 or bullet.x + bullet.width >= screen_width:
@@ -277,8 +275,7 @@ class Game():
                     enemy.bullets.pop(removal_index)
                     continue
                 bullet.move()
-            #print_location()    
-            
+
                 if self.overlap_check(bullet,player_ship):
                     explosion_sound.play()
                     player_ship.hit(bullet.damage) # 3. update code to reflect bullet's damage capacity field
@@ -502,29 +499,13 @@ class Game():
             if player_ship.health <= 0:
                 self.running = False
                 break
-            
-            '''
-            Call set_wave function for bosses
-            
-                set_wave checks for health transition and puts boss in proper wave, which sets proper wave properties
-                
-           Add Bosses to levels.csv
-           Added boss to bosses list in game class based on whether self contains Boss in name
-           Place Boss in proper location
-           
-           Cannot call enemy_status_updates for bosses, they have different bullet positions (that is one thing that I know of that is different)
-           need separate boss_status_updates function for each boss, keep it in Game class for now, might move to Boss class later
-           
-           Will be able to call enemy_status_updates for bosses as well, after numbered changes are made 
-            '''
+
             if self.testing == False:
                 self.move_enemies_as_unit(current_frame,old_frame) 
                 old_movement = self.move_enemies_individually(old_movement,current_movement)
                 self.enemy_status_updates(old_frame,current_frame,player_ship,shoot_flag,index)
                 self.enemy_ship_bullet_updates(player_ship)
-                
-                    
-                          
+
             self.player_ship_bullet_updates(player_ship,current_frame)      
             old_frame = self.process_user_input(player_ship,old_frame,current_frame,a)
             old = self.redraw_game_window(player_ship,old,cur)
