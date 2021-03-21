@@ -35,7 +35,6 @@ enemy_width = 32
 enemy_height = 31
 
 enemy_missile = pygame.image.load('enemy_missile.png')
-#print('Missile Image Type: ' + str(type(enemy_missile)))
 
 current_frame = 0
 old_frame = 0
@@ -44,7 +43,6 @@ num_levels = 10
 distance_index = 0
 clock = pygame.time.Clock()
 
-# need a debugging function
 
 def log(text,x,y):
     draw_text(text,20,(255,255,255),x,y)   
@@ -67,7 +65,6 @@ def print_location(objects):
         
 class Game():
     enemies = list()
-    #font = pygame.font.SysFont('comicsansms', 30, True)
     data = ()
     running = True
     level = 1
@@ -100,10 +97,7 @@ class Game():
         player_ship.hitbox = (player_ship.x,player_ship.y,player_ship.width,player_ship.height)
         
         self._process_weapons(player_ship)
-        
-        #if keys[pygame.K_SPACE] and len(player_ship.bullets) < player_ship.num_bullets:
-        #    print('INSIDE PROCESS USER INPUT: CREATING BULLET NOW')
-        #    initialize = False
+
         if self.count == 0:
             initialize = True
         else:
@@ -119,14 +113,6 @@ class Game():
         old_frame = player_ship.shoot(self,old_frame,current_frame,initialize)
         initialize = False
         self.count = 1
-            #trigger shoot method  
-            ### DO NOT REMOVE WILL NEED CODE LATER: if current_frame - old_frame > 5:
-               # b = datetime.datetime.now()
-            ### DO NOT REMOVE WILL NEED CODE LATER: old_frame = current_frame
-               # delta = b - a
-               # print('Bullet Time Difference: ' + str(delta.total_seconds()*1000))
-               # player_ship.bullets.append(Player_Projectile(player_ship.x + 0.5*player_ship.width - 12,player_ship.y,12,7,small_missile,5,player_ship.dir))
-        
         return old_frame
     
     def _process_weapons(self,player_ship):
@@ -136,7 +122,6 @@ class Game():
         self.prev = self.current
         self.current = keys[pygame.K_1] or keys[pygame.K_2] or keys[pygame.K_3] or keys[pygame.K_4] or keys[pygame.K_5]
         if self.current and not self.prev:
-        #BUTTONS WILL NEVER BE PRESSED AT SAME TIME MOST LIKELY
             orange = (255,165,0)
             size = 20
             x = screen_width/2
@@ -145,34 +130,18 @@ class Game():
             if keys[pygame.K_1]:
                 player_ship.weapon = 'REGULAR SHOOTING' 
                 draw_text('REGULAR SHOOTING',size,orange,x,y)
-                #print('Current 1 Key Pressed: ' + str(self.current))
-                #print('Previous 1 Key Pressed: ' + str(self.prev))
-                # print('REGULAR SHOOTING')
             elif keys[pygame.K_2]:
                 player_ship.weapon = 'RAPID FIRE'
                 draw_text('REGULAR SHOOTING',size,orange,x,y)
-                #print('Current 2 Key Pressed: ' + str(self.current))
-                #print('Previous 2 Key Pressed: ' + str(self.prev))
-                #print('RAPID FIRE')
             elif keys[pygame.K_3]:
                 player_ship.weapon = 'MULTI SHOOTING'
-                #print('MULTI SHOOTING')
             elif keys[pygame.K_4]:
                 player_ship.weapon = 'ROCKET'
-                #print('ROCKET')
             elif keys[pygame.K_5]:
                 player_ship.weapon = 'LASER'
-                #print('LASER')
-            
+
             
     def redraw_game_window(self,player_ship,old,cur):
-        '''
-        @
-        @debugging_dump : added for debugging purposes, to check if one missile is moving faster than the others
-        
-        What I need to do is get the position at frame 1, then 30 frames later get y position for all the missiles and display the difference
-        keep the difference up for 30 frames, where again the difference is updated and displayed until 30 frames pass
-        '''
         win.blit(bg,(0,0))
         player_ship.draw(win)
         
@@ -192,11 +161,6 @@ class Game():
             bullet_location_y = ' Bullet Y: ' + str(bullet.y)
             
             if cur - old > 30:
-                # print('UPDATE FRAME NOW')
-                # add flag to update difference, so when flag is set, then display all differences, which is stored in debugging dump at beginning
-                # print('CUR: ' + str(cur))
-                # print('OLD: ' + str(old))
-                #take difference in position here debugging_dump[i] -== bullet.y
                 draw_text(bullet_location_x,20,(255,51,153),text_x + index*150,text_y)
                 draw_text(bullet_location_y,20,(255,51,153),text_x + index*150,text_y + 75)
                 index += 1

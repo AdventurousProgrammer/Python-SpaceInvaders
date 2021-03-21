@@ -25,7 +25,6 @@ class Projectile(object):
             
     def draw(self,win):
         win.blit(self.image,(self.x,self.y))
-        #pygame.draw.rect(win,(255,255,0),self.hitbox,2)
 
     def set_direction(self,image_name):
         if self.type == '4':
@@ -131,7 +130,6 @@ class Player_Projectile(Projectile):
     def move(self,current_frame):
         if self.reversed == True:
             if current_frame - self.last_stopped > 0:
-                print('Move Again')
                 self.reversed = False
                 super().move()
                 self.hitbox = (self.x + 9,self.y,self.width - 20,self.height + 10)

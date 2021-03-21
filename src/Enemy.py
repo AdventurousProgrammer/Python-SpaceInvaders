@@ -111,32 +111,32 @@ class Enemy(object):
         elif up:
             self.y+=self.y_vel*self.y_dir
         elif up_left:
-            self.x+=self.x_vel*self.x_dir
-            self.y+=self.y_vel*self.y_dir
+            self.x += self.x_vel*self.x_dir
+            self.y += self.y_vel*self.y_dir
         elif left:
-            self.x+=self.x_vel*self.x_dir
+            self.x += self.x_vel*self.x_dir
         elif down_left:
-            self.x+=self.x_vel*self.x_dir
-            self.y+=self.y_vel*self.y_dir
+            self.x += self.x_vel*self.x_dir
+            self.y += self.y_vel*self.y_dir
         elif down:
-            self.y+=self.y_vel*self.y_dir
+            self.y += self.y_vel*self.y_dir
         elif down_right:
-            self.x+=self.x_vel*self.x_dir
-            self.y+=self.y_vel*self.y_dir
+            self.x += self.x_vel*self.x_dir
+            self.y += self.y_vel*self.y_dir
         self.hitbox = (self.x,self.y,self.width,self.height)
     
     def descend_next_level(self,directions):
         for direction in directions:
             if direction == 'right' or direction == 'left':
-                self.x_dir*=-1
+                self.x_dir *= -1
                 if self.top_out_of_bounds() or self.bottom_out_of_bounds():
                     self.switch *= -1
                 self.y+=self.y_vel*self.switch
             else:
-                self.y_dir*=-1
+                self.y_dir *= -1
                 if self.right_out_of_bounds() or self.left_out_of_bounds():
                     self.switch *= -1
-                self.x+=self.x_vel*self.switch
+                self.x += self.x_vel*self.switch
         self.hitbox = (self.x,self.y,self.width,self.height)
         
     def draw(self,win):
