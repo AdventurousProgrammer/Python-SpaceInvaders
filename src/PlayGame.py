@@ -173,7 +173,7 @@ class Game():
         weapon = 'Current Weapon: ' + str(player_ship.weapon)
         draw_text(score,30,(0,255,0),45,0)
         draw_text(health,30,(255,0,0),351,0)
-        draw_text(weapon,20,(255,165,0),150,500)
+        # draw_text(weapon,20,(255,165,0),150,500)
         
         pygame.draw.rect(win,(255,0,0),(450,0,player_ship.health,15))
         pygame.display.update()
