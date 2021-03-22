@@ -1,2 +1,2 @@
-Level, Enemy, Count, Bullets, Num_Enemy_Bullets, Enemy_Health
-1,Vertical_Enemy,1,5,1,3
+Level,Enemy,Count,Bullets,Num_Enemy_Bullets,Enemy_Health,Enemy_X_Speed,Enemy_Y_Speed,Player_X_Speed,Player_Y_Speed,Testing
+1,Horizontal_Enemy,1,5,5,1,2,0,6,6,False
