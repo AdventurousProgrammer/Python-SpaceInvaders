@@ -42,7 +42,7 @@ class Player(object):
         small_missile = 'small_missile.png'
         ship_center_x = self.x + 0.5*self.width - 12
         ship_center_y = self.y
-        bullet_sound = mixer.Sound('images/Player/sounds/laser.wav')
+        bullet_sound = mixer.Sound('Entities/Player/sounds/laser.wav')
 
         if num_bullets_to_add > 0:
             if self.weapon == 'REGULAR SHOOTING':

@@ -8,7 +8,7 @@ import datetime
 from pygame import mixer
 
 pygame.init()
-mixer.music.load('background.wav')
+mixer.music.load('Entities/Background/background.wav')
 mixer.music.play(-1)
 
 screen_width = 700
@@ -21,20 +21,20 @@ win = pygame.display.set_mode((screen_width,screen_height))
 
 pygame.display.set_caption("Space Invaders")
 
-bg = pygame.image.load('images/background/starter_background.png')
-ship = pygame.image.load('images/Player/player_ship.png')
+bg = pygame.image.load('Entities/Background/starter_background.png')
+ship = pygame.image.load('Entities/Player/player_ship.png')
 
 ship_vel = 5
 
-small_missile = pygame.image.load('images/Player/missiles/small_missile.png')
+small_missile = pygame.image.load('Entities/Player/missiles/small_missile.png')
 
 num_small_enemies = 6
 
-multiple_movement_enemy_image = pygame.image.load('images/Enemy/enemy_2.png')
+multiple_movement_enemy_image = pygame.image.load('Entities/Enemy/enemy_2.png')
 enemy_width = 32
 enemy_height = 31
 
-enemy_missile = pygame.image.load('enemy_missile.png')
+enemy_missile = pygame.image.load('Entities/Enemy/enemy_missile.png')
 
 current_frame = 0
 old_frame = 0
@@ -231,7 +231,7 @@ class Game():
                 enemy.shoot(fire) 
 
     def enemy_ship_bullet_updates(self,player_ship):
-        explosion_sound = mixer.Sound('explosion.wav')
+        explosion_sound = mixer.Sound('Entities/Enemy/sounds/explosion.wav')
         for enemy in self.enemies:
             for bullet in enemy.bullets:
                 if bullet.y + bullet.height > screen_height or bullet.x < 20 or bullet.x + bullet.width >= screen_width:
@@ -256,7 +256,7 @@ class Game():
                         player_ship.bullets.pop(removal_index)
                         
     def player_ship_bullet_updates(self,player_ship,current_frame):
-        explosion_sound = mixer.Sound('explosion.wav')
+        explosion_sound = mixer.Sound('Entities/Enemy/sounds/explosion.wav')
         for bullet in player_ship.bullets:
             if bullet.y < 0 or bullet.y + bullet.hitbox[3] > screen_height:
                 removal_index = player_ship.bullets.index(bullet)
@@ -366,7 +366,7 @@ class Game():
                         num_enemy_type -= n-1
                         
                     dir = 0  
-                    image = pygame.image.load('images/Enemy/enemy_2.png')
+                    image = pygame.image.load('Entities/Enemy/enemy_2.png')
                          
                     for k in range(0,num_enemies):
                         x_loc = margin + (k%n)*(sprite_width + x_sep)
@@ -390,7 +390,7 @@ class Game():
                         elif enemy_type == 'Deflector_Enemy':
                             enemy = Deflector_Enemy(x_loc,y_loc,width,height,image,enemy_x_speed,enemy_y_speed,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)
                         elif enemy_type == 'Boss':
-                            image = pygame.image.load('images/Enemy/Boss/boss_1.png')
+                            image = pygame.image.load('Entities/Enemy/Boss/boss_1.png')
                             width = image.get_width()
                             height = image.get_height()
                             enemy = Boss(x_loc,y_loc,width,height,image,enemy_x_speed,enemy_y_speed,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)
