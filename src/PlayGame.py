@@ -30,7 +30,7 @@ small_missile = pygame.image.load('images/Player/missiles/small_missile.png')
 
 num_small_enemies = 6
 
-multiple_movement_enemy_image = pygame.image.load('enemy_2.png')
+multiple_movement_enemy_image = pygame.image.load('images/Enemy/enemy_2.png')
 enemy_width = 32
 enemy_height = 31
 
@@ -366,7 +366,7 @@ class Game():
                         num_enemy_type -= n-1
                         
                     dir = 0  
-                    image = pygame.image.load('enemy_2.png') 
+                    image = pygame.image.load('images/Enemy/enemy_2.png')
                          
                     for k in range(0,num_enemies):
                         x_loc = margin + (k%n)*(sprite_width + x_sep)
@@ -390,7 +390,7 @@ class Game():
                         elif enemy_type == 'Deflector_Enemy':
                             enemy = Deflector_Enemy(x_loc,y_loc,width,height,image,enemy_x_speed,enemy_y_speed,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)
                         elif enemy_type == 'Boss':
-                            image = pygame.image.load('boss_1.png')
+                            image = pygame.image.load('images/Enemy/Boss/boss_1.png')
                             width = image.get_width()
                             height = image.get_height()
                             enemy = Boss(x_loc,y_loc,width,height,image,enemy_x_speed,enemy_y_speed,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)
