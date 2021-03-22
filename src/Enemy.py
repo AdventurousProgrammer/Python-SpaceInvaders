@@ -169,9 +169,9 @@ class Enemy(object):
                 damage = 5
             if self.num_bullets == 1:
                 if self.type == 'Boss':
-                    image = 'boss_6_position.png'
+                    image = 'Entities/Enemy/Boss/boss_6_position.png'
                 else:
-                    image = 'enemy_6_position.png'
+                    image = 'Entities/Enemy/enemy_6_position.png'
                 bullet = Basic_Enemy_Projectile(current_bullet_position_x,current_bullet_position_y,40,26,default_position,image,4,'down',damage)
                 self.bullets.append(bullet)
                 bullet_sound.play()
@@ -191,7 +191,7 @@ class Enemy(object):
                     if self.type == 'Boss':
                         image = 'boss_6_position.png'
                     else:
-                        image = 'enemy_6_position.png'
+                        image = 'Entities/Enemy/enemy_6_position.png'
                     x = current_bullet_position_x + bullet_number*horizontal_gap - 50
                     bullet_number+=1
                     bullet = Basic_Enemy_Projectile(x,current_bullet_position_y,40,26,bullet_type,image,4,'down',damage)

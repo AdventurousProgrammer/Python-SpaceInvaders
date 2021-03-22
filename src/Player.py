@@ -39,7 +39,7 @@ class Player(object):
 
     def shoot(self,game,old_frame,current_frame,initialize):
         num_bullets_to_add = self.num_bullets - len(self.bullets)
-        small_missile = 'small_missile.png'
+        small_missile = 'Entities/Player/missiles/small_missile.png'
         ship_center_x = self.x + 0.5*self.width - 12
         ship_center_y = self.y
         bullet_sound = mixer.Sound('Entities/Player/sounds/laser.wav')
