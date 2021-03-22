@@ -160,7 +160,7 @@ class Enemy(object):
         current_bullet_position_x,current_bullet_position_y = self._set_bullet_position()
         num_active_bullets = len(self.bullets)
         bullets_left = self.num_bullets - num_active_bullets
-        bullet_sound = mixer.Sound('laser.wav')
+        bullet_sound = mixer.Sound('images/Player/sounds/laser.wav')
         if fire == True:
             default_position = '6'
             if self.type == 'Boss':

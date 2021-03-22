@@ -21,12 +21,12 @@ win = pygame.display.set_mode((screen_width,screen_height))
 
 pygame.display.set_caption("Space Invaders")
 
-bg = pygame.image.load('starter_background.png')
-ship = pygame.image.load('player_ship.png')
+bg = pygame.image.load('images/background/starter_background.png')
+ship = pygame.image.load('images/Player/player_ship.png')
 
 ship_vel = 5
 
-small_missile = pygame.image.load('small_missile.png')
+small_missile = pygame.image.load('images/Player/missiles/small_missile.png')
 
 num_small_enemies = 6
 
