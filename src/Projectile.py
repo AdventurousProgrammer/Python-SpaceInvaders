@@ -8,7 +8,6 @@ class Projectile(object):
         self.y = y
         self.x_vel = 5
         self.y_vel = 7
-        print(f'In Projectile create enemy missile image: {image}')
         self.image = pygame.image.load(image)
         self.vel = vel
         self.width = self.image.get_width()
@@ -122,7 +121,7 @@ class Player_Projectile(Projectile):
         super().__init__(x,y,width,height,type,image,vel,dir,damage)
         self.y_dir = -1
         self.reversed = False
-        self.hitbox = (self.x + 9,self.y,self.width - 20,self.height + 10)
+        self.hitbox = (self.x + 9,self.y, self.width - 20, self.height + 10)
     
     def draw(self,win):
         super(Player_Projectile,self).draw(win)

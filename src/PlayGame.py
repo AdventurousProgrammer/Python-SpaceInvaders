@@ -211,12 +211,12 @@ class Game():
                 directions = enemy.check_out_of_bounds()
                 if len(directions) > 0:
                     enemy.descend_next_level(directions)
-                x = enemy.move(current_movement,old_movement)
+                x = enemy.move(current_movement, old_movement)
         if x == True:
             old_movement = current_movement
                     
         return old_movement
-    
+
     def enemy_status_updates(self,old_frame,curent_frame,player_ship,shoot_flag,index):
         for enemy in self.enemies:
             if 'Boss' in enemy.type:
@@ -287,8 +287,8 @@ class Game():
                             player_ship.bullets.pop(removal_index)
                             enemy.dead = enemy.hit(player_ship)
                             
-                        if enemy.dead == True:
-                            self.num_level_enemies-=1
+                        if enemy.dead:
+                            self.num_level_enemies -= 1
                                
     def overlap_check(self,sprite1,sprite2):
         top_in = sprite1.hitbox[1] > sprite2.hitbox[1] and sprite1.hitbox[1] < sprite2.hitbox[1] + sprite2.hitbox[3]
@@ -384,7 +384,7 @@ class Game():
                             dir = 2
                         elif enemy_type == 'Multiple_Movement_Enemy':
                             enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,enemy_x_speed,enemy_y_speed,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)
-                            dir = random.randint(0,7)
+                            dir = random.randint(0, 7)
                         elif enemy_type == 'Erratic_Movement_Enemy':
                             enemy = Erratic_Movement_Enemy(x_loc,y_loc,width,height,image,enemy_x_speed,enemy_y_speed,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)
                         elif enemy_type == 'Deflector_Enemy':
@@ -393,7 +393,7 @@ class Game():
                             image = pygame.image.load('Entities/Enemy/Boss/boss_1.png')
                             width = image.get_width()
                             height = image.get_height()
-                            enemy = Boss(x_loc,y_loc,width,height,image,enemy_x_speed,enemy_y_speed,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)
+                            enemy = Boss(x_loc, y_loc, width, height, image, enemy_x_speed, enemy_y_speed, 0, 0, score, shoot, screen_width, screen_height, enemy_num_bullets, enemy_health)
                             
                         enemy.name = 'Enemy: ' + str(k)                        
                         enemy.set_direction(dir)
@@ -465,9 +465,10 @@ class Game():
                 break
 
             if self.testing == False:
-                self.move_enemies_as_unit(current_frame,old_frame) 
-                old_movement = self.move_enemies_individually(old_movement,current_movement)
-                self.enemy_status_updates(old_frame,current_frame,player_ship,shoot_flag,index)
+                self.move_enemies_as_unit(current_frame, old_frame)
+                old_movement = self.move_enemies_individually(old_movement, current_movement)
+                # self.boss_move() still working out how to deal with boss movement
+                self.enemy_status_updates(old_frame, current_frame, player_ship, shoot_flag, index)
                 self.enemy_ship_bullet_updates(player_ship)
 
             self.player_ship_bullet_updates(player_ship,current_frame)      

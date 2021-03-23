@@ -87,7 +87,7 @@ class Enemy(object):
         elif self.bottom_out_of_bounds():
             directions.append('up')
         return directions
-        
+
     def move(self):
         will_be_within_left = self.x - self.x_vel >= self.left_boundary
         will_be_within_right = self.x + self.width + self.x_vel <= self.right_boundary
@@ -104,26 +104,26 @@ class Enemy(object):
         down_right = will_be_within_right and self.x_dir == 1 and will_be_within_bottom and self.y_dir == 1
 
         if right:
-            self.x+=self.x_vel*self.x_dir 
+            self.x += self.x_vel * self.x_dir
         elif up_right:
-            self.x+=self.x_vel*self.x_dir
-            self.y+=self.y_vel*self.y_dir
+            self.x += self.x_vel * self.x_dir
+            self.y += self.y_vel * self.y_dir
         elif up:
-            self.y+=self.y_vel*self.y_dir
+            self.y += self.y_vel * self.y_dir
         elif up_left:
-            self.x += self.x_vel*self.x_dir
-            self.y += self.y_vel*self.y_dir
+            self.x += self.x_vel * self.x_dir
+            self.y += self.y_vel * self.y_dir
         elif left:
-            self.x += self.x_vel*self.x_dir
+            self.x += self.x_vel * self.x_dir
         elif down_left:
-            self.x += self.x_vel*self.x_dir
-            self.y += self.y_vel*self.y_dir
+            self.x += self.x_vel * self.x_dir
+            self.y += self.y_vel * self.y_dir
         elif down:
-            self.y += self.y_vel*self.y_dir
+            self.y += self.y_vel * self.y_dir
         elif down_right:
-            self.x += self.x_vel*self.x_dir
-            self.y += self.y_vel*self.y_dir
-        self.hitbox = (self.x,self.y,self.width,self.height)
+            self.x += self.x_vel * self.x_dir
+            self.y += self.y_vel * self.y_dir
+        self.hitbox = (self.x, self.y, self.width, self.height)
     
     def descend_next_level(self,directions):
         for direction in directions:
@@ -131,21 +131,20 @@ class Enemy(object):
                 self.x_dir *= -1
                 if self.top_out_of_bounds() or self.bottom_out_of_bounds():
                     self.switch *= -1
-                self.y+=self.y_vel*self.switch
+                self.y += self.y_vel * self.switch
             else:
                 self.y_dir *= -1
                 if self.right_out_of_bounds() or self.left_out_of_bounds():
                     self.switch *= -1
-                self.x += self.x_vel*self.switch
-        self.hitbox = (self.x,self.y,self.width,self.height)
+                self.x += self.x_vel * self.switch
+        self.hitbox = (self.x, self.y, self.width, self.height)
         
     def draw(self,win):
         win.blit(self.image,(self.x,self.y))
         pygame.draw.rect(win,(255,0,0),self.hitbox,2)
     
     def hit(self,player_ship):
-        self.health-=1
-        print('Enemy Health: ' + str(self.health))
+        self.health -= 1
         if self.health <= 0:
             player_ship.score += self.score
             return True
@@ -154,7 +153,7 @@ class Enemy(object):
     def _set_bullet_position(self):
         current_bullet_position_x = self.x + 0.5*self.width - 30
         current_bullet_position_y = self.y + self.height - 25
-        return (current_bullet_position_x,current_bullet_position_y)
+        return current_bullet_position_x, current_bullet_position_y
     
     def shoot(self,fire):
         current_bullet_position_x,current_bullet_position_y = self._set_bullet_position()
@@ -184,12 +183,11 @@ class Enemy(object):
                 # multi shot    
                 bullet_type = '6'
                 bullets_left = self.num_bullets - len(self.bullets)
-                print('Num Bullets Left: ' + str(bullets_left))
                 bullet_number = 0
                 horizontal_gap = 20
                 while bullets_left > 0:           
                     if self.type == 'Boss':
-                        image = 'boss_6_position.png'
+                        image = 'Entities/Enemy/Boss/boss_6_position.png'
                     else:
                         image = 'Entities/Enemy/enemy_6_position.png'
                     x = current_bullet_position_x + bullet_number*horizontal_gap - 50
@@ -245,6 +243,7 @@ class Boss(Enemy):
         self.current_movement = 0
         self.previous_movement = 0
         self.type = 'Boss'
+        self.move_type = 'Horizontal_Enemy'
         self.score = 10
         
     def set_wave(self):
@@ -266,16 +265,15 @@ class Boss(Enemy):
             
     def move(self):
         if self.wave == 1 or self.wave == 2 or self.wave == 3:
-            self.set_direction(0)
-            Multiple_Movement_Enemy.move()
+            self.move_type = 'Horizontal_Enemy'
             
         elif self.wave == 4:
-            Erratic_Movement_Enemy.move()
+            self.move_type = 'Erratic_Movement_Enemy'
             
         self.hitbox = (self.x,self.y,self.width,self.height)
              
     def _set_bullet_position(self):
-        current_bullet_position_x = self.x + 0.5*self.width - 30
+        current_bullet_position_x = self.x + 0.5 * self.width - 30
         current_bullet_position_y = self.y + self.height - 25
         return (current_bullet_position_x,current_bullet_position_y)
     
@@ -289,4 +287,3 @@ class Boss(Enemy):
         if self.current_health <= 0:
             player_ship.score += self.score
         return self.current_health <= 0
-        #TODO: work on boss functionality
