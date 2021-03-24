@@ -205,7 +205,7 @@ class Game():
         for enemy in self.enemies:
             if enemy.dead == True:
                 continue
-            if enemy.type == 'Vertical_Enemy' or enemy.type == 'Horizontal_Enemy':
+            if enemy.type == 'Multiple_Movement_Enemy':
                 continue
             if enemy.type == 'Erratic_Movement_Enemy':
                 directions = enemy.check_out_of_bounds()
@@ -216,6 +216,11 @@ class Game():
             old_movement = current_movement
                     
         return old_movement
+
+    def boss_move(self):
+        for enemy in self.enemies:
+            if 'Boss' in enemy.type:
+                enemy.move()
 
     def enemy_status_updates(self,old_frame,curent_frame,player_ship,shoot_flag,index):
         for enemy in self.enemies:
@@ -467,7 +472,7 @@ class Game():
             if self.testing == False:
                 self.move_enemies_as_unit(current_frame, old_frame)
                 old_movement = self.move_enemies_individually(old_movement, current_movement)
-                # self.boss_move() still working out how to deal with boss movement
+                self.boss_move() # still working out how to deal with boss movement
                 self.enemy_status_updates(old_frame, current_frame, player_ship, shoot_flag, index)
                 self.enemy_ship_bullet_updates(player_ship)
 

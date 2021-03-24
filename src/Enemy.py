@@ -89,6 +89,7 @@ class Enemy(object):
         return directions
 
     def move(self):
+        print(f'Direction: {self.x_dir}')
         will_be_within_left = self.x - self.x_vel >= self.left_boundary
         will_be_within_right = self.x + self.width + self.x_vel <= self.right_boundary
         will_be_within_top = self.y - self.y_vel >= self.top_boundary
@@ -201,6 +202,7 @@ class Multiple_Movement_Enemy(Enemy):
     def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health):
         super().__init__(x, y, width, height, image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health)
         self.hitbox = (x,y,width,height)
+        print(f'Horizontal Enemey Initial Direction: {x_dir}')
         self.type = 'Multiple_Movement_Enemy'
               
 class Erratic_Movement_Enemy(Enemy):             
@@ -253,6 +255,7 @@ class Boss(Enemy):
         
         if self.previous_health > three_quarter_health and self.current_health <= three_quarter_health:
             self.wave = 2
+
             # can shoot multi directional bullets
 
         elif self.previous_health > half_health and self.current_health <= half_health:
@@ -265,11 +268,12 @@ class Boss(Enemy):
             
     def move(self):
         if self.wave == 1 or self.wave == 2 or self.wave == 3:
-            self.move_type = 'Horizontal_Enemy'
-            
+            directions = self.check_out_of_bounds()
+            if len(directions) > 0:
+                self.descend_next_level(directions)
+            super().move()
         elif self.wave == 4:
             self.move_type = 'Erratic_Movement_Enemy'
-            
         self.hitbox = (self.x,self.y,self.width,self.height)
              
     def _set_bullet_position(self):
