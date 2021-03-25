@@ -266,14 +266,24 @@ class Boss(Enemy):
             # move like a random movement self 
             self.wave = 4
             
-    def move(self):
+    def move(self, current_movement, old_movement):
         if self.wave == 1 or self.wave == 2 or self.wave == 3:
             directions = self.check_out_of_bounds()
             if len(directions) > 0:
                 self.descend_next_level(directions)
             super().move()
         elif self.wave == 4:
-            self.move_type = 'Erratic_Movement_Enemy'
+            directions = self.check_out_of_bounds()
+            if len(directions) > 0:
+                self.descend_next_level(directions)
+            x = False
+            if current_movement - old_movement >= 50:
+                direction = random.randint(0, 7)
+                super().set_direction(direction)
+                x = True
+            super().move()
+            return x
+
         self.hitbox = (self.x,self.y,self.width,self.height)
              
     def _set_bullet_position(self):

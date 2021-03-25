@@ -217,10 +217,12 @@ class Game():
                     
         return old_movement
 
-    def boss_move(self):
+    def boss_move(self, current_movement, old_movement):
         for enemy in self.enemies:
             if 'Boss' in enemy.type:
-                enemy.move()
+                if enemy.move(current_movement, old_movement):
+                    old_movement = current_movement
+                return old_movement
 
     def enemy_status_updates(self,old_frame,curent_frame,player_ship,shoot_flag,index):
         for enemy in self.enemies:
@@ -445,6 +447,8 @@ class Game():
         
         old_movement = 0
         current_movement = 0
+        boss_old_movement = 0
+        boss_current_movement = 0
         a = 0
         b = 0
         old = 0
@@ -460,6 +464,7 @@ class Game():
             clock.tick(30)
             current_frame += 1
             current_movement += 1
+            boss_current_movement += 1
             cur += 1
             
             self.update_level(player_ship)
@@ -472,7 +477,7 @@ class Game():
             if self.testing == False:
                 self.move_enemies_as_unit(current_frame, old_frame)
                 old_movement = self.move_enemies_individually(old_movement, current_movement)
-                self.boss_move() # still working out how to deal with boss movement
+                boss_old_movement = self.boss_move(boss_current_movement, boss_old_movement) # still working out how to deal with boss movement
                 self.enemy_status_updates(old_frame, current_frame, player_ship, shoot_flag, index)
                 self.enemy_ship_bullet_updates(player_ship)
 
