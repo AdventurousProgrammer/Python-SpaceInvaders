@@ -76,15 +76,23 @@ class Game():
     current_spacebar = True
     count = 0
     testing = False
-    
-    def process_user_input(self,player_ship,old_frame,current_frame,a):
+    pause = False
+
+    def process_user_input(self,player_ship,old_frame,current_frame,a, current_paused, old_paused):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
     
         keys = pygame.key.get_pressed()
-        
+
+        if keys[pygame.K_p]:
+            if current_paused - old_paused >= 5:
+                print(f'Paused?: {self.pause}')
+                if not self.pause:
+                    self.pause = True
+                else:
+                    self.pause = False
         if keys[pygame.K_RIGHT] and player_ship.x + player_ship.width + player_ship.x_speed <= screen_width - 20:
             player_ship.x += player_ship.x_speed
         elif keys[pygame.K_LEFT] and player_ship.x - player_ship.x_speed >= 20:
@@ -113,7 +121,7 @@ class Game():
         old_frame = player_ship.shoot(self,old_frame,current_frame,initialize)
         initialize = False
         self.count = 1
-        return old_frame
+        return old_frame, current_paused, old_paused
     
     def _process_weapons(self,player_ship):
         
@@ -451,7 +459,8 @@ class Game():
     def play(self,player_ship):
         old_frame = 0
         current_frame = 0
-        
+        old_pause = -5 # first time when p is pressed, pause is hit based on difference
+        current_pause = 0
         old_movement = 0
         current_movement = 0
         boss_old_movement = 0
@@ -469,30 +478,31 @@ class Game():
         while self.running:
             a = datetime.datetime.now()
             clock.tick(30)
-            current_frame += 1
-            current_movement += 1
-            boss_current_movement += 1
-            cur += 1
-            
-            self.update_level(player_ship)
-            shoot_flag = random.randint(0,9)
-            
-            if player_ship.health <= 0:
-                self.running = False
-                break
+            if self.pause:
+                current_pause += 1
 
-            if self.testing == False:
+            if not self.pause:
+                current_frame += 1
+                current_movement += 1
+                boss_current_movement += 1
+                cur += 1
+
+                self.update_level(player_ship)
+                shoot_flag = random.randint(0, 9)
+
+                if player_ship.health <= 0:
+                    self.running = False
+                    break
+
                 self.move_enemies_as_unit(current_frame, old_frame)
                 old_movement = self.move_enemies_individually(old_movement, current_movement)
                 boss_old_movement = self.boss_move(boss_current_movement, boss_old_movement) # still working out how to deal with boss movement
                 self.enemy_status_updates(old_frame, current_frame, player_ship, shoot_flag, index)
                 self.enemy_ship_bullet_updates(player_ship)
+                self.player_ship_bullet_updates(player_ship, current_frame)
+            old = self.redraw_game_window(player_ship, old, cur)
+            old_frame, current_pause, old_pause = self.process_user_input(player_ship,old_frame,current_frame,a, current_pause, old_pause)
 
-            self.player_ship_bullet_updates(player_ship,current_frame)      
-            old_frame = self.process_user_input(player_ship,old_frame,current_frame,a)
-            old = self.redraw_game_window(player_ship,old,cur)
-            b = datetime.datetime.now()
-            
         self.game_over_screen()
 
 def main():
