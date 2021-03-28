@@ -26,7 +26,7 @@ ship = pygame.image.load('Entities/Player/player_ship.png')
 
 ship_vel = 5
 
-small_missile = pygame.image.load('Entities/Player/missiles/small_missile.png')
+small_missile = pygame.image.load('Entities/Player/missiles/large_missile.png')
 
 num_small_enemies = 6
 
@@ -223,6 +223,7 @@ class Game():
                 if enemy.move(current_movement, old_movement):
                     old_movement = current_movement
                 return old_movement
+            return old_movement
 
     def enemy_status_updates(self,old_frame,curent_frame,player_ship,shoot_flag,index):
         for enemy in self.enemies:
@@ -380,23 +381,29 @@ class Game():
                         y_loc = top_y_boundary + j*(sprite_height + y_sep)
                         width = 32
                         height = 32
-                        score = 7
+                        #score = 7
                         shoot = random.randint(0,9)
                         
                         if enemy_type == 'Horizontal_Enemy':
+                            score = 7
                             enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,enemy_x_speed,enemy_y_speed,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)
                             dir = 0
                         elif enemy_type == 'Vertical_Enemy':
+                            score = 5
                             enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,enemy_x_speed,enemy_y_speed,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)
                             dir = 2
                         elif enemy_type == 'Multiple_Movement_Enemy':
+                            score = 10
                             enemy = Multiple_Movement_Enemy(x_loc,y_loc,width,height,image,enemy_x_speed,enemy_y_speed,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)
                             dir = random.randint(0, 7)
                         elif enemy_type == 'Erratic_Movement_Enemy':
+                            score = 10
                             enemy = Erratic_Movement_Enemy(x_loc,y_loc,width,height,image,enemy_x_speed,enemy_y_speed,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)
                         elif enemy_type == 'Deflector_Enemy':
+                            score = 15
                             enemy = Deflector_Enemy(x_loc,y_loc,width,height,image,enemy_x_speed,enemy_y_speed,0,0,score,shoot,screen_width,screen_height,enemy_num_bullets,enemy_health)
                         elif enemy_type == 'Boss':
+                            score = 30
                             image = pygame.image.load('Entities/Enemy/Boss/boss_1.png')
                             width = image.get_width()
                             height = image.get_height()

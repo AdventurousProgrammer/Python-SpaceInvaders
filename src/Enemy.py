@@ -89,7 +89,6 @@ class Enemy(object):
         return directions
 
     def move(self):
-        print(f'Direction: {self.x_dir}')
         will_be_within_left = self.x - self.x_vel >= self.left_boundary
         will_be_within_right = self.x + self.width + self.x_vel <= self.right_boundary
         will_be_within_top = self.y - self.y_vel >= self.top_boundary
@@ -202,7 +201,6 @@ class Multiple_Movement_Enemy(Enemy):
     def __init__(self,x,y,width,height,image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health):
         super().__init__(x, y, width, height, image,x_vel,y_vel,x_dir,y_dir,score,shoot,screen_width,screen_height,num_bullets,health)
         self.hitbox = (x,y,width,height)
-        print(f'Horizontal Enemey Initial Direction: {x_dir}')
         self.type = 'Multiple_Movement_Enemy'
               
 class Erratic_Movement_Enemy(Enemy):             
