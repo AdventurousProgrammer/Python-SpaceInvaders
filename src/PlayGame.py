@@ -77,6 +77,8 @@ class Game():
     count = 0
     testing = False
     pause = False
+    pause_pressed = False
+    pause_released = False
 
     def process_user_input(self,player_ship,old_frame,current_frame,a, current_paused, old_paused):
         for event in pygame.event.get():
@@ -86,13 +88,7 @@ class Game():
     
         keys = pygame.key.get_pressed()
 
-        if keys[pygame.K_p]:
-            if current_paused - old_paused >= 5:
-                print(f'Paused?: {self.pause}')
-                if not self.pause:
-                    self.pause = True
-                else:
-                    self.pause = False
+
         if keys[pygame.K_RIGHT] and player_ship.x + player_ship.width + player_ship.x_speed <= screen_width - 20:
             player_ship.x += player_ship.x_speed
         elif keys[pygame.K_LEFT] and player_ship.x - player_ship.x_speed >= 20:
@@ -327,7 +323,43 @@ class Game():
         level_layout = open('levels.csv')
         file_reader = csv.reader(level_layout)
         self.data = list(file_reader)
-            
+
+    def check_pause(self, current_pause, old_pause):
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                print(pygame.K_p)
+                if event.key == pygame.K_p:
+                    pygame.time.delay(10)
+                    self.pause_pressed = True
+            elif event.type == pygame.KEYUP:
+                if event.key == pygame.K_p:
+                    pygame.time.delay(10)
+                    self.pause_pressed = False
+                    self.pause_released = True
+        if not self.pause_pressed and self.pause_released:
+            #print(f'Pause State: {self.pause}')
+            if self.pause:
+                self.pause = False
+            else:
+                self.pause = True
+            self.pause_released = False
+            old_pause = current_pause
+        return old_pause
+
+        '''
+        keys = pygame.key.get_pressed()
+        print(dir(pygame.KEYDOWN))
+        if keys[pygame.K_p]:
+            if current_pause - old_pause >= 20:
+                print(f'In Check Pause actually changing pause state: current_pause:{current_pause} old_pause: {old_pause}')
+                if not self.pause:
+                    self.pause = True
+                else:
+                    self.pause = False
+                old_pause = current_pause
+        return old_pause
+        '''
+
     def set_level(self,player_ship):
         enemy_list = []
         left_x_boundary = 50
@@ -459,7 +491,7 @@ class Game():
     def play(self,player_ship):
         old_frame = 0
         current_frame = 0
-        old_pause = -5 # first time when p is pressed, pause is hit based on difference
+        old_pause = 0 # first time when p is pressed, pause is hit based on difference
         current_pause = 0
         old_movement = 0
         current_movement = 0
@@ -480,7 +512,8 @@ class Game():
             clock.tick(30)
             if self.pause:
                 current_pause += 1
-
+            old_pause = self.check_pause(current_pause, old_pause)
+            current_pause += 1
             if not self.pause:
                 current_frame += 1
                 current_movement += 1
@@ -500,8 +533,8 @@ class Game():
                 self.enemy_status_updates(old_frame, current_frame, player_ship, shoot_flag, index)
                 self.enemy_ship_bullet_updates(player_ship)
                 self.player_ship_bullet_updates(player_ship, current_frame)
-            old = self.redraw_game_window(player_ship, old, cur)
-            old_frame, current_pause, old_pause = self.process_user_input(player_ship,old_frame,current_frame,a, current_pause, old_pause)
+                old = self.redraw_game_window(player_ship, old, cur)
+                old_frame, current_pause, old_pause = self.process_user_input(player_ship,old_frame,current_frame,a, current_pause, old_pause)
 
         self.game_over_screen()
 
